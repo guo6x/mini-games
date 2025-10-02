@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地理游戏 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-area {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .question-area {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+        .option-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .option-btn.correct {
+            background: #2ecc71;
+            border-color: #27ae60;
+        }
+        .option-btn.incorrect {
+            background: #e74c3c;
+            border-color: #c0392b;
+        }
+        .result-message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .game-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🌍 地理游戏</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🌍 地理游戏</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>等级</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div>点击开始游戏</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" class="game-btn start-btn" id="start-btn">开始游戏</button>
+            <button onclick="resetGame()" class="game-btn">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="game-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let level = 1;
+        let gameActive = false;
+        let startTime = 0;
+        
+        class GeographyGame {
+            constructor() {
+                this.score = 0;
+                this.level = 1;
+                this.currentQuestion = 0;
+                this.totalQuestions = 10;
+                this.gameActive = false;
+                this.questions = [
+                    {
+                        question: "世界上最高的山峰是？",
+                        options: ["珠穆朗玛峰", "乔戈里峰", "干城章嘉峰", "洛子峰"],
+                        correct: 0
+                    },
+                    {
+                        question: "世界上最长的河流是？",
+                        options: ["亚马逊河", "尼罗河", "长江", "密西西比河"],
+                        correct: 1
+                    },
+                    {
+                        question: "世界上面积最大的国家是？",
+                        options: ["中国", "美国", "俄罗斯", "加拿大"],
+                        correct: 2
+                    },
+                    {
+                        question: "世界上最大的沙漠是？",
+                        options: ["撒哈拉沙漠", "戈壁沙漠", "阿拉伯沙漠", "卡拉哈里沙漠"],
+                        correct: 0
+                    },
+                    {
+                        question: "世界上最深的海沟是？",
+                        options: ["马里亚纳海沟", "汤加海沟", "日本海沟", "千岛海沟"],
+                        correct: 0
+                    },
+                    {
+                        question: "澳大利亚的首都是？",
+                        options: ["悉尼", "墨尔本", "堪培拉", "布里斯班"],
+                        correct: 2
+                    },
+                    {
+                        question: "世界上最大的岛屿是？",
+                        options: ["格陵兰岛", "新几内亚岛", "婆罗洲", "马达加斯加岛"],
+                        correct: 0
+                    },
+                    {
+                        question: "世界上最小的国家是？",
+                        options: ["摩纳哥", "梵蒂冈", "圣马力诺", "列支敦士登"],
+                        correct: 1
+                    },
+                    {
+                        question: "世界上最大的湖泊是？",
+                        options: ["里海", "苏必利尔湖", "维多利亚湖", "贝加尔湖"],
+                        correct: 0
+                    },
+                    {
+                        question: "南美洲最长的山脉是？",
+                        options: ["洛基山脉", "安第斯山脉", "阿巴拉契亚山脉", "乌拉尔山脉"],
+                        correct: 1
+                    }
+                ];
+                this.shuffleQuestions();
+            }
+
+            shuffleQuestions() {
+                for (let i = this.questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.questions[i], this.questions[j]] = [this.questions[j], this.questions[i]];
+                }
+            }
+
+            start() {
+                this.gameActive = true;
+                this.score = 0;
+                this.level = 1;
+                this.currentQuestion = 0;
+                this.shuffleQuestions();
+                this.showQuestion();
+            }
+
+            showQuestion() {
+                if (this.currentQuestion >= this.totalQuestions) {
+                    this.endGame();
+                    return;
+                }
+
+                const question = this.questions[this.currentQuestion];
+                const gameArea = document.getElementById('game-area');
+                
+                gameArea.innerHTML = `
+                    <div class="question-area">
+                        <div class="question-text">${question.question}</div>
+                        <div class="options-grid">
+                            ${question.options.map((option, index) => 
+                                `<button class="option-btn" onclick="geographyGame.selectAnswer(${index})">${option}</button>`
+                            ).join('')}
+                        </div>
+                        <div class="result-message" id="resultMessage"></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(this.currentQuestion / this.totalQuestions) * 100}%"></div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9em;">
+                            问题 ${this.currentQuestion + 1} / ${this.totalQuestions}
+                        </div>
+                    </div>
+                `;
+            }
+
+            selectAnswer(selectedIndex) {
+                if (!this.gameActive) return;
+
+                const question = this.questions[this.currentQuestion];
+                const options = document.querySelectorAll('.option-btn');
+                const resultMessage = document.getElementById('resultMessage');
+
+                // 禁用所有选项
+                options.forEach(btn => btn.disabled = true);
+
+                if (selectedIndex === question.correct) {
+                    options[selectedIndex].classList.add('correct');
+                    this.score += 10;
+                    resultMessage.innerHTML = '🎉 正确！';
+                    resultMessage.style.color = '#2ecc71';
+                } else {
+                    options[selectedIndex].classList.add('incorrect');
+                    options[question.correct].classList.add('correct');
+                    resultMessage.innerHTML = `❌ 错误！正确答案是：${question.options[question.correct]}`;
+                    resultMessage.style.color = '#e74c3c';
+                }
+
+                this.level = Math.floor(this.currentQuestion / 2) + 1;
+                this.updateStats();
+
+                setTimeout(() => {
+                    this.currentQuestion++;
+                    this.showQuestion();
+                }, 2000);
+            }
+
+            endGame() {
+                this.gameActive = false;
+                const gameArea = document.getElementById('game-area');
+                const percentage = Math.round((this.score / (this.totalQuestions * 10)) * 100);
+                
+                let message = '';
+                if (percentage >= 90) {
+                    message = '🏆 地理大师！';
+                } else if (percentage >= 70) {
+                    message = '🌟 地理专家！';
+                } else if (percentage >= 50) {
+                    message = '📚 继续学习！';
+                } else {
+                    message = '🗺️ 多看地图！';
+                }
+
+                gameArea.innerHTML = `
+                    <div class="question-area">
+                        <div class="question-text">游戏结束！</div>
+                        <div style="font-size: 1.5em; margin: 20px 0;">${message}</div>
+                        <div style="font-size: 1.2em;">最终得分: ${this.score} / ${this.totalQuestions * 10}</div>
+                        <div style="font-size: 1.1em; margin-top: 10px;">正确率: ${percentage}%</div>
+                        <div style="margin-top: 20px;">
+                            <button class="option-btn" onclick="geographyGame.start(); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">再玩一次</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('start-btn').textContent = '开始游戏';
+                document.getElementById('start-btn').disabled = false;
+            }
+
+            updateStats() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('level').textContent = this.level;
+            }
+        }
+
+        let geographyGame;
+
+        function startGame() {
+            if (!geographyGame) {
+                geographyGame = new GeographyGame();
+            }
+            
+            gameActive = true;
+            startTime = Date.now();
+            
+            document.getElementById('start-btn').textContent = '游戏中...';
+            document.getElementById('start-btn').disabled = true;
+            
+            geographyGame.start();
+            score = geographyGame.score;
+            level = geographyGame.level;
+            
+            updateStats();
+        }
+        
+        function resetGame() {
+            gameActive = false;
+            score = 0;
+            level = 1;
+            startTime = 0;
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('game-area').innerHTML = '<div>点击开始游戏</div>';
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            
+            const timeElapsed = gameActive ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            document.getElementById('time').textContent = timeElapsed + 's';
+        }
+        
+        // 定时更新时间显示
+        setInterval(() => {
+            if (gameActive) {
+                updateStats();
+            }
+        }, 1000);
+        
+        // 游戏特定逻辑可以在这里添加
+        console.log('地理游戏 已加载');
+    </script>
+</body>
+</html>

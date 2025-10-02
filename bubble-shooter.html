@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泡泡射击 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-area {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .bubble-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+        }
+        .shooter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .aim-line {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            width: 2px;
+            height: 100px;
+            background: rgba(255,255,255,0.5);
+            transform-origin: bottom center;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+        }
+        .next-bubble {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .game-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🫧 泡泡射击</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🫧 泡泡射击</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>等级</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 2em;">点击开始游戏</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" class="game-btn start-btn" id="start-btn">开始游戏</button>
+            <button onclick="resetGame()" class="game-btn">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="game-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let level = 1;
+        let gameActive = false;
+        let startTime = 0;
+        
+        class BubbleShooter {
+            constructor() {
+                this.bubbles = [];
+                this.currentBubble = null;
+                this.nextBubble = null;
+                this.colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+                this.rows = 12;
+                this.cols = 20;
+                this.bubbleSize = 30;
+                this.gameActive = false;
+                this.score = 0;
+                this.level = 1;
+                this.shootAngle = 0;
+                this.gameArea = document.getElementById('game-area');
+            }
+
+            init() {
+                this.gameArea.innerHTML = `
+                    <canvas class="bubble-canvas" id="bubbleCanvas" width="600" height="400"></canvas>
+                    <div class="shooter" id="shooter"></div>
+                    <div class="aim-line" id="aimLine"></div>
+                    <div class="next-bubble" id="nextBubble"></div>
+                `;
+                
+                this.canvas = document.getElementById('bubbleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.shooter = document.getElementById('shooter');
+                this.aimLine = document.getElementById('aimLine');
+                this.nextBubbleEl = document.getElementById('nextBubble');
+                
+                this.setupEventListeners();
+                this.generateBubbles();
+                this.generateCurrentBubble();
+                this.generateNextBubble();
+                this.gameLoop();
+            }
+
+            setupEventListeners() {
+                this.gameArea.addEventListener('mousemove', (e) => {
+                    if (!this.gameActive) return;
+                    const rect = this.gameArea.getBoundingClientRect();
+                    const x = e.clientX - rect.left - 300;
+                    const y = e.clientY - rect.top - 380;
+                    this.shootAngle = Math.atan2(y, x);
+                    this.aimLine.style.transform = `rotate(${this.shootAngle}rad)`;
+                });
+
+                this.gameArea.addEventListener('click', () => {
+                    if (!this.gameActive || !this.currentBubble) return;
+                    this.shootBubble();
+                });
+            }
+
+            generateBubbles() {
+                this.bubbles = [];
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < this.cols; col++) {
+                        if (row % 2 === 1 && col === this.cols - 1) continue;
+                        
+                        const x = col * (this.bubbleSize - 2) + (row % 2 === 1 ? this.bubbleSize / 2 : 0);
+                        const y = row * (this.bubbleSize - 2);
+                        
+                        if (Math.random() < 0.8) {
+                            this.bubbles.push({
+                                x: x,
+                                y: y,
+                                color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                                row: row,
+                                col: col
+                            });
+                        }
+                    }
+                }
+            }
+
+            generateCurrentBubble() {
+                if (this.nextBubble) {
+                    this.currentBubble = { ...this.nextBubble };
+                } else {
+                    this.currentBubble = {
+                        x: 285,
+                        y: 360,
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        vx: 0,
+                        vy: 0,
+                        moving: false
+                    };
+                }
+                this.shooter.style.background = this.currentBubble.color;
+            }
+
+            generateNextBubble() {
+                this.nextBubble = {
+                    color: this.colors[Math.floor(Math.random() * this.colors.length)]
+                };
+                this.nextBubbleEl.style.background = this.nextBubble.color;
+            }
+
+            shootBubble() {
+                if (!this.currentBubble || this.currentBubble.moving) return;
+                
+                const speed = 8;
+                this.currentBubble.vx = Math.cos(this.shootAngle) * speed;
+                this.currentBubble.vy = Math.sin(this.shootAngle) * speed;
+                this.currentBubble.moving = true;
+            }
+
+            updateBubble() {
+                if (!this.currentBubble || !this.currentBubble.moving) return;
+                
+                this.currentBubble.x += this.currentBubble.vx;
+                this.currentBubble.y += this.currentBubble.vy;
+                
+                // 边界碰撞
+                if (this.currentBubble.x <= 15 || this.currentBubble.x >= 585) {
+                    this.currentBubble.vx = -this.currentBubble.vx;
+                }
+                
+                // 检查碰撞
+                this.checkCollisions();
+            }
+
+            checkCollisions() {
+                if (!this.currentBubble.moving) return;
+                
+                // 检查与现有泡泡的碰撞
+                for (let bubble of this.bubbles) {
+                    const dx = this.currentBubble.x - bubble.x;
+                    const dy = this.currentBubble.y - bubble.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < this.bubbleSize) {
+                        this.attachBubble();
+                        return;
+                    }
+                }
+                
+                // 检查顶部碰撞
+                if (this.currentBubble.y <= 15) {
+                    this.attachBubble();
+                }
+            }
+
+            attachBubble() {
+                // 将当前泡泡添加到网格
+                const gridX = Math.round(this.currentBubble.x / (this.bubbleSize - 2));
+                const gridY = Math.round(this.currentBubble.y / (this.bubbleSize - 2));
+                
+                const newBubble = {
+                    x: gridX * (this.bubbleSize - 2) + (gridY % 2 === 1 ? this.bubbleSize / 2 : 0),
+                    y: gridY * (this.bubbleSize - 2),
+                    color: this.currentBubble.color,
+                    row: gridY,
+                    col: gridX
+                };
+                
+                this.bubbles.push(newBubble);
+                
+                // 检查匹配
+                this.checkMatches(newBubble);
+                
+                // 生成新泡泡
+                this.generateCurrentBubble();
+                this.generateNextBubble();
+            }
+
+            checkMatches(bubble) {
+                const matches = this.findMatches(bubble, bubble.color, []);
+                
+                if (matches.length >= 3) {
+                    // 移除匹配的泡泡
+                    for (let match of matches) {
+                        const index = this.bubbles.indexOf(match);
+                        if (index > -1) {
+                            this.bubbles.splice(index, 1);
+                        }
+                    }
+                    
+                    this.score += matches.length * 10;
+                    this.updateStats();
+                    
+                    // 检查悬空泡泡
+                    this.removeFloatingBubbles();
+                    
+                    // 检查胜利条件
+                    if (this.bubbles.length === 0) {
+                        this.nextLevel();
+                    }
+                }
+            }
+
+            findMatches(bubble, color, visited) {
+                if (visited.includes(bubble) || bubble.color !== color) {
+                    return [];
+                }
+                
+                visited.push(bubble);
+                let matches = [bubble];
+                
+                // 检查相邻泡泡
+                const neighbors = this.getNeighbors(bubble);
+                for (let neighbor of neighbors) {
+                    if (!visited.includes(neighbor) && neighbor.color === color) {
+                        matches = matches.concat(this.findMatches(neighbor, color, visited));
+                    }
+                }
+                
+                return matches;
+            }
+
+            getNeighbors(bubble) {
+                const neighbors = [];
+                const directions = bubble.row % 2 === 0 ? 
+                    [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]] :
+                    [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]];
+                
+                for (let [dr, dc] of directions) {
+                    const newRow = bubble.row + dr;
+                    const newCol = bubble.col + dc;
+                    
+                    const neighbor = this.bubbles.find(b => b.row === newRow && b.col === newCol);
+                    if (neighbor) {
+                        neighbors.push(neighbor);
+                    }
+                }
+                
+                return neighbors;
+            }
+
+            removeFloatingBubbles() {
+                const connected = new Set();
+                
+                // 找到所有连接到顶部的泡泡
+                for (let bubble of this.bubbles) {
+                    if (bubble.row === 0) {
+                        this.markConnected(bubble, connected);
+                    }
+                }
+                
+                // 移除未连接的泡泡
+                this.bubbles = this.bubbles.filter(bubble => connected.has(bubble));
+            }
+
+            markConnected(bubble, connected) {
+                if (connected.has(bubble)) return;
+                
+                connected.add(bubble);
+                const neighbors = this.getNeighbors(bubble);
+                for (let neighbor of neighbors) {
+                    this.markConnected(neighbor, connected);
+                }
+            }
+
+            nextLevel() {
+                this.level++;
+                this.generateBubbles();
+                this.updateStats();
+            }
+
+            render() {
+                this.ctx.clearRect(0, 0, 600, 400);
+                
+                // 绘制泡泡
+                for (let bubble of this.bubbles) {
+                    this.ctx.fillStyle = bubble.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(bubble.x + 15, bubble.y + 15, 13, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+                
+                // 绘制当前泡泡
+                if (this.currentBubble) {
+                    this.ctx.fillStyle = this.currentBubble.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.currentBubble.x + 15, this.currentBubble.y + 15, 13, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+            }
+
+            gameLoop() {
+                if (this.gameActive) {
+                    this.updateBubble();
+                    this.render();
+                    requestAnimationFrame(() => this.gameLoop());
+                }
+            }
+
+            updateStats() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('level').textContent = this.level;
+            }
+
+            start() {
+                this.gameActive = true;
+                this.score = 0;
+                this.level = 1;
+                this.init();
+                this.updateStats();
+            }
+
+            stop() {
+                this.gameActive = false;
+            }
+        }
+
+        let bubbleGame;
+
+        function startGame() {
+            gameActive = true;
+            startTime = Date.now();
+            
+            if (!bubbleGame) {
+                bubbleGame = new BubbleShooter();
+            }
+            
+            bubbleGame.start();
+            
+            document.getElementById('start-btn').textContent = '游戏中...';
+            document.getElementById('start-btn').disabled = true;
+            
+            score = bubbleGame.score;
+            level = bubbleGame.level;
+            
+            updateStats();
+        }
+        
+        function resetGame() {
+            gameActive = false;
+            score = 0;
+            level = 1;
+            startTime = 0;
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('game-area').innerHTML = '<div>点击开始游戏</div>';
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            
+            const timeElapsed = gameActive ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            document.getElementById('time').textContent = timeElapsed + 's';
+        }
+        
+        // 定时更新时间显示
+        setInterval(() => {
+            if (gameActive) {
+                updateStats();
+            }
+        }, 1000);
+        
+        // 游戏特定逻辑可以在这里添加
+        console.log('泡泡射击 已加载');
+    </script>
+</body>
+</html>

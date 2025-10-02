@@ -1,0 +1,84 @@
+/* 井字棋专属样式 */
+.ttt-container {
+    max-width: 400px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 2em 1.5em 1.5em 1.5em;
+    text-align: center;
+}
+.ttt-container h1 {
+    color: #2c3e50;
+    margin-bottom: 1em;
+}
+.ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 1em;
+}
+.ttt-cell {
+    width: 80px;
+    height: 80px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    font-size: 2.5em;
+    color: #2980b9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+    border: 2px solid #e0e0e0;
+}
+.ttt-cell:hover {
+    background: #e3f2fd;
+}
+.ttt-info {
+    margin-bottom: 1em;
+    font-size: 1.2em;
+    color: #555;
+}
+#ttt-restart {
+    font-size: 1em;
+    padding: 0.5em 2em;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 1em;
+    transition: background 0.3s;
+}
+#ttt-restart:hover {
+    background-color: #2980b9;
+}
+.ttt-back {
+    display: inline-block;
+    margin-top: 0.5em;
+    color: #888;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: color 0.2s;
+}
+.ttt-back:hover {
+    color: #3498db;
+}
+@media (max-width: 500px) {
+    .ttt-board {
+        grid-template-columns: repeat(3, 60px);
+        grid-template-rows: repeat(3, 60px);
+    }
+    .ttt-cell {
+        width: 60px;
+        height: 60px;
+        font-size: 1.6em;
+    }
+    .ttt-container {
+        padding: 1em 0.5em 1em 0.5em;
+    }
+}

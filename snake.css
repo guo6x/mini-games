@@ -1,0 +1,239 @@
+.game-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.difficulty-selector,
+.food-selector,
+.grid-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.difficulty-selector select,
+.food-selector select,
+.grid-selector select {
+    padding: 8px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+    flex-wrap: wrap;
+}
+
+.score, .high-score, .level, .snake-length {
+    padding: 8px 15px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.game-board-container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    border: 2px solid var(--secondary-color);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.3s;
+}
+
+#game-canvas {
+    display: block;
+    background-color: var(--background-color);
+    transition: background-color 0.3s;
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.game-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.game-overlay h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: color 0.3s;
+}
+
+.game-overlay p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.btn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05);
+}
+
+.game-controls {
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.mobile-controls {
+    display: none;
+}
+
+.direction-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.horizontal-btns {
+    display: flex;
+    gap: 40px;
+}
+
+.direction-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.direction-btn:hover {
+    background-color: var(--secondary-color);
+    transform: scale(0.95);
+}
+
+.direction-btn:active {
+    opacity: 0.8;
+}
+
+.action-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.action-btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.help-section {
+    margin: 30px 0;
+    padding: 15px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-radius: 5px;
+    text-align: left;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.help-section h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    transition: color 0.3s;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .game-board-container {
+        width: 300px;
+        height: 300px;
+    }
+    
+    #game-canvas {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .game-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .mobile-controls {
+        display: block;
+    }
+    
+    .direction-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .horizontal-btns {
+        gap: 20px;
+    }
+}
+
+@media (min-width: 601px) {
+    .mobile-controls {
+        display: none;
+    }
+}

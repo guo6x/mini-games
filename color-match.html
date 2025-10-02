@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色匹配 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .color-word {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border: 3px solid #dee2e6;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .color-option {
+            padding: 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .color-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        .timer-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🎨 颜色匹配</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🎨 颜色匹配</h1>
+        
+        <div class="stats">
+            <div class="stat-item">得分: <span id="score">0</span></div>
+            <div class="stat-item">连击: <span id="streak">0</span></div>
+            <div class="stat-item">时间: <span id="time">30</span>s</div>
+        </div>
+        
+        <div class="timer-bar">
+            <div class="timer-fill" id="timer-fill"></div>
+        </div>
+        
+        <div class="color-word" id="color-word">点击开始游戏</div>
+        
+        <div class="options" id="options" style="display: none;">
+            <!-- 选项将通过JavaScript生成 -->
+        </div>
+        
+        <button onclick="startGame()" class="play-button" id="start-btn">开始游戏</button>
+        <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+    </div>
+    
+    <script>
+        let score = 0;
+        let streak = 0;
+        let timeLeft = 30;
+        let gameActive = false;
+        let currentCorrectColor = '';
+        let gameTimer;
+        
+        const colors = {
+            '红色': '#e74c3c',
+            '蓝色': '#3498db',
+            '绿色': '#2ecc71',
+            '黄色': '#f1c40f',
+            '紫色': '#9b59b6',
+            '橙色': '#e67e22',
+            '粉色': '#e91e63',
+            '青色': '#1abc9c'
+        };
+        
+        const colorNames = Object.keys(colors);
+        
+        function startGame() {
+            score = 0;
+            streak = 0;
+            timeLeft = 30;
+            gameActive = true;
+            
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('options').style.display = 'grid';
+            
+            updateDisplay();
+            generateQuestion();
+            startTimer();
+        }
+        
+        function generateQuestion() {
+            if (!gameActive) return;
+            
+            // 随机选择一个颜色名称
+            const wordColor = colorNames[Math.floor(Math.random() * colorNames.length)];
+            // 随机选择显示的颜色（可能与名称不符）
+            const displayColor = colorNames[Math.floor(Math.random() * colorNames.length)];
+            
+            currentCorrectColor = displayColor;
+            
+            const colorWordElement = document.getElementById('color-word');
+            colorWordElement.textContent = wordColor;
+            colorWordElement.style.color = colors[displayColor];
+            
+            generateOptions();
+        }
+        
+        function generateOptions() {
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            // 创建选项（包括正确答案和3个错误答案）
+            const options = [currentCorrectColor];
+            while (options.length < 4) {
+                const randomColor = colorNames[Math.floor(Math.random() * colorNames.length)];
+                if (!options.includes(randomColor)) {
+                    options.push(randomColor);
+                }
+            }
+            
+            // 打乱选项顺序
+            options.sort(() => Math.random() - 0.5);
+            
+            options.forEach(colorName => {
+                const button = document.createElement('button');
+                button.className = 'color-option';
+                button.textContent = colorName;
+                button.style.backgroundColor = colors[colorName];
+                button.style.color = 'white';
+                button.onclick = () => selectColor(colorName);
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function selectColor(selectedColor) {
+            if (!gameActive) return;
+            
+            if (selectedColor === currentCorrectColor) {
+                // 答对了
+                score += (10 + streak * 2);
+                streak++;
+                
+                // 视觉反馈
+                document.getElementById('color-word').style.background = '#d4edda';
+                setTimeout(() => {
+                    document.getElementById('color-word').style.background = '#f8f9fa';
+                }, 200);
+            } else {
+                // 答错了
+                streak = 0;
+                
+                // 视觉反馈
+                document.getElementById('color-word').style.background = '#f8d7da';
+                setTimeout(() => {
+                    document.getElementById('color-word').style.background = '#f8f9fa';
+                }, 200);
+            }
+            
+            updateDisplay();
+            setTimeout(generateQuestion, 300);
+        }
+        
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                
+                const timerFill = document.getElementById('timer-fill');
+                timerFill.style.width = (timeLeft / 30 * 100) + '%';
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            
+            document.getElementById('color-word').textContent = `游戏结束！最终得分: ${score}`;
+            document.getElementById('options').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'inline-block';
+        }
+        
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('time').textContent = timeLeft;
+        }
+    </script>
+</body>
+</html>

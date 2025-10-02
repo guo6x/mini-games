@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫雷游戏</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="minesweeper.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html" class="active">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+        </ul>
+    </nav>
+    
+    <div class="game-container">
+        <h1>经典扫雷</h1>
+        
+        <div class="game-options">
+            <div class="difficulty-selector">
+                <label for="difficulty">难度:</label>
+                <select id="difficulty">
+                    <option value="beginner" selected>初级 (9x9, 10雷)</option>
+                    <option value="intermediate">中级 (16x16, 40雷)</option>
+                    <option value="expert">高级 (16x30, 99雷)</option>
+                </select>
+            </div>
+            <button id="new-game" class="btn">新游戏</button>
+            <button onclick="minesweeperSaveGame()">保存游戏</button>
+            <button onclick="minesweeperLoadGame()">加载游戏</button>
+        </div>
+        
+        <div class="game-stats">
+            <div class="mine-counter">雷数: <span id="mine-counter">10</span></div>
+            <div class="timer">用时: <span id="timer">000</span></div>
+        </div>
+        
+        <div class="game-board-container">
+            <div class="mine-grid" id="mine-grid"></div>
+        </div>
+        
+        <div class="game-controls">
+            <div class="control-info">
+                <p>左键点击: 翻开格子</p>
+                <p>右键点击: 标记雷</p>
+                <p>双击已翻开的格子: 快速翻开周围</p>
+            </div>
+        </div>
+        
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="result-message">游戏结束</h2>
+                <p>用时: <span id="final-time">0</span> 秒</p>
+                <button id="play-again" class="btn">再玩一次</button>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>扫雷是一款经典的单人解谜游戏。游戏目标是找出所有不含地雷的方格，同时避免触发地雷。</p>
+            <p>每个数字表示周围八个方格中地雷的数量。通过这些数字，你可以推断出地雷的位置。</p>
+            <p>当你确定某个方格有地雷时，可以右键标记它。当所有非地雷方格都被翻开时，你就赢了！</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="game-memory-manager.js"></script>
+    <script src="game-lifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="game-performance-monitor.js"></script>
+    <script src="game-state-manager.js"></script>
+    <script src="minesweeper.js"></script>
+</body>
+</html>

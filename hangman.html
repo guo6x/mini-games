@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜单词游戏</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="hangman.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html" class="active">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+        </ul>
+    </nav>
+    
+    <div class="game-container">
+        <h1>猜单词游戏</h1>
+        
+        <div class="game-options">
+            <div class="difficulty-selector">
+                <label for="difficulty">难度：</label>
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium" selected>中等</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <div class="category-selector">
+                <label for="category">类别：</label>
+                <select id="category">
+                    <option value="animals">动物</option>
+                    <option value="fruits" selected>水果</option>
+                    <option value="countries">国家</option>
+                    <option value="sports">运动</option>
+                </select>
+            </div>
+            <button id="new-game-btn" class="btn">新游戏</button>
+        </div>
+        
+        <div class="game-stats">
+            <div class="score">得分: <span id="score">0</span></div>
+            <div class="high-score">最高分: <span id="high-score">0</span></div>
+            <div class="remaining-tries">剩余尝试次数: <span id="remaining-tries">6</span></div>
+        </div>
+        
+        <div class="game-board-container">
+            <div class="hangman-drawing">
+                <svg height="250" width="200" id="hangman-svg">
+                    <!-- 绞刑架 -->
+                    <line x1="50" y1="20" x2="150" y2="20" class="hangman-part" id="part-1" />
+                    <line x1="150" y1="20" x2="150" y2="50" class="hangman-part" id="part-2" />
+                    <line x1="50" y1="20" x2="50" y2="250" class="hangman-part" id="part-3" />
+                    <line x1="20" y1="250" x2="80" y2="250" class="hangman-part" id="part-4" />
+                    
+                    <!-- 人物 -->
+                    <circle cx="150" cy="70" r="20" class="hangman-part" id="part-5" />
+                    <line x1="150" y1="90" x2="150" y2="170" class="hangman-part" id="part-6" />
+                    <line x1="150" y1="120" x2="120" y2="100" class="hangman-part" id="part-7" />
+                    <line x1="150" y1="120" x2="180" y2="100" class="hangman-part" id="part-8" />
+                    <line x1="150" y1="170" x2="120" y2="200" class="hangman-part" id="part-9" />
+                    <line x1="150" y1="170" x2="180" y2="200" class="hangman-part" id="part-10" />
+                </svg>
+            </div>
+            
+            <div class="word-display" id="word-display">
+                <!-- 单词将在这里显示 -->
+            </div>
+            
+            <div class="keyboard" id="keyboard">
+                <!-- 键盘将在这里生成 -->
+            </div>
+        </div>
+        
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="result-message">游戏结束</h2>
+                <p>正确单词: <span id="correct-word"></span></p>
+                <p>得分: <span id="final-score">0</span></p>
+                <button id="play-again-btn" class="btn">再玩一次</button>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>猜单词是一个经典的文字游戏。游戏会随机选择一个单词，你需要猜出这个单词中的所有字母。</p>
+            <p>每次猜错一个字母，小人就会被画出一部分。当小人被完全画出（6次错误尝试后），游戏结束。</p>
+            <p>如果在小人被完全画出之前猜出了所有字母，你就赢了！</p>
+            <p>选择不同的难度和类别来挑战自己。祝你好运！</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="hangman.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成语接龙 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .word-display {
+            font-size: 2em;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .input-area {
+            margin: 20px 0;
+        }
+        .word-input {
+            font-size: 1.2em;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+        .submit-btn {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin-left: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .score {
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #333;
+        }
+        .word-chain {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🔤 成语接龙</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🔤 成语接龙</h1>
+        <div class="score">得分: <span id="score">0</span></div>
+        
+        <div class="word-display" id="current-word">开始游戏</div>
+        
+        <div class="input-area">
+            <input type="text" id="word-input" class="word-input" placeholder="输入成语" maxlength="4">
+            <button onclick="submitWord()" class="submit-btn">提交</button>
+        </div>
+        
+        <div class="word-chain" id="word-chain">
+            <p>成语链: 等待开始...</p>
+        </div>
+        
+        <button onclick="startGame()" class="play-button">开始新游戏</button>
+        <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+    </div>
+    
+    <script>
+        let score = 0;
+        let currentWord = '';
+        let wordChain = [];
+        let gameStarted = false;
+        
+        const idioms = [
+            '一心一意', '意气风发', '发愤图强', '强词夺理', '理直气壮',
+            '壮志凌云', '云开雾散', '散兵游勇', '勇往直前', '前功尽弃',
+            '弃暗投明', '明察秋毫', '毫不犹豫', '豫章故郡', '郡县制度',
+            '度日如年', '年富力强', '强人所难', '难以置信', '信口开河'
+        ];
+        
+        function startGame() {
+            score = 0;
+            wordChain = [];
+            gameStarted = true;
+            
+            // 随机选择一个成语开始
+            currentWord = idioms[Math.floor(Math.random() * idioms.length)];
+            wordChain.push(currentWord);
+            
+            updateDisplay();
+            document.getElementById('word-input').focus();
+        }
+        
+        function submitWord() {
+            if (!gameStarted) {
+                alert('请先开始游戏！');
+                return;
+            }
+            
+            const input = document.getElementById('word-input');
+            const newWord = input.value.trim();
+            
+            if (newWord.length !== 4) {
+                alert('请输入4个字的成语！');
+                return;
+            }
+            
+            // 检查是否能接龙
+            const lastChar = currentWord[currentWord.length - 1];
+            const firstChar = newWord[0];
+            
+            if (lastChar === firstChar) {
+                // 接龙成功
+                currentWord = newWord;
+                wordChain.push(newWord);
+                score += 10;
+                input.value = '';
+                updateDisplay();
+            } else {
+                alert(`接龙失败！需要以"${lastChar}"开头的成语`);
+            }
+        }
+        
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('current-word').textContent = currentWord;
+            document.getElementById('word-chain').innerHTML = 
+                '<p>成语链: ' + wordChain.join(' → ') + '</p>';
+        }
+        
+        // 回车键提交
+        document.getElementById('word-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitWord();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 游戏 - 小游戏集合</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="2048.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="2048.html" class="active">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+            <li><a href="space-shooter.html">太空射击</a></li>
+            <li><a href="gomoku.html">五子棋</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h1>2048 游戏</h1>
+        <div class="game-header">
+            <div class="scores-container">
+                <div class="score-box">
+                    <div class="title">分数</div>
+                    <div id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="title">最高分</div>
+                    <div id="best-score">0</div>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="new-game-button">新游戏</button>
+            </div>
+        </div>
+        <div class="game-intro">
+            <p>使用 <strong>方向键</strong> 或 <strong>WSAD</strong> 移动方块。当两个相同数字的方块碰触时，它们会合并成为一个！</p>
+        </div>
+        <div class="grid-container">
+            <div class="grid-background">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div id="grid-tiles" class="grid-tiles">
+                <!-- 方块将由JavaScript动态创建 -->
+            </div>
+        </div>
+        <div class="game-message" id="game-message">
+            <p></p>
+            <div class="game-message-buttons">
+                <button id="retry-button">再试一次</button>
+                <button id="keep-playing-button">继续游戏</button>
+            </div>
+        </div>
+        
+        <!-- 高分榜 -->
+        <div class="highscores-panel">
+            <h2>高分榜</h2>
+            <table class="highscores-list">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>玩家</th>
+                        <th>分数</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody id="highscores-body">
+                    <!-- 高分数据将在这里动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="2048.js?v=3"></script>
+</body>
+</html>

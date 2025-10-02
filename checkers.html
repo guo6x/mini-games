@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳棋 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-area {
+            width: 600px;
+            height: 600px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: #f4f4f4;
+            position: relative;
+        }
+        .checkerboard {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+        }
+        .square {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .square.dark {
+            background-color: #8B4513;
+        }
+        .square.light {
+            background-color: #DEB887;
+        }
+        .square.selected {
+            background-color: #FFD700 !important;
+        }
+        .square.possible-move {
+            background-color: #90EE90 !important;
+        }
+        .piece {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .piece.red {
+            background: radial-gradient(circle, #ff4444, #cc0000);
+        }
+        .piece.black {
+            background: radial-gradient(circle, #444444, #000000);
+        }
+        .piece.king {
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .piece:hover {
+            transform: scale(1.1);
+        }
+        .game-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .game-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">⚫ 跳棋</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>⚫ 跳棋</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>等级</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div class="game-info" id="game-info">
+                当前玩家: <span id="current-player">红方</span><br>
+                红方棋子: <span id="red-pieces">12</span><br>
+                黑方棋子: <span id="black-pieces">12</span>
+            </div>
+            <div class="checkerboard" id="checkerboard">
+                <!-- 棋盘将由JavaScript生成 -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" class="game-btn start-btn" id="start-btn">开始游戏</button>
+            <button onclick="resetGame()" class="game-btn">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="game-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        class CheckersGame {
+            constructor() {
+                this.board = [];
+                this.currentPlayer = 'red';
+                this.selectedPiece = null;
+                this.selectedSquare = null;
+                this.gameActive = false;
+                this.score = 0;
+                this.startTime = 0;
+                this.redPieces = 12;
+                this.blackPieces = 12;
+                
+                this.initBoard();
+                this.renderBoard();
+                this.updateDisplay();
+            }
+            
+            initBoard() {
+                // 初始化8x8棋盘
+                this.board = [];
+                for (let row = 0; row < 8; row++) {
+                    this.board[row] = [];
+                    for (let col = 0; col < 8; col++) {
+                        this.board[row][col] = null;
+                    }
+                }
+                
+                // 放置初始棋子
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if ((row + col) % 2 === 1) {
+                            this.board[row][col] = { color: 'black', king: false };
+                        }
+                    }
+                }
+                
+                for (let row = 5; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if ((row + col) % 2 === 1) {
+                            this.board[row][col] = { color: 'red', king: false };
+                        }
+                    }
+                }
+            }
+            
+            renderBoard() {
+                const checkerboard = document.getElementById('checkerboard');
+                checkerboard.innerHTML = '';
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const square = document.createElement('div');
+                        square.className = 'square ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        
+                        if (this.board[row][col]) {
+                            const piece = document.createElement('div');
+                            piece.className = `piece ${this.board[row][col].color}`;
+                            if (this.board[row][col].king) {
+                                piece.classList.add('king');
+                            }
+                            square.appendChild(piece);
+                        }
+                        
+                        square.addEventListener('click', () => this.handleSquareClick(row, col));
+                        checkerboard.appendChild(square);
+                    }
+                }
+            }
+            
+            handleSquareClick(row, col) {
+                if (!this.gameActive) return;
+                
+                const piece = this.board[row][col];
+                
+                if (this.selectedPiece) {
+                    // 尝试移动棋子
+                    if (this.isValidMove(this.selectedSquare.row, this.selectedSquare.col, row, col)) {
+                        this.movePiece(this.selectedSquare.row, this.selectedSquare.col, row, col);
+                        this.clearSelection();
+                        this.switchPlayer();
+                        this.checkGameEnd();
+                    } else {
+                        this.clearSelection();
+                    }
+                } else if (piece && piece.color === this.currentPlayer) {
+                    // 选择棋子
+                    this.selectedPiece = piece;
+                    this.selectedSquare = { row, col };
+                    this.highlightPossibleMoves(row, col);
+                }
+                
+                this.renderBoard();
+                this.updateDisplay();
+            }
+            
+            isValidMove(fromRow, fromCol, toRow, toCol) {
+                // 检查目标位置是否为空
+                if (this.board[toRow][toCol] !== null) return false;
+                
+                // 检查是否在深色格子上
+                if ((toRow + toCol) % 2 === 0) return false;
+                
+                const piece = this.board[fromRow][fromCol];
+                const rowDiff = toRow - fromRow;
+                const colDiff = Math.abs(toCol - fromCol);
+                
+                // 普通移动（一格对角线）
+                if (Math.abs(rowDiff) === 1 && colDiff === 1) {
+                    if (piece.king) return true;
+                    if (piece.color === 'red' && rowDiff === -1) return true;
+                    if (piece.color === 'black' && rowDiff === 1) return true;
+                }
+                
+                // 跳跃移动（两格对角线，中间有敌方棋子）
+                if (Math.abs(rowDiff) === 2 && colDiff === 2) {
+                    const middleRow = fromRow + rowDiff / 2;
+                    const middleCol = fromCol + (toCol - fromCol) / 2;
+                    const middlePiece = this.board[middleRow][middleCol];
+                    
+                    if (middlePiece && middlePiece.color !== piece.color) {
+                        if (piece.king) return true;
+                        if (piece.color === 'red' && rowDiff === -2) return true;
+                        if (piece.color === 'black' && rowDiff === 2) return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            movePiece(fromRow, fromCol, toRow, toCol) {
+                const piece = this.board[fromRow][fromCol];
+                this.board[toRow][toCol] = piece;
+                this.board[fromRow][fromCol] = null;
+                
+                // 检查跳跃吃子
+                if (Math.abs(toRow - fromRow) === 2) {
+                    const middleRow = fromRow + (toRow - fromRow) / 2;
+                    const middleCol = fromCol + (toCol - fromCol) / 2;
+                    const capturedPiece = this.board[middleRow][middleCol];
+                    
+                    if (capturedPiece) {
+                        this.board[middleRow][middleCol] = null;
+                        if (capturedPiece.color === 'red') {
+                            this.redPieces--;
+                        } else {
+                            this.blackPieces--;
+                        }
+                        this.score += 10;
+                    }
+                }
+                
+                // 检查是否成王
+                if ((piece.color === 'red' && toRow === 0) || (piece.color === 'black' && toRow === 7)) {
+                    piece.king = true;
+                    this.score += 20;
+                }
+            }
+            
+            highlightPossibleMoves(row, col) {
+                // 清除之前的高亮
+                document.querySelectorAll('.square').forEach(square => {
+                    square.classList.remove('selected', 'possible-move');
+                });
+                
+                // 高亮选中的格子
+                const selectedSquare = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                selectedSquare.classList.add('selected');
+                
+                // 高亮可能的移动位置
+                for (let r = 0; r < 8; r++) {
+                    for (let c = 0; c < 8; c++) {
+                        if (this.isValidMove(row, col, r, c)) {
+                            const square = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+                            square.classList.add('possible-move');
+                        }
+                    }
+                }
+            }
+            
+            clearSelection() {
+                this.selectedPiece = null;
+                this.selectedSquare = null;
+                document.querySelectorAll('.square').forEach(square => {
+                    square.classList.remove('selected', 'possible-move');
+                });
+            }
+            
+            switchPlayer() {
+                this.currentPlayer = this.currentPlayer === 'red' ? 'black' : 'red';
+            }
+            
+            checkGameEnd() {
+                if (this.redPieces === 0) {
+                    alert('黑方获胜！');
+                    this.gameActive = false;
+                } else if (this.blackPieces === 0) {
+                    alert('红方获胜！');
+                    this.gameActive = false;
+                }
+            }
+            
+            updateDisplay() {
+                document.getElementById('current-player').textContent = this.currentPlayer === 'red' ? '红方' : '黑方';
+                document.getElementById('red-pieces').textContent = this.redPieces;
+                document.getElementById('black-pieces').textContent = this.blackPieces;
+                document.getElementById('score').textContent = this.score;
+                
+                const timeElapsed = this.gameActive ? Math.floor((Date.now() - this.startTime) / 1000) : 0;
+                document.getElementById('time').textContent = timeElapsed + 's';
+            }
+        }
+        
+        let game = new CheckersGame();
+        
+        function startGame() {
+            game = new CheckersGame();
+            game.gameActive = true;
+            game.startTime = Date.now();
+            
+            document.getElementById('start-btn').textContent = '游戏中...';
+            document.getElementById('start-btn').disabled = true;
+            
+            game.updateDisplay();
+        }
+        
+        function resetGame() {
+            game = new CheckersGame();
+            game.gameActive = false;
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+            
+            game.updateDisplay();
+        }
+        
+        // 定时更新时间显示
+        setInterval(() => {
+            if (game && game.gameActive) {
+                game.updateDisplay();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

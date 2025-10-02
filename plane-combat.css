@@ -1,0 +1,209 @@
+.game-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.score, .lives, .level {
+    padding: 8px 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-container {
+    position: relative;
+    width: 480px;
+    height: 640px;
+    margin: 0 auto;
+    border: 2px solid #34495e;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#gameCanvas {
+    display: block;
+    background-color: #111;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23222" width="100" height="100"/><circle fill="%23444" cx="10" cy="10" r="1"/><circle fill="%23444" cx="30" cy="10" r="1"/><circle fill="%23444" cx="50" cy="10" r="1"/><circle fill="%23444" cx="70" cy="10" r="1"/><circle fill="%23444" cx="90" cy="10" r="1"/><circle fill="%23444" cx="10" cy="30" r="1"/><circle fill="%23444" cx="30" cy="30" r="1"/><circle fill="%23444" cx="50" cy="30" r="1"/><circle fill="%23444" cx="70" cy="30" r="1"/><circle fill="%23444" cx="90" cy="30" r="1"/><circle fill="%23444" cx="10" cy="50" r="1"/><circle fill="%23444" cx="30" cy="50" r="1"/><circle fill="%23444" cx="50" cy="50" r="1"/><circle fill="%23444" cx="70" cy="50" r="1"/><circle fill="%23444" cx="90" cy="50" r="1"/><circle fill="%23444" cx="10" cy="70" r="1"/><circle fill="%23444" cx="30" cy="70" r="1"/><circle fill="%23444" cx="50" cy="70" r="1"/><circle fill="%23444" cx="70" cy="70" r="1"/><circle fill="%23444" cx="90" cy="70" r="1"/><circle fill="%23444" cx="10" cy="90" r="1"/><circle fill="%23444" cx="30" cy="90" r="1"/><circle fill="%23444" cx="50" cy="90" r="1"/><circle fill="%23444" cx="70" cy="90" r="1"/><circle fill="%23444" cx="90" cy="90" r="1"/></svg>');
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.game-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.game-overlay h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #3498db;
+    text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+.game-overlay p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.game-overlay button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.game-overlay button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.controls {
+    margin: 20px auto;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.control-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.action-btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #2980b9;
+}
+
+.direction-pad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.horizontal-btns {
+    display: flex;
+    gap: 40px;
+}
+
+.direction-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: #34495e;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.direction-btn:hover {
+    background-color: #2c3e50;
+    transform: scale(0.95);
+}
+
+.direction-btn:active {
+    background-color: #2980b9;
+}
+
+.help-section {
+    margin: 30px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.help-section h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #95a5a6;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #7f8c8d;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .canvas-container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 3/4;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .game-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .controls {
+        margin-top: 30px;
+    }
+} 

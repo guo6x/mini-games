@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块</title>
+    <link rel="stylesheet" href="tetris.css">
+</head>
+<body>
+    <div class="tetris-container">
+        <h1>俄罗斯方块</h1>
+        <div class="game-wrapper">
+            <canvas id="game-board" width="300" height="600"></canvas>
+            <div class="side-panel">
+                <div class="score-box">
+                    <h3>得分</h3>
+                    <div id="score">0</div>
+                </div>
+                <div class="next-box">
+                    <h3>下一个</h3>
+                    <canvas id="next-block" width="100" height="100"></canvas>
+                </div>
+                <div class="controls">
+                    <button onclick="tetris.startGame()">开始游戏</button>
+                    <button onclick="tetris.pauseGame()">暂停/继续</button>
+                    <button onclick="tetris.resetGame()">重新开始</button>
+                    <button onclick="saveTetrisGame()">保存游戏</button>
+                    <button onclick="loadTetrisGame()">加载游戏</button>
+                </div>
+                <a href="index.html" class="game-back">返回主菜单</a>
+            </div>
+        </div>
+    </div>
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="game-performance-monitor.js?v=2"></script>
+    <script src="game-state-manager.js"></script>
+    <script src="game-analytics.js"></script>
+    <script src="tetris.js?v=2"></script>
+</body>
+</html>

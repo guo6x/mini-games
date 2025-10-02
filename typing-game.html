@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打字练习 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .text-display {
+            font-size: 1.3em;
+            line-height: 1.8;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #dee2e6;
+            font-family: 'Courier New', monospace;
+        }
+        .char {
+            position: relative;
+        }
+        .char.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        .char.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .char.current {
+            background: #007bff;
+            color: white;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        .typing-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">⌨️ 打字练习</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>⌨️ 打字练习</h1>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="wpm">0</div>
+                <div>WPM</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">100%</div>
+                <div>准确率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="time">60</div>
+                <div>剩余时间</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="progress">0%</div>
+                <div>进度</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div class="text-display" id="text-display">
+            点击开始按钮开始打字练习
+        </div>
+        
+        <input type="text" class="typing-input" id="typing-input" placeholder="在这里输入..." disabled>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="startGame()" class="play-button" id="start-btn">开始练习</button>
+            <button onclick="resetGame()" class="play-button">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentText = '';
+        let currentIndex = 0;
+        let startTime = 0;
+        let gameActive = false;
+        let timeLeft = 60;
+        let timer;
+        let correctChars = 0;
+        let totalChars = 0;
+        
+        const texts = [
+            "The quick brown fox jumps over the lazy dog. This sentence contains every letter of the alphabet.",
+            "Programming is the art of telling another human being what one wants the computer to do.",
+            "In the middle of difficulty lies opportunity. Every great developer you know got there by solving problems.",
+            "Code is like humor. When you have to explain it, it's bad. Clean code always looks like it was written by someone who cares.",
+            "The best way to get a project done faster is to start sooner. Debugging is twice as hard as writing the code in the first place."
+        ];
+        
+        function startGame() {
+            currentText = texts[Math.floor(Math.random() * texts.length)];
+            currentIndex = 0;
+            correctChars = 0;
+            totalChars = 0;
+            timeLeft = 60;
+            gameActive = true;
+            startTime = Date.now();
+            
+            document.getElementById('typing-input').disabled = false;
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-input').focus();
+            document.getElementById('start-btn').textContent = '练习中...';
+            document.getElementById('start-btn').disabled = true;
+            
+            displayText();
+            startTimer();
+        }
+        
+        function displayText() {
+            const textDisplay = document.getElementById('text-display');
+            let html = '';
+            
+            for (let i = 0; i < currentText.length; i++) {
+                let className = '';
+                if (i < currentIndex) {
+                    className = 'correct';
+                } else if (i === currentIndex) {
+                    className = 'current';
+                }
+                
+                html += `<span class="char ${className}">${currentText[i]}</span>`;
+            }
+            
+            textDisplay.innerHTML = html;
+        }
+        
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateStats();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        function updateStats() {
+            const elapsed = (Date.now() - startTime) / 1000 / 60; // 分钟
+            const wpm = elapsed > 0 ? Math.round((correctChars / 5) / elapsed) : 0;
+            const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+            const progress = Math.round((currentIndex / currentText.length) * 100);
+            
+            document.getElementById('wpm').textContent = wpm;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            document.getElementById('time').textContent = timeLeft;
+            document.getElementById('progress').textContent = progress + '%';
+            
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            document.getElementById('typing-input').disabled = true;
+            document.getElementById('start-btn').textContent = '开始练习';
+            document.getElementById('start-btn').disabled = false;
+            
+            const finalWPM = document.getElementById('wpm').textContent;
+            const finalAccuracy = document.getElementById('accuracy').textContent;
+            
+            alert(`练习结束！\n打字速度: ${finalWPM} WPM\n准确率: ${finalAccuracy}`);
+        }
+        
+        function resetGame() {
+            gameActive = false;
+            if (timer) clearInterval(timer);
+            
+            currentIndex = 0;
+            correctChars = 0;
+            totalChars = 0;
+            timeLeft = 60;
+            
+            document.getElementById('typing-input').disabled = true;
+            document.getElementById('typing-input').value = '';
+            document.getElementById('start-btn').textContent = '开始练习';
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('text-display').textContent = '点击开始按钮开始打字练习';
+            
+            updateStats();
+        }
+        
+        // 监听输入
+        document.getElementById('typing-input').addEventListener('input', function(e) {
+            if (!gameActive) return;
+            
+            const inputValue = e.target.value;
+            const inputChar = inputValue[inputValue.length - 1];
+            const expectedChar = currentText[currentIndex];
+            
+            if (inputChar === expectedChar) {
+                correctChars++;
+                currentIndex++;
+                
+                // 清空输入框，准备下一个字符
+                e.target.value = '';
+                
+                // 检查是否完成
+                if (currentIndex >= currentText.length) {
+                    endGame();
+                    return;
+                }
+            }
+            
+            totalChars++;
+            displayText();
+            updateStats();
+        });
+        
+        // 防止退格键
+        document.getElementById('typing-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+            }
+        });
+        
+        // 初始化显示
+        updateStats();
+    </script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小游戏集合 - 经典休闲游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="games-data.js?v=2"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="game-performance-monitor.js?v=1"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="game-analytics.js"></script>
+    <script src="analytics-dashboard.js"></script>
+    <style>
+        /* 现代化设计样式 */
+        .category-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 12px 24px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .filter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .filter-btn.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+        .game-card {
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 300% 100%;
+            animation: gradient 3s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        .game-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+        .game-tags {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        .difficulty {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .easy { 
+            background: linear-gradient(135deg, #4CAF50, #45a049); 
+            color: white; 
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+        .medium { 
+            background: linear-gradient(135deg, #FF9800, #f57c00); 
+            color: white; 
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+        }
+        .hard { 
+            background: linear-gradient(135deg, #F44336, #d32f2f); 
+            color: white; 
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+        }
+        .stats {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 30px auto;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 18px 60px 18px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 22px;
+        }
+        
+        .featured-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 25px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(245, 87, 108, 0.3);
+        }
+        
+        .featured-games {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .featured-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .featured-card:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .game-count {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #666;
+        }
+        .stats h3 {
+            margin: 0 0 10px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        /* Hero Section 样式 */
+        .hero-section {
+            text-align: center;
+            margin: 40px 0 60px 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+        .hero-title {
+            font-size: 3.5em;
+            font-weight: 900;
+            margin: 0 0 15px 0;
+            background: linear-gradient(45deg, #ffffff, #f8f9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        .hero-subtitle {
+            font-size: 1.3em;
+            font-weight: 300;
+            margin: 0 0 20px 0;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        .intro {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 0;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5em;
+            }
+            .hero-subtitle {
+                font-size: 1.1em;
+            }
+            .intro {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面加载器 -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <nav class="game-nav">
+    <ul>
+        <li><a href="index.html" class="active">首页</a></li>
+        <li><a href="memory-game.html">记忆翻牌</a></li>
+        <li><a href="tic-tac-toe.html">井字棋</a></li>
+        <li><a href="tetris.html">俄罗斯方块</a></li>
+        <li><a href="minesweeper.html">扫雷</a></li>
+        <li><a href="snake.html">贪吃蛇</a></li>
+        <li><a href="brick-breaker.html">打砖块</a></li>
+        <li><a href="sudoku.html">数独</a></li>
+        <li><a href="flappy-bird.html">Flappy Bird</a></li>
+        <li><a href="2048.html">2048</a></li>
+        <li><a href="hangman.html">猜单词</a></li>
+        <li><a href="sliding-puzzle.html">数字华容道</a></li>
+        <li><a href="plane-combat.html">飞机大战</a></li>
+        <li><a href="space-shooter.html">太空射击</a></li>
+        <li><a href="gomoku.html">五子棋</a></li>
+        <li><a href="pong.html">乒乓球</a></li>
+    </ul>
+</nav>
+<div class="container">
+    <div class="hero-section">
+        <h1 class="hero-title">🎮 精品游戏大全</h1>
+        <p class="hero-subtitle">探索50+款精心挑选的游戏世界</p>
+        <p class="intro">从益智解谜到动作射击，从经典复古到现代创新<br>每一款游戏都经过精心优化，为您带来最佳游戏体验</p>
+    </div>
+    
+    <div class="stats">
+        <h3>🏆 游戏统计</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" id="total-games">50</span>
+                <span>精品游戏</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">5</span>
+                <span>游戏分类</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span>免费畅玩</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">0</span>
+                <span>广告干扰</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="game-controls">
+        <button id="fullscreen-btn" class="control-btn">
+            <i class="fas fa-expand"></i>
+            全屏模式
+        </button>
+        <button id="theme-toggle" class="control-btn">
+            <i class="fas fa-moon"></i>
+            深色模式
+        </button>
+        <button id="performance-toggle" class="control-btn">
+            <i class="fas fa-chart-line"></i>
+            性能监控
+        </button>
+        <button id="analytics-toggle" class="control-btn">
+            <i class="fas fa-chart-bar"></i>
+            数据分析
+        </button>
+    </div>
+    
+    <div class="search-container">
+        <input type="text" class="search-input" id="game-search" placeholder="搜索游戏名称、标签或描述...">
+        <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="featured-section">
+        <h3>⭐ 精选推荐</h3>
+        <div class="featured-games" id="featured-games">
+            <!-- 精选游戏将通过JavaScript动态生成 -->
+        </div>
+    </div>
+    
+    <div class="category-filters">
+        <button class="filter-btn active" data-category="all">🎯 全部游戏</button>
+        <button class="filter-btn" data-category="puzzle">🧩 益智解谜</button>
+        <button class="filter-btn" data-category="action">⚡ 动作游戏</button>
+        <button class="filter-btn" data-category="strategy">🎲 策略棋牌</button>
+        <button class="filter-btn" data-category="classic">👾 经典复古</button>
+    </div>
+    
+    <div class="game-count" id="game-count">
+        显示 <span id="visible-count">50</span> 个游戏，共 <span id="total-count">50</span> 个
+    </div>
+    
+    <div class="games-grid" id="games-grid">
+        <!-- 游戏卡片将通过JavaScript动态生成 -->
+    </div>
+    
+    <div class="no-results" id="no-results" style="display: none;">
+        <h3>😔 没有找到匹配的游戏</h3>
+        <p>尝试使用不同的关键词搜索，或者浏览其他分类</p>
+    </div>
+</div>
+
+<footer>
+    <p>© 2024 小游戏集合 - 休闲娱乐的最佳选择</p>
+</footer>
+
+<script>
+        // 全局性能监控面板实例
+        let performanceDashboard = null;
+
+        // 设置性能监控
+        function setupPerformanceMonitoring() {
+            if (typeof window.initPerformanceDashboard === 'function') {
+                const dashboard = window.initPerformanceDashboard();
+                const toggleBtn = document.getElementById('performance-toggle');
+                
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', () => {
+                        dashboard.toggle();
+                    });
+                }
+            }
+        }
+
+        // 设置数据分析
+        function setupAnalytics() {
+            // 初始化游戏数据统计
+            window.gameAnalytics = new GameAnalytics();
+            
+            // 初始化分析面板
+            const analyticsDashboard = new AnalyticsDashboard();
+            const toggleBtn = document.getElementById('analytics-toggle');
+            
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    analyticsDashboard.toggle();
+                });
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化错误处理器
+            if (typeof window.initGameErrorHandler === 'function') {
+                window.initGameErrorHandler();
+            }
+            
+            setupPerformanceMonitoring();
+            setupAnalytics();
+            initializeHomepage();
+            setupThemeToggle();
+            setupFullscreen();
+        });
+        
+        // 主题切换功能
+        function setupThemeToggle() {
+            const toggleBtn = document.getElementById('theme-toggle');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-theme');
+                });
+            }
+        }
+        
+        // 全屏功能
+        function setupFullscreen() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', () => {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        document.documentElement.requestFullscreen();
+                    }
+                });
+            }
+        }
+</script>
+<script src="performance-monitor-fix.js"></script>
+<script src="performance-dashboard.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

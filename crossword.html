@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>填字游戏 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-area {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .crossword-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 1px;
+            width: 100%;
+            height: 100%;
+            background: #333;
+        }
+        .crossword-cell {
+            background: white;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+        }
+        .crossword-cell.black {
+            background: #333;
+            cursor: default;
+        }
+        .crossword-cell.selected {
+            background: #e3f2fd;
+        }
+        .crossword-cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            background: transparent;
+        }
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            color: #666;
+        }
+        .clues-panel {
+            position: absolute;
+            right: -250px;
+            top: 0;
+            width: 240px;
+            height: 100%;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .clue-section {
+            margin-bottom: 20px;
+        }
+        .clue-item {
+            margin: 5px 0;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .clue-item:hover {
+            background: #e9ecef;
+        }
+        .clue-item.active {
+            background: #007bff;
+            color: white;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .game-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">📝 填字游戏</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>📝 填字游戏</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>等级</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div class="crossword-grid" id="crosswordGrid"></div>
+            <div class="clues-panel" id="cluesPanel">
+                <div class="clue-section">
+                    <h4>横向</h4>
+                    <div id="acrossClues"></div>
+                </div>
+                <div class="clue-section">
+                    <h4>纵向</h4>
+                    <div id="downClues"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" class="game-btn start-btn" id="start-btn">开始游戏</button>
+            <button onclick="resetGame()" class="game-btn">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="game-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let level = 1;
+        let gameActive = false;
+        let startTime = 0;
+        
+        function startGame() {
+            gameActive = true;
+            startTime = Date.now();
+            score = 0;
+            level = 1;
+            
+            document.getElementById('start-btn').textContent = '游戏中...';
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('game-area').innerHTML = '<div>游戏进行中...</div>';
+            
+            updateStats();
+            
+            // 初始化填字游戏
+            const crosswordGame = new CrosswordGame();
+        }
+        
+        class CrosswordGame {
+            constructor() {
+                this.score = 0;
+                this.level = 1;
+                this.timeLeft = 300;
+                this.gameRunning = false;
+                this.selectedCell = null;
+                this.currentDirection = 'across';
+                this.grid = [];
+                this.words = [
+                    { word: 'CAT', clue: '小猫', row: 1, col: 1, direction: 'across', number: 1 },
+                    { word: 'DOG', clue: '小狗', row: 3, col: 1, direction: 'across', number: 2 },
+                    { word: 'BIRD', clue: '鸟类', row: 5, col: 2, direction: 'across', number: 3 },
+                    { word: 'FISH', clue: '鱼类', row: 7, col: 3, direction: 'across', number: 4 },
+                    { word: 'CODE', clue: '代码', row: 1, col: 1, direction: 'down', number: 5 },
+                    { word: 'DATA', clue: '数据', row: 1, col: 3, direction: 'down', number: 6 }
+                ];
+                this.init();
+            }
+
+            init() {
+                this.createGrid();
+                this.setupWords();
+                this.createClues();
+                this.updateDisplay();
+            }
+
+            createGrid() {
+                const grid = document.getElementById('crosswordGrid');
+                grid.innerHTML = '';
+                
+                for (let row = 0; row < 10; row++) {
+                    this.grid[row] = [];
+                    for (let col = 0; col < 10; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'crossword-cell black';
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        grid.appendChild(cell);
+                        this.grid[row][col] = { element: cell, letter: '', isBlack: true };
+                    }
+                }
+            }
+
+            setupWords() {
+                this.words.forEach(wordData => {
+                    const { word, row, col, direction, number } = wordData;
+                    
+                    for (let i = 0; i < word.length; i++) {
+                        const currentRow = direction === 'across' ? row : row + i;
+                        const currentCol = direction === 'across' ? col + i : col;
+                        
+                        if (currentRow < 10 && currentCol < 10) {
+                            const cell = this.grid[currentRow][currentCol];
+                            cell.isBlack = false;
+                            cell.element.className = 'crossword-cell';
+                            cell.element.innerHTML = `<input type="text" maxlength="1">`;
+                            
+                            if (i === 0) {
+                                const numberSpan = document.createElement('span');
+                                numberSpan.className = 'cell-number';
+                                numberSpan.textContent = number;
+                                cell.element.appendChild(numberSpan);
+                            }
+                            
+                            const input = cell.element.querySelector('input');
+                            input.addEventListener('input', (e) => {
+                                e.target.value = e.target.value.toUpperCase();
+                                this.checkCompletion();
+                            });
+                            
+                            input.addEventListener('click', () => {
+                                this.selectCell(currentRow, currentCol);
+                            });
+                        }
+                    }
+                });
+            }
+
+            createClues() {
+                const acrossClues = document.getElementById('acrossClues');
+                const downClues = document.getElementById('downClues');
+                
+                acrossClues.innerHTML = '';
+                downClues.innerHTML = '';
+                
+                this.words.forEach(wordData => {
+                    const clueDiv = document.createElement('div');
+                    clueDiv.className = 'clue-item';
+                    clueDiv.textContent = `${wordData.number}. ${wordData.clue}`;
+                    clueDiv.addEventListener('click', () => {
+                        this.highlightWord(wordData);
+                    });
+                    
+                    if (wordData.direction === 'across') {
+                        acrossClues.appendChild(clueDiv);
+                    } else {
+                        downClues.appendChild(clueDiv);
+                    }
+                });
+            }
+
+            selectCell(row, col) {
+                if (this.selectedCell) {
+                    this.selectedCell.classList.remove('selected');
+                }
+                
+                this.selectedCell = this.grid[row][col].element;
+                this.selectedCell.classList.add('selected');
+            }
+
+            highlightWord(wordData) {
+                document.querySelectorAll('.clue-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                event.target.classList.add('active');
+                
+                const { row, col, direction } = wordData;
+                this.selectCell(row, col);
+                this.currentDirection = direction;
+            }
+
+            checkCompletion() {
+                let correctCount = 0;
+                let totalCells = 0;
+                
+                this.words.forEach(wordData => {
+                    const { word, row, col, direction } = wordData;
+                    let wordCorrect = true;
+                    
+                    for (let i = 0; i < word.length; i++) {
+                        const currentRow = direction === 'across' ? row : row + i;
+                        const currentCol = direction === 'across' ? col + i : col;
+                        
+                        if (currentRow < 10 && currentCol < 10) {
+                            totalCells++;
+                            const input = this.grid[currentRow][currentCol].element.querySelector('input');
+                            if (input && input.value === word[i]) {
+                                correctCount++;
+                            } else {
+                                wordCorrect = false;
+                            }
+                        }
+                    }
+                    
+                    if (wordCorrect && word.length > 0) {
+                        score += word.length * 10;
+                    }
+                });
+                
+                if (correctCount === totalCells && totalCells > 0) {
+                    gameActive = false;
+                    level++;
+                    alert('恭喜完成！');
+                }
+                
+                updateStats();
+            }
+
+            updateDisplay() {
+                document.getElementById('score').textContent = score;
+                document.getElementById('level').textContent = level;
+            }
+        }
+        
+        function resetGame() {
+            gameActive = false;
+            score = 0;
+            level = 1;
+            startTime = 0;
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('game-area').innerHTML = '<div>点击开始游戏</div>';
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            
+            const timeElapsed = gameActive ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            document.getElementById('time').textContent = timeElapsed + 's';
+        }
+        
+        // 定时更新时间显示
+        setInterval(() => {
+            if (gameActive) {
+                updateStats();
+            }
+        }, 1000);
+        
+        // 游戏特定逻辑可以在这里添加
+        console.log('填字游戏 已加载');
+    </script>
+</body>
+</html>

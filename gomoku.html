@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gomoku.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+            <li><a href="space-shooter.html">太空射击</a></li>
+            <li><a href="gomoku.html" class="active">五子棋</a></li>
+        </ul>
+    </nav>
+    
+    <div class="game-container">
+        <h1>五子棋</h1>
+        
+        <div class="game-options">
+            <div class="mode-selector">
+                <label for="game-mode">游戏模式：</label>
+                <select id="game-mode">
+                    <option value="pvp" selected>双人对战</option>
+                    <option value="pve">人机对战</option>
+                </select>
+            </div>
+            <div class="difficulty-selector" id="ai-difficulty" style="display: none;">
+                <label for="difficulty">AI难度：</label>
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium" selected>中等</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <div class="first-move-selector">
+                <label for="first-move">先手：</label>
+                <select id="first-move">
+                    <option value="black" selected>黑子</option>
+                    <option value="white">白子</option>
+                </select>
+            </div>
+            <button id="new-game-btn" class="btn">新游戏</button>
+        </div>
+        
+        <div class="game-status">
+            <div class="current-player">当前回合: <span id="current-player">黑子</span></div>
+            <div class="timer">游戏时间: <span id="game-timer">00:00</span></div>
+        </div>
+        
+        <div class="game-board-container">
+            <canvas id="game-board" width="450" height="450"></canvas>
+            
+            <div id="game-over-modal" class="modal">
+                <div class="modal-content">
+                    <h2 id="result-message">游戏结束</h2>
+                    <p>获胜者: <span id="winner"></span></p>
+                    <p>用时: <span id="final-time">00:00</span></p>
+                    <button id="play-again-btn" class="btn">再玩一次</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button id="undo-btn" class="control-btn">悔棋</button>
+            <button id="hint-btn" class="control-btn">提示</button>
+            <button id="resign-btn" class="control-btn">认输</button>
+        </div>
+        
+        <div class="move-history">
+            <h3>走棋记录</h3>
+            <div id="move-list" class="move-list"></div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>五子棋是一种两人对弈的纯策略型棋类游戏，使用15×15的棋盘，黑白两色的棋子。</p>
+            <p>游戏规则很简单：</p>
+            <ul>
+                <li>黑子先行，双方交替在棋盘上放置己方棋子</li>
+                <li>率先在横、竖或斜方向上形成连续五子的一方获胜</li>
+                <li>棋子一旦放置，就不能移动或移除</li>
+            </ul>
+            <p>在人机对战模式下，你可以选择AI的难度级别。简单模式下AI会做出一些随机的决策，而困难模式下AI会尝试阻止你的连线并寻找自己获胜的机会。</p>
+            <p>使用"悔棋"按钮可以撤销最后一步走棋，"提示"按钮可以获得AI推荐的下一步走法。</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="gomoku.js"></script>
+</body>
+</html> 

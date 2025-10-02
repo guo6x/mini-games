@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐节拍 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .rhythm-track {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .track-line {
+            position: absolute;
+            width: 80px;
+            height: 100%;
+            border: 2px solid #333;
+            background: rgba(255,255,255,0.05);
+        }
+        .track-line:nth-child(1) { left: 20%; }
+        .track-line:nth-child(2) { left: 40%; }
+        .track-line:nth-child(3) { left: 60%; }
+        .track-line:nth-child(4) { left: 80%; }
+        
+        .note {
+            position: absolute;
+            width: 70px;
+            height: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border-radius: 10px;
+            animation: fall 2s linear;
+        }
+        
+        @keyframes fall {
+            from { top: -20px; }
+            to { top: 420px; }
+        }
+        
+        .hit-zone {
+            position: absolute;
+            bottom: 20px;
+            width: 70px;
+            height: 30px;
+            background: rgba(46, 204, 113, 0.8);
+            border-radius: 5px;
+            border: 2px solid #2ecc71;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .rhythm-btn {
+            width: 80px;
+            height: 50px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .rhythm-btn:nth-child(1) { background: #e74c3c; color: white; }
+        .rhythm-btn:nth-child(2) { background: #f39c12; color: white; }
+        .rhythm-btn:nth-child(3) { background: #2ecc71; color: white; }
+        .rhythm-btn:nth-child(4) { background: #3498db; color: white; }
+        
+        .rhythm-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🎵 音乐节拍</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🎵 音乐节拍</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>连击</div>
+                <div id="combo">0</div>
+            </div>
+            <div class="stat-box">
+                <div>准确率</div>
+                <div id="accuracy">100%</div>
+            </div>
+        </div>
+        
+        <div class="rhythm-track" id="rhythm-track">
+            <div class="track-line"></div>
+            <div class="track-line"></div>
+            <div class="track-line"></div>
+            <div class="track-line"></div>
+            
+            <div class="hit-zone" style="left: 20%;"></div>
+            <div class="hit-zone" style="left: 40%;"></div>
+            <div class="hit-zone" style="left: 60%;"></div>
+            <div class="hit-zone" style="left: 80%;"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="rhythm-btn" data-track="0" onmousedown="hitNote(0)" ontouchstart="hitNote(0)">A</button>
+            <button class="rhythm-btn" data-track="1" onmousedown="hitNote(1)" ontouchstart="hitNote(1)">S</button>
+            <button class="rhythm-btn" data-track="2" onmousedown="hitNote(2)" ontouchstart="hitNote(2)">D</button>
+            <button class="rhythm-btn" data-track="3" onmousedown="hitNote(3)" ontouchstart="hitNote(3)">F</button>
+        </div>
+        
+        <button onclick="startGame()" class="play-button" id="start-btn">开始游戏</button>
+        <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+    </div>
+    
+    <script>
+        let score = 0;
+        let combo = 0;
+        let totalNotes = 0;
+        let hitNotes = 0;
+        let gameActive = false;
+        let notes = [];
+        let gameTimer;
+        
+        const trackPositions = [20, 40, 60, 80]; // 百分比位置
+        
+        function startGame() {
+            score = 0;
+            combo = 0;
+            totalNotes = 0;
+            hitNotes = 0;
+            gameActive = true;
+            notes = [];
+            
+            document.getElementById('start-btn').textContent = '游戏中...';
+            document.getElementById('start-btn').disabled = true;
+            
+            updateStats();
+            spawnNotes();
+            
+            // 30秒后结束游戏
+            setTimeout(() => {
+                endGame();
+            }, 30000);
+        }
+        
+        function spawnNotes() {
+            if (!gameActive) return;
+            
+            // 随机生成音符
+            if (Math.random() < 0.7) {
+                createNote();
+            }
+            
+            // 继续生成
+            setTimeout(spawnNotes, 500 + Math.random() * 500);
+        }
+        
+        function createNote() {
+            const track = Math.floor(Math.random() * 4);
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.style.left = trackPositions[track] + '%';
+            note.dataset.track = track;
+            note.dataset.id = Date.now() + Math.random();
+            
+            document.getElementById('rhythm-track').appendChild(note);
+            notes.push({
+                element: note,
+                track: track,
+                id: note.dataset.id,
+                hit: false
+            });
+            
+            totalNotes++;
+            
+            // 2秒后自动移除
+            setTimeout(() => {
+                if (note.parentNode) {
+                    note.parentNode.removeChild(note);
+                    // 如果没有击中，重置连击
+                    const noteData = notes.find(n => n.id === note.dataset.id);
+                    if (noteData && !noteData.hit) {
+                        combo = 0;
+                        updateStats();
+                    }
+                }
+            }, 2000);
+        }
+        
+        function hitNote(track) {
+            if (!gameActive) return;
+            
+            // 查找该轨道上的音符
+            const trackNotes = notes.filter(n => n.track === track && !n.hit);
+            
+            if (trackNotes.length > 0) {
+                // 找到最接近击中区域的音符
+                let closestNote = null;
+                let minDistance = Infinity;
+                
+                trackNotes.forEach(noteData => {
+                    const noteElement = noteData.element;
+                    const noteRect = noteElement.getBoundingClientRect();
+                    const trackRect = document.getElementById('rhythm-track').getBoundingClientRect();
+                    const hitZoneY = trackRect.bottom - 50; // 击中区域的Y坐标
+                    
+                    const distance = Math.abs(noteRect.bottom - hitZoneY);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestNote = noteData;
+                    }
+                });
+                
+                if (closestNote && minDistance < 50) {
+                    // 击中！
+                    closestNote.hit = true;
+                    hitNotes++;
+                    combo++;
+                    
+                    let points = 10;
+                    if (minDistance < 20) points = 50; // 完美击中
+                    else if (minDistance < 35) points = 30; // 良好击中
+                    
+                    score += points * (1 + combo * 0.1);
+                    
+                    // 移除音符
+                    if (closestNote.element.parentNode) {
+                        closestNote.element.style.background = '#2ecc71';
+                        setTimeout(() => {
+                            if (closestNote.element.parentNode) {
+                                closestNote.element.parentNode.removeChild(closestNote.element);
+                            }
+                        }, 100);
+                    }
+                    
+                    updateStats();
+                } else {
+                    // 没击中，重置连击
+                    combo = 0;
+                    updateStats();
+                }
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('score').textContent = Math.round(score);
+            document.getElementById('combo').textContent = combo;
+            
+            const accuracy = totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 100;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+        
+        function endGame() {
+            gameActive = false;
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+            
+            // 清除所有音符
+            notes.forEach(noteData => {
+                if (noteData.element.parentNode) {
+                    noteData.element.parentNode.removeChild(noteData.element);
+                }
+            });
+            
+            const finalScore = Math.round(score);
+            const accuracy = totalNotes > 0 ? Math.round((hitNotes / totalNotes) * 100) : 100;
+            
+            alert(`游戏结束！\n最终得分: ${finalScore}\n准确率: ${accuracy}%\n最高连击: ${combo}`);
+        }
+        
+        // 键盘控制
+        document.addEventListener('keydown', function(e) {
+            switch(e.key.toLowerCase()) {
+                case 'a': hitNote(0); break;
+                case 's': hitNote(1); break;
+                case 'd': hitNote(2); break;
+                case 'f': hitNote(3); break;
+            }
+        });
+    </script>
+</body>
+</html>

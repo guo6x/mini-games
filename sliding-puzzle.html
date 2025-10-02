@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字华容道</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="sliding-puzzle.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html" class="active">数字华容道</a></li>
+        </ul>
+    </nav>
+    
+    <div class="game-container">
+        <h1>数字华容道</h1>
+        
+        <div class="game-stats">
+            <div class="moves">步数: <span id="moves-count">0</span></div>
+            <div class="timer">时间: <span id="time">00:00</span></div>
+        </div>
+        
+        <div class="puzzle-container">
+            <div id="puzzle-board" class="puzzle-board"></div>
+        </div>
+        
+        <div class="controls">
+            <div class="difficulty-selector">
+                <label for="grid-size">难度:</label>
+                <select id="grid-size">
+                    <option value="3">3x3 (简单)</option>
+                    <option value="4" selected>4x4 (中等)</option>
+                    <option value="5">5x5 (困难)</option>
+                </select>
+            </div>
+            
+            <div class="game-buttons">
+                <button id="start-button">开始游戏</button>
+                <button id="shuffle-button">重新打乱</button>
+                <button onclick="slidingPuzzleGame.saveGame()">保存游戏</button>
+                <button onclick="slidingPuzzleGame.loadGame()">加载游戏</button>
+            </div>
+        </div>
+        
+        <div class="game-over-modal" id="game-over-modal">
+            <div class="modal-content">
+                <h2>恭喜你完成了!</h2>
+                <p>你用了 <span id="final-moves">0</span> 步</p>
+                <p>用时: <span id="final-time">00:00</span></p>
+                <button id="play-again-button">再玩一次</button>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏说明</h3>
+            <p>点击数字方块，将其移动到空白位置。通过移动方块，将它们按顺序排列，最后一个位置为空白。</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="game-memory-manager.js"></script>
+    <script src="game-lifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="game-performance-monitor.js"></script>
+    <script src="game-state-manager.js"></script>
+    <script src="sliding-puzzle.js"></script>
+</body>
+</html>

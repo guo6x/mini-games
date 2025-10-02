@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记忆翻牌游戏</title>
+    <link rel="stylesheet" href="memory-game.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html" class="active">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+        </ul>
+    </nav>
+    
+    <div class="game-container">
+        <h1>记忆翻牌游戏</h1>
+        <div class="game-info">
+            <div class="stats">
+                <span class="moves">步数: <span id="moves-count">0</span></span>
+                <span class="timer">时间: <span id="time">0</span>秒</span>
+            </div>
+            <button id="restart">重新开始</button>
+        </div>
+        
+        <div class="memory-game" id="memory-game"></div>
+        
+        <div class="controls">
+            <div class="difficulty">
+                <label for="difficulty">难度:</label>
+                <select id="difficulty">
+                    <option value="easy">简单 (4x3)</option>
+                    <option value="medium" selected>中等 (4x4)</option>
+                    <option value="hard">困难 (6x4)</option>
+                </select>
+            </div>
+            <button onclick="saveMemoryGame()">保存游戏</button>
+            <button onclick="loadMemoryGame()">加载游戏</button>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <div class="game-over-container" id="game-over">
+        <div class="game-over-content">
+            <h2>游戏结束!</h2>
+            <p>你用了 <span id="final-moves">0</span> 步</p>
+            <p>耗时 <span id="final-time">0</span> 秒</p>
+            <button id="play-again">再玩一次</button>
+        </div>
+    </div>
+    
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="game-performance-monitor.js"></script>
+    <script src="game-state-manager.js"></script>
+    <script src="memory-game.js?v=2"></script>
+</body>
+</html>

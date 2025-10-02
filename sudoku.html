@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数独游戏</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="sudoku.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html" class="active">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+        </ul>
+    </nav>
+    <div class="game-container">
+        <h1>数独挑战</h1>
+        
+        <div class="game-options">
+            <div class="difficulty-selector">
+                <label for="difficulty">难度:</label>
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium" selected>中等</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <button id="newGame" class="btn">新游戏</button>
+            <button id="checkSolution" class="btn">检查答案</button>
+            <button id="solveSudoku" class="btn">显示答案</button>
+        </div>
+        
+        <div class="game-stats">
+            <div class="timer">用时: <span id="gameTime">00:00</span></div>
+            <div class="mistakes">错误: <span id="mistakes">0</span>/3</div>
+        </div>
+        
+        <div class="sudoku-board-container">
+            <div class="sudoku-grid" id="sudokuGrid"></div>
+            
+            <div class="number-pad">
+                <div class="number-btn" data-number="1">1</div>
+                <div class="number-btn" data-number="2">2</div>
+                <div class="number-btn" data-number="3">3</div>
+                <div class="number-btn" data-number="4">4</div>
+                <div class="number-btn" data-number="5">5</div>
+                <div class="number-btn" data-number="6">6</div>
+                <div class="number-btn" data-number="7">7</div>
+                <div class="number-btn" data-number="8">8</div>
+                <div class="number-btn" data-number="9">9</div>
+                <div class="number-btn erase" data-number="0">X</div>
+                <div class="number-btn notes" id="notesToggle">笔记</div>
+                <div class="number-btn hint" id="hintBtn">提示</div>
+            </div>
+        </div>
+        
+        <div id="gameOverModal" class="modal">
+            <div class="modal-content">
+                <h2 id="gameOverTitle">恭喜！</h2>
+                <p id="gameOverMessage">你成功完成了数独！</p>
+                <p>用时: <span id="finalTime">00:00</span></p>
+                <button id="playAgainBtn" class="btn">再玩一次</button>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>数独是一种逻辑游戏，目标是在9×9的网格中填入数字1-9，使每行、每列和每个3×3的小方格中都包含1-9的数字且不重复。</p>
+            <p><strong>提示：</strong> 点击一个单元格，然后点击数字面板或使用键盘输入数字。使用笔记模式可以记录可能的数字。</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="sudoku.js?v=2"></script>
+</body>
+</html>

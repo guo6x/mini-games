@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <link rel="stylesheet" href="flappy-bird.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">记忆配对</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+        </ul>
+    </nav>
+    <div class="game-container">
+        <h1>Flappy Bird</h1>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div class="game-info">
+            <span>得分: <span id="score">0</span></span>
+            <button id="startGame">开始游戏</button>
+            <a href="index.html" class="back-link">返回主菜单</a>
+        </div>
+    </div>
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="flappy-bird.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农场经营 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-area {
+            width: 800px;
+            height: 500px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #87ceeb 0%, #98fb98 100%);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 2px;
+            flex: 1;
+            padding: 10px;
+            background: #228b22;
+        }
+        .farm-plot {
+            background: #8b4513;
+            border: 2px solid #654321;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .farm-plot:hover {
+            border-color: #ffd700;
+            transform: scale(1.05);
+        }
+        .farm-plot.planted {
+            background: #654321;
+        }
+        .farm-plot.growing {
+            background: #90ee90;
+        }
+        .farm-plot.ready {
+            background: #ffd700;
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #ffd700; }
+            to { box-shadow: 0 0 15px #ffd700; }
+        }
+        .toolbar {
+            height: 80px;
+            background: #f4f4f4;
+            border-top: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
+        .tool-item {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .tool-item:hover {
+            border-color: #007bff;
+            transform: scale(1.1);
+        }
+        .tool-item.selected {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .resources {
+            display: flex;
+            gap: 20px;
+            margin-left: auto;
+            font-weight: bold;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .growth-timer {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .game-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🚜 农场经营</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🚜 农场经营</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>等级</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div class="farm-grid" id="farmGrid"></div>
+            <div class="toolbar">
+                <div class="tool-item" id="seedTool" data-tool="seed" title="种子">🌱</div>
+                <div class="tool-item" id="waterTool" data-tool="water" title="浇水">💧</div>
+                <div class="tool-item" id="harvestTool" data-tool="harvest" title="收获">🚜</div>
+                <div class="tool-item" id="sellTool" data-tool="sell" title="出售">💰</div>
+                <div class="resources">
+                    <div class="resource-item">
+                        <span>💰</span>
+                        <span id="money">100</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🌾</span>
+                        <span id="crops">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🌱</span>
+                        <span id="seeds">10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" class="game-btn start-btn" id="start-btn">开始游戏</button>
+            <button onclick="resetGame()" class="game-btn">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="game-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let level = 1;
+        let gameActive = false;
+        let startTime = 0;
+        
+        class FarmGame {
+            constructor() {
+                this.score = 0;
+                this.level = 1;
+                this.timeLeft = 300;
+                this.gameRunning = false;
+                this.money = 100;
+                this.crops = 0;
+                this.seeds = 10;
+                this.selectedTool = 'seed';
+                this.farmPlots = [];
+                this.cropTypes = {
+                    wheat: { emoji: '🌾', growTime: 5000, value: 10, cost: 2 },
+                    corn: { emoji: '🌽', growTime: 8000, value: 15, cost: 3 },
+                    tomato: { emoji: '🍅', growTime: 6000, value: 12, cost: 2 },
+                    carrot: { emoji: '🥕', growTime: 4000, value: 8, cost: 1 }
+                };
+                this.init();
+            }
+
+            init() {
+                this.createFarmGrid();
+                this.bindEvents();
+                this.updateDisplay();
+            }
+
+            createFarmGrid() {
+                const farmGrid = document.getElementById('farmGrid');
+                farmGrid.innerHTML = '';
+                
+                for (let row = 0; row < 6; row++) {
+                    this.farmPlots[row] = [];
+                    for (let col = 0; col < 8; col++) {
+                        const plot = document.createElement('div');
+                        plot.className = 'farm-plot';
+                        plot.dataset.row = row;
+                        plot.dataset.col = col;
+                        
+                        plot.addEventListener('click', () => {
+                            this.handlePlotClick(row, col);
+                        });
+                        
+                        farmGrid.appendChild(plot);
+                        
+                        this.farmPlots[row][col] = {
+                            element: plot,
+                            state: 'empty',
+                            cropType: null,
+                            plantTime: null,
+                            timer: null
+                        };
+                    }
+                }
+            }
+
+            bindEvents() {
+                document.querySelectorAll('.tool-item').forEach(tool => {
+                    tool.addEventListener('click', () => {
+                        document.querySelectorAll('.tool-item').forEach(t => t.classList.remove('selected'));
+                        tool.classList.add('selected');
+                        this.selectedTool = tool.dataset.tool;
+                    });
+                });
+                
+                document.getElementById('seedTool').classList.add('selected');
+            }
+
+            handlePlotClick(row, col) {
+                if (!this.gameRunning) return;
+                
+                const plot = this.farmPlots[row][col];
+                
+                switch (this.selectedTool) {
+                    case 'seed':
+                        this.plantSeed(plot);
+                        break;
+                    case 'water':
+                        this.waterPlot(plot);
+                        break;
+                    case 'harvest':
+                        this.harvestCrop(plot);
+                        break;
+                    case 'sell':
+                        this.sellCrop(plot);
+                        break;
+                }
+            }
+
+            plantSeed(plot) {
+                if (plot.state === 'empty' && this.seeds > 0) {
+                    const cropTypes = Object.keys(this.cropTypes);
+                    const randomCrop = cropTypes[Math.floor(Math.random() * cropTypes.length)];
+                    const crop = this.cropTypes[randomCrop];
+                    
+                    if (this.money >= crop.cost) {
+                        plot.state = 'planted';
+                        plot.cropType = randomCrop;
+                        plot.plantTime = Date.now();
+                        plot.element.className = 'farm-plot planted';
+                        plot.element.innerHTML = '🌱';
+                        
+                        this.seeds--;
+                        this.money -= crop.cost;
+                        this.score += 5;
+                        
+                        this.startGrowthTimer(plot);
+                        this.updateDisplay();
+                    }
+                }
+            }
+
+            waterPlot(plot) {
+                if (plot.state === 'planted' || plot.state === 'growing') {
+                    if (plot.timer) {
+                        const remainingTime = plot.timer.remainingTime;
+                        const newTime = Math.max(1000, remainingTime * 0.8);
+                        
+                        clearTimeout(plot.timer.timeout);
+                        plot.timer.remainingTime = newTime;
+                        
+                        plot.timer.timeout = setTimeout(() => {
+                            this.cropReady(plot);
+                        }, newTime);
+                        
+                        this.score += 2;
+                        this.updateDisplay();
+                    }
+                }
+            }
+
+            harvestCrop(plot) {
+                if (plot.state === 'ready') {
+                    const crop = this.cropTypes[plot.cropType];
+                    plot.element.innerHTML = crop.emoji;
+                    plot.state = 'harvested';
+                    plot.element.className = 'farm-plot';
+                    
+                    this.crops++;
+                    this.score += crop.value;
+                    this.updateDisplay();
+                }
+            }
+
+            sellCrop(plot) {
+                if (plot.state === 'harvested') {
+                    const crop = this.cropTypes[plot.cropType];
+                    
+                    this.money += crop.value;
+                    this.crops--;
+                    this.score += crop.value;
+                    
+                    plot.state = 'empty';
+                    plot.cropType = null;
+                    plot.plantTime = null;
+                    plot.element.className = 'farm-plot';
+                    plot.element.innerHTML = '';
+                    
+                    this.updateDisplay();
+                }
+            }
+
+            startGrowthTimer(plot) {
+                const crop = this.cropTypes[plot.cropType];
+                const growTime = crop.growTime;
+                
+                plot.timer = {
+                    remainingTime: growTime,
+                    timeout: setTimeout(() => {
+                        this.cropReady(plot);
+                    }, growTime)
+                };
+                
+                this.updateGrowthProgress(plot);
+            }
+
+            updateGrowthProgress(plot) {
+                if (plot.state === 'planted' || plot.state === 'growing') {
+                    const crop = this.cropTypes[plot.cropType];
+                    const elapsed = Date.now() - plot.plantTime;
+                    const progress = Math.min(elapsed / crop.growTime, 1);
+                    
+                    if (progress < 0.5) {
+                        plot.element.className = 'farm-plot planted';
+                        plot.element.innerHTML = '🌱';
+                    } else if (progress < 1) {
+                        plot.state = 'growing';
+                        plot.element.className = 'farm-plot growing';
+                        plot.element.innerHTML = '🌿';
+                    }
+                    
+                    const remainingSeconds = Math.ceil((crop.growTime - elapsed) / 1000);
+                    if (remainingSeconds > 0) {
+                        const timerElement = plot.element.querySelector('.growth-timer') || document.createElement('div');
+                        timerElement.className = 'growth-timer';
+                        timerElement.textContent = remainingSeconds + 's';
+                        if (!plot.element.querySelector('.growth-timer')) {
+                            plot.element.appendChild(timerElement);
+                        }
+                        
+                        setTimeout(() => this.updateGrowthProgress(plot), 1000);
+                    }
+                }
+            }
+
+            cropReady(plot) {
+                plot.state = 'ready';
+                plot.element.className = 'farm-plot ready';
+                plot.element.innerHTML = '✨';
+                
+                const timerElement = plot.element.querySelector('.growth-timer');
+                if (timerElement) {
+                    timerElement.remove();
+                }
+                
+                this.score += 10;
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('time').textContent = this.timeLeft + 's';
+                document.getElementById('money').textContent = this.money;
+                document.getElementById('crops').textContent = this.crops;
+                document.getElementById('seeds').textContent = this.seeds;
+            }
+        }
+        
+        let farmGame;
+        
+        function startGame() {
+            if (!farmGame) {
+                farmGame = new FarmGame();
+            }
+            farmGame.gameRunning = true;
+            
+            document.getElementById('start-btn').textContent = '游戏中...';
+            document.getElementById('start-btn').disabled = true;
+            
+            setInterval(() => {
+                if (farmGame.gameRunning && farmGame.seeds < 5) {
+                    farmGame.seeds += 2;
+                    farmGame.updateDisplay();
+                }
+            }, 10000);
+        }
+        
+        function resetGame() {
+            if (farmGame) {
+                farmGame.gameRunning = false;
+                farmGame.score = 0;
+                farmGame.level = 1;
+                farmGame.money = 100;
+                farmGame.crops = 0;
+                farmGame.seeds = 10;
+                
+                for (let row = 0; row < 6; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const plot = farmGame.farmPlots[row][col];
+                        if (plot.timer && plot.timer.timeout) {
+                            clearTimeout(plot.timer.timeout);
+                        }
+                        plot.state = 'empty';
+                        plot.cropType = null;
+                        plot.plantTime = null;
+                        plot.timer = null;
+                        plot.element.className = 'farm-plot';
+                        plot.element.innerHTML = '';
+                    }
+                }
+                
+                farmGame.updateDisplay();
+            }
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+        }
+        
+        function updateStats() {
+            if (farmGame) {
+                farmGame.updateDisplay();
+            }
+        }
+        
+        console.log('农场经营 已加载');
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字记忆 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .number-display {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border-radius: 15px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-area {
+            margin: 20px 0;
+        }
+        .number-input {
+            font-size: 1.5em;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
+        .level-info {
+            font-size: 1.2em;
+            margin: 15px 0;
+            color: #666;
+        }
+        .timer {
+            font-size: 1.5em;
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🧠 数字记忆</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🧠 数字记忆</h1>
+        <div class="level-info">等级: <span id="level">1</span> | 得分: <span id="score">0</span></div>
+        
+        <div class="number-display" id="number-display">点击开始游戏</div>
+        
+        <div class="timer" id="timer"></div>
+        
+        <div class="input-area" id="input-area" style="display: none;">
+            <input type="text" id="number-input" class="number-input" placeholder="输入你记住的数字">
+            <br><br>
+            <button onclick="checkAnswer()" class="play-button">确认</button>
+        </div>
+        
+        <button onclick="startGame()" class="play-button" id="start-btn">开始游戏</button>
+        <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+    </div>
+    
+    <script>
+        let level = 1;
+        let score = 0;
+        let currentNumber = '';
+        let gamePhase = 'waiting'; // waiting, showing, input
+        let timer;
+        
+        function startGame() {
+            level = 1;
+            score = 0;
+            updateDisplay();
+            showNumber();
+        }
+        
+        function generateNumber() {
+            const digits = level + 2; // 从3位数开始
+            let number = '';
+            for (let i = 0; i < digits; i++) {
+                number += Math.floor(Math.random() * 10);
+            }
+            return number;
+        }
+        
+        function showNumber() {
+            gamePhase = 'showing';
+            currentNumber = generateNumber();
+            
+            document.getElementById('number-display').textContent = currentNumber;
+            document.getElementById('input-area').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'none';
+            
+            // 显示时间根据难度调整
+            const showTime = Math.max(2000, 4000 - level * 200);
+            let timeLeft = showTime / 1000;
+            
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = `记住这个数字！剩余时间: ${timeLeft.toFixed(1)}秒`;
+            
+            const countdown = setInterval(() => {
+                timeLeft -= 0.1;
+                timerElement.textContent = `记住这个数字！剩余时间: ${timeLeft.toFixed(1)}秒`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    hideNumber();
+                }
+            }, 100);
+        }
+        
+        function hideNumber() {
+            gamePhase = 'input';
+            document.getElementById('number-display').textContent = '?';
+            document.getElementById('timer').textContent = '请输入你记住的数字';
+            document.getElementById('input-area').style.display = 'block';
+            document.getElementById('number-input').value = '';
+            document.getElementById('number-input').focus();
+        }
+        
+        function checkAnswer() {
+            const userInput = document.getElementById('number-input').value;
+            
+            if (userInput === currentNumber) {
+                // 答对了
+                score += level * 10;
+                level++;
+                
+                document.getElementById('number-display').textContent = '正确！';
+                document.getElementById('timer').textContent = `太棒了！得分 +${(level-1) * 10}`;
+                
+                setTimeout(() => {
+                    showNumber();
+                }, 1500);
+            } else {
+                // 答错了
+                gamePhase = 'waiting';
+                document.getElementById('number-display').textContent = `游戏结束！正确答案: ${currentNumber}`;
+                document.getElementById('timer').textContent = `最终得分: ${score} 分，到达等级: ${level}`;
+                document.getElementById('input-area').style.display = 'none';
+                document.getElementById('start-btn').style.display = 'inline-block';
+            }
+            
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            document.getElementById('level').textContent = level;
+            document.getElementById('score').textContent = score;
+        }
+        
+        // 回车键确认
+        document.getElementById('number-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>

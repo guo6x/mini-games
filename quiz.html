@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识问答 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-area {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            text-align: center;
+        }
+        .question-text {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option-btn {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            text-align: center;
+        }
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .option-btn.correct {
+            background: #2ecc71;
+            border-color: #27ae60;
+        }
+        .option-btn.incorrect {
+            background: #e74c3c;
+            border-color: #c0392b;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .quiz-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .result-message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .category-selector {
+            margin-bottom: 20px;
+        }
+        .category-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+        .category-btn:hover, .category-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .game-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">❓ 知识问答</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>❓ 知识问答</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>等级</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div>点击开始游戏</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" class="game-btn start-btn" id="start-btn">开始游戏</button>
+            <button onclick="resetGame()" class="game-btn">重新开始</button>
+            <button onclick="window.location.href='index.html'" class="game-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let level = 1;
+        let gameActive = false;
+        let startTime = 0;
+        
+        class QuizGame {
+            constructor() {
+                this.score = 0;
+                this.level = 1;
+                this.currentQuestion = 0;
+                this.totalQuestions = 10;
+                this.gameActive = false;
+                this.correctAnswers = 0;
+                this.category = 'general';
+                this.questions = {
+                    general: [
+                        {
+                            question: "世界上最高的山峰是？",
+                            options: ["珠穆朗玛峰", "乔戈里峰", "干城章嘉峰", "洛子峰"],
+                            correct: 0
+                        },
+                        {
+                            question: "中国的首都是？",
+                            options: ["上海", "北京", "广州", "深圳"],
+                            correct: 1
+                        },
+                        {
+                            question: "一年有多少天？",
+                            options: ["364天", "365天", "366天", "367天"],
+                            correct: 1
+                        },
+                        {
+                            question: "太阳系中最大的行星是？",
+                            options: ["地球", "火星", "木星", "土星"],
+                            correct: 2
+                        },
+                        {
+                            question: "世界上最长的河流是？",
+                            options: ["亚马逊河", "尼罗河", "长江", "密西西比河"],
+                            correct: 1
+                        }
+                    ],
+                    science: [
+                        {
+                            question: "水的化学分子式是？",
+                            options: ["H2O", "CO2", "O2", "H2SO4"],
+                            correct: 0
+                        },
+                        {
+                            question: "光速大约是多少？",
+                            options: ["30万公里/秒", "20万公里/秒", "40万公里/秒", "50万公里/秒"],
+                            correct: 0
+                        },
+                        {
+                            question: "人体最大的器官是？",
+                            options: ["心脏", "肝脏", "皮肤", "肺"],
+                            correct: 2
+                        },
+                        {
+                            question: "DNA的全称是？",
+                            options: ["脱氧核糖核酸", "核糖核酸", "蛋白质", "氨基酸"],
+                            correct: 0
+                        },
+                        {
+                            question: "元素周期表中第一个元素是？",
+                            options: ["氦", "氢", "锂", "碳"],
+                            correct: 1
+                        }
+                    ],
+                    history: [
+                        {
+                            question: "中国古代四大发明不包括？",
+                            options: ["造纸术", "指南针", "火药", "望远镜"],
+                            correct: 3
+                        },
+                        {
+                            question: "第二次世界大战结束于哪一年？",
+                            options: ["1944年", "1945年", "1946年", "1947年"],
+                            correct: 1
+                        },
+                        {
+                            question: "万里长城始建于哪个朝代？",
+                            options: ["秦朝", "汉朝", "春秋战国", "明朝"],
+                            correct: 2
+                        },
+                        {
+                            question: "古埃及的金字塔位于？",
+                            options: ["开罗", "亚历山大", "吉萨", "卢克索"],
+                            correct: 2
+                        },
+                        {
+                            question: "中国历史上最后一个封建王朝是？",
+                            options: ["明朝", "清朝", "元朝", "宋朝"],
+                            correct: 1
+                        }
+                    ]
+                };
+            }
+
+            start(category = 'general') {
+                this.category = category;
+                this.gameActive = true;
+                this.score = 0;
+                this.level = 1;
+                this.currentQuestion = 0;
+                this.correctAnswers = 0;
+                this.shuffleQuestions();
+                this.showQuestion();
+            }
+
+            shuffleQuestions() {
+                const questions = this.questions[this.category];
+                for (let i = questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [questions[i], questions[j]] = [questions[j], questions[i]];
+                }
+            }
+
+            showQuestion() {
+                if (this.currentQuestion >= this.totalQuestions || this.currentQuestion >= this.questions[this.category].length) {
+                    this.endGame();
+                    return;
+                }
+
+                const question = this.questions[this.category][this.currentQuestion];
+                const gameArea = document.getElementById('game-area');
+                
+                gameArea.innerHTML = `
+                    <div class="quiz-container">
+                        <div class="quiz-progress">
+                            <div class="progress-fill" style="width: ${(this.currentQuestion / this.totalQuestions) * 100}%"></div>
+                        </div>
+                        <div class="quiz-info">
+                            <span>题目 ${this.currentQuestion + 1} / ${Math.min(this.totalQuestions, this.questions[this.category].length)}</span>
+                            <span>分类: ${this.getCategoryName()}</span>
+                        </div>
+                        <div class="question-text">${question.question}</div>
+                        <div class="options-container">
+                            ${question.options.map((option, index) => 
+                                `<button class="option-btn" onclick="quizGame.selectAnswer(${index})">${option}</button>`
+                            ).join('')}
+                        </div>
+                        <div class="result-message" id="resultMessage"></div>
+                    </div>
+                `;
+            }
+
+            getCategoryName() {
+                const names = {
+                    general: '综合知识',
+                    science: '科学',
+                    history: '历史'
+                };
+                return names[this.category] || '综合知识';
+            }
+
+            selectAnswer(selectedIndex) {
+                if (!this.gameActive) return;
+
+                const question = this.questions[this.category][this.currentQuestion];
+                const options = document.querySelectorAll('.option-btn');
+                const resultMessage = document.getElementById('resultMessage');
+
+                // 禁用所有选项
+                options.forEach(btn => btn.disabled = true);
+
+                if (selectedIndex === question.correct) {
+                    options[selectedIndex].classList.add('correct');
+                    this.correctAnswers++;
+                    this.score += 10;
+                    resultMessage.innerHTML = '🎉 正确！';
+                    resultMessage.style.color = '#2ecc71';
+                } else {
+                    options[selectedIndex].classList.add('incorrect');
+                    options[question.correct].classList.add('correct');
+                    resultMessage.innerHTML = `❌ 错误！正确答案是：${question.options[question.correct]}`;
+                    resultMessage.style.color = '#e74c3c';
+                }
+
+                this.level = Math.floor(this.currentQuestion / 3) + 1;
+                this.updateStats();
+
+                setTimeout(() => {
+                    this.currentQuestion++;
+                    this.showQuestion();
+                }, 2500);
+            }
+
+            endGame() {
+                this.gameActive = false;
+                const gameArea = document.getElementById('game-area');
+                const totalQuestions = Math.min(this.totalQuestions, this.questions[this.category].length);
+                const percentage = Math.round((this.correctAnswers / totalQuestions) * 100);
+                
+                let message = '';
+                if (percentage >= 90) {
+                    message = '🏆 知识大师！';
+                } else if (percentage >= 70) {
+                    message = '🌟 博学多才！';
+                } else if (percentage >= 50) {
+                    message = '📚 继续学习！';
+                } else {
+                    message = '📖 多读书！';
+                }
+
+                gameArea.innerHTML = `
+                    <div class="quiz-container">
+                        <div class="question-text">游戏结束！</div>
+                        <div style="font-size: 1.5em; margin: 20px 0;">${message}</div>
+                        <div style="font-size: 1.2em;">最终得分: ${this.score} / ${totalQuestions * 10}</div>
+                        <div style="font-size: 1.1em; margin-top: 10px;">正确率: ${percentage}% (${this.correctAnswers}/${totalQuestions})</div>
+                        <div class="category-selector" style="margin-top: 20px;">
+                            <div style="margin-bottom: 10px;">选择分类重新开始：</div>
+                            <button class="category-btn" onclick="quizGame.start('general'); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">综合知识</button>
+                            <button class="category-btn" onclick="quizGame.start('science'); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">科学</button>
+                            <button class="category-btn" onclick="quizGame.start('history'); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">历史</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('start-btn').textContent = '开始游戏';
+                document.getElementById('start-btn').disabled = false;
+            }
+
+            updateStats() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('level').textContent = this.level;
+            }
+        }
+
+        let quizGame;
+
+        function startGame() {
+            if (!quizGame) {
+                quizGame = new QuizGame();
+            }
+            
+            gameActive = true;
+            startTime = Date.now();
+            
+            // 显示分类选择
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = `
+                <div class="quiz-container">
+                    <div class="question-text">选择问答分类</div>
+                    <div class="category-selector">
+                        <button class="category-btn" onclick="quizGame.start('general'); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">综合知识</button>
+                        <button class="category-btn" onclick="quizGame.start('science'); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">科学</button>
+                        <button class="category-btn" onclick="quizGame.start('history'); document.getElementById('start-btn').textContent = '游戏中...'; document.getElementById('start-btn').disabled = true;">历史</button>
+                    </div>
+                    <div style="margin-top: 20px; font-size: 0.9em; color: rgba(255,255,255,0.8);">
+                        每个分类包含多道精选题目，测试你的知识水平！
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('start-btn').textContent = '选择分类...';
+            document.getElementById('start-btn').disabled = true;
+            
+            score = quizGame.score;
+            level = quizGame.level;
+            
+            updateStats();
+        }
+        
+        function resetGame() {
+            gameActive = false;
+            score = 0;
+            level = 1;
+            startTime = 0;
+            
+            document.getElementById('start-btn').textContent = '开始游戏';
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('game-area').innerHTML = '<div>点击开始游戏</div>';
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            
+            const timeElapsed = gameActive ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            document.getElementById('time').textContent = timeElapsed + 's';
+        }
+        
+        // 定时更新时间显示
+        setInterval(() => {
+            if (gameActive) {
+                updateStats();
+            }
+        }, 1000);
+        
+        // 游戏特定逻辑可以在这里添加
+        console.log('知识问答 已加载');
+    </script>
+</body>
+</html>

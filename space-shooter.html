@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太空射击游戏</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="space-shooter.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+            <li><a href="space-shooter.html" class="active">太空射击</a></li>
+        </ul>
+    </nav>
+    
+    <div class="game-container">
+        <h1>太空射击</h1>
+        
+        <div class="game-options">
+            <div class="difficulty-selector">
+                <label for="difficulty">难度：</label>
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium" selected>中等</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <div class="ship-selector">
+                <label for="ship-type">飞船类型：</label>
+                <select id="ship-type">
+                    <option value="fighter">战斗机</option>
+                    <option value="cruiser" selected>巡洋舰</option>
+                    <option value="destroyer">驱逐舰</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="game-stats">
+            <div class="score">得分: <span id="score">0</span></div>
+            <div class="high-score">最高分: <span id="high-score">0</span></div>
+            <div class="level">等级: <span id="level">1</span></div>
+            <div class="lives">生命: <span id="lives">3</span></div>
+        </div>
+        
+        <div class="game-board-container">
+            <canvas id="game-canvas" width="600" height="600"></canvas>
+            
+            <div id="game-over-screen" class="game-overlay">
+                <h2>游戏结束</h2>
+                <p>最终得分: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="btn">再玩一次</button>
+            </div>
+            
+            <div id="game-paused-screen" class="game-overlay">
+                <h2>游戏暂停</h2>
+                <button id="resume-btn" class="btn">继续游戏</button>
+            </div>
+            
+            <div id="game-start-screen" class="game-overlay active">
+                <h2>太空射击</h2>
+                <p>使用方向键或WASD控制飞船移动</p>
+                <p>空格键发射子弹</p>
+                <p>P键暂停游戏</p>
+                <button id="start-btn" class="btn">开始游戏</button>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <div class="mobile-controls">
+                <div class="direction-buttons">
+                    <button id="up-btn" class="direction-btn">↑</button>
+                    <div class="horizontal-btns">
+                        <button id="left-btn" class="direction-btn">←</button>
+                        <button id="right-btn" class="direction-btn">→</button>
+                    </div>
+                    <button id="down-btn" class="direction-btn">↓</button>
+                </div>
+                <div class="action-buttons">
+                    <button id="fire-btn" class="action-btn">发射</button>
+                    <button id="pause-btn" class="action-btn">暂停</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>在太空射击游戏中，你控制一艘太空飞船，目标是消灭来袭的敌人并获得尽可能高的分数。</p>
+            <p>每击落一个敌人可以获得分数，不同类型的敌人得分不同。随着游戏的进行，敌人会越来越多，移动速度也会越来越快。</p>
+            <p>注意避开敌人的攻击，如果你的飞船被击中三次，游戏就会结束。</p>
+            <p>收集游戏中出现的各种道具可以获得武器升级、生命恢复等效果。</p>
+            <p><strong>电脑控制：</strong> 方向键或WASD移动，空格键发射，P键暂停</p>
+            <p><strong>手机控制：</strong> 触摸屏幕上的方向按钮移动，点击发射按钮攻击</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="space-shooter.js"></script>
+</body>
+</html> 

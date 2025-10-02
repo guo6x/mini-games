@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典乒乓球 - 小游戏集合</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="pong.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+            <li><a href="space-shooter.html">太空射击</a></li>
+            <li><a href="gomoku.html">五子棋</a></li>
+            <li><a href="pong.html" class="active">乒乓球</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h1>经典乒乓球</h1>
+        
+        <div class="game-options">
+            <div class="difficulty-selector">
+                <label for="difficulty">难度：</label>
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium" selected>中等</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <div class="mode-selector">
+                <label for="game-mode">游戏模式：</label>
+                <select id="game-mode">
+                    <option value="single">单人模式</option>
+                    <option value="two-player">双人模式</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="game-stats">
+            <div class="score player1-score">玩家1: <span id="player1-score">0</span></div>
+            <div class="score player2-score">玩家2: <span id="player2-score">0</span></div>
+            <div class="high-score">最高分: <span id="high-score">0</span></div>
+        </div>
+        
+        <div class="game-board-container">
+            <canvas id="game-canvas" width="600" height="400"></canvas>
+            
+            <div id="game-over-screen" class="game-overlay">
+                <h2>游戏结束</h2>
+                <p>获胜者: <span id="winner">玩家1</span></p>
+                <p>最终比分: <span id="final-score">5-3</span></p>
+                <button id="restart-btn" class="btn">再玩一次</button>
+            </div>
+            
+            <div id="game-paused-screen" class="game-overlay">
+                <h2>游戏暂停</h2>
+                <button id="resume-btn" class="btn">继续游戏</button>
+            </div>
+            
+            <div id="game-start-screen" class="game-overlay active">
+                <h2>乒乓球</h2>
+                <p>单人模式：使用鼠标或触摸控制挡板</p>
+                <p>双人模式：玩家1使用W/S键，玩家2使用方向键</p>
+                <p>P键暂停游戏</p>
+                <button id="start-btn" class="btn">开始游戏</button>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <div class="mobile-controls">
+                <div class="direction-buttons">
+                    <button id="up-btn" class="direction-btn">↑</button>
+                    <button id="down-btn" class="direction-btn">↓</button>
+                </div>
+                <div class="action-buttons">
+                    <button id="pause-btn" class="action-btn">暂停</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>乒乓球是一个经典的双人游戏，玩家通过控制挡板击打小球，防止小球从自己这边出界。</p>
+            <p>当一方无法接住球时，对方得分。先达到设定分数（默认为5分）的玩家获胜。</p>
+            <p><strong>单人模式控制：</strong> 鼠标移动或触摸屏幕控制挡板</p>
+            <p><strong>双人模式控制：</strong> 玩家1使用W/S键，玩家2使用上/下方向键</p>
+            <p><strong>暂停游戏：</strong> P键</p>
+        </div>
+        
+        <!-- 高分榜 -->
+        <div class="highscores-panel">
+            <h2>高分榜</h2>
+            <table class="highscores-list">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>玩家</th>
+                        <th>分数</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody id="highscores-body">
+                    <!-- 高分数据将在这里动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="game-error-handler.js"></script>
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-performance-monitor.js"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="pong.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞机大战</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="plane-combat.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="pong.html">Pong 乒乓球</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html" class="active">飞机大战</a></li>
+        </ul>
+    </nav>
+    <div class="game-container">
+        <h1>经典飞机大战</h1>
+        <div class="game-stats">
+            <div class="score">得分: <span id="score">0</span></div>
+            <div class="lives">生命: <span id="lives">3</span></div>
+            <div class="level">等级: <span id="level">1</span></div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="480" height="640"></canvas>
+            
+            <div id="game-over" class="game-overlay">
+                <h2>游戏结束</h2>
+                <p>最终得分: <span id="final-score">0</span></p>
+                <button id="restart-btn">再玩一次</button>
+            </div>
+            
+            <div id="game-paused" class="game-overlay">
+                <h2>游戏暂停</h2>
+                <button id="resume-btn">继续游戏</button>
+            </div>
+            
+            <div id="game-start" class="game-overlay active">
+                <h2>飞机大战</h2>
+                <p>使用方向键或WASD移动飞机</p>
+                <p>空格键发射子弹</p>
+                <p>P键暂停游戏</p>
+                <button id="start-btn">开始游戏</button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <button id="fire-btn" class="action-btn">发射 (空格)</button>
+                <button id="pause-btn" class="action-btn">暂停 (P)</button>
+            </div>
+            
+            <div class="control-group direction-pad">
+                <button id="up-btn" class="direction-btn">↑</button>
+                <div class="horizontal-btns">
+                    <button id="left-btn" class="direction-btn">←</button>
+                    <button id="right-btn" class="direction-btn">→</button>
+                </div>
+                <button id="down-btn" class="direction-btn">↓</button>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏说明</h3>
+            <p>控制你的飞机躲避敌机，收集道具提升能力。击落敌机获得分数，小心不要被敌机击中！</p>
+            <p><strong>电脑控制：</strong> 方向键或WASD移动，空格键发射子弹，P键暂停</p>
+            <p><strong>手机控制：</strong> 触摸屏幕上的方向按钮移动，点击发射按钮射击</p>
+        </div>
+        
+        <a href="index.html" class="back-button">返回主页</a>
+    </div>
+    
+    <script src="plane-combat.js"></script>
+</body>
+</html>

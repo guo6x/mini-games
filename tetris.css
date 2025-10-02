@@ -1,0 +1,55 @@
+.tetris-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 2em;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.game-wrapper {
+    display: flex;
+    gap: 2em;
+    align-items: flex-start;
+}
+
+#game-board {
+    border: 2px solid #2c3e50;
+    background: #f8f9fa;
+}
+
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+
+.score-box, .next-box {
+    background: #f1f5f9;
+    padding: 1em;
+    border-radius: 8px;
+}
+
+#start-btn {
+    padding: 0.8em 2em;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#start-btn:hover {
+    background: #2980b9;
+}
+
+.game-back {
+    color: #888;
+    text-decoration: none;
+    align-self: center;
+}
+
+.game-back:hover {
+    color: #3498db;
+}

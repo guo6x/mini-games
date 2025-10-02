@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典贪吃蛇 - 小游戏集合</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="snake.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html" class="active">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+            <li><a href="space-shooter.html">太空射击</a></li>
+            <li><a href="gomoku.html">五子棋</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h1>经典贪吃蛇</h1>
+        
+        <div class="game-options">
+            <div class="difficulty-selector">
+                <label for="difficulty">难度：</label>
+                <select id="difficulty">
+                    <option value="200">简单 (慢速)</option>
+                    <option value="150" selected>普通 (中速)</option>
+                    <option value="100">困难 (快速)</option>
+                    <option value="70">极难 (超快速)</option>
+                </select>
+            </div>
+            <div class="food-selector">
+                <label for="food-type">食物类型：</label>
+                <select id="food-type">
+                    <option value="normal">普通食物</option>
+                    <option value="bonus">奖励食物</option>
+                    <option value="random">随机食物</option>
+                </select>
+            </div>
+            <div class="grid-selector">
+                <label for="grid-size">网格大小：</label>
+                <select id="grid-size">
+                    <option value="10">10×10 (大格子)</option>
+                    <option value="20" selected>20×20 (中等)</option>
+                    <option value="40">40×40 (小格子)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="game-stats">
+            <div class="score">得分: <span id="score">0</span></div>
+            <div class="high-score">最高分: <span id="high-score">0</span></div>
+            <div class="level">等级: <span id="level">1</span></div>
+            <div class="snake-length">长度: <span id="snake-length">1</span></div>
+        </div>
+        
+        <div class="game-board-container">
+            <canvas id="game-canvas" width="400" height="400"></canvas>
+            
+            <div id="game-over-screen" class="game-overlay">
+                <h2>游戏结束</h2>
+                <p>最终得分: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="btn">再玩一次</button>
+            </div>
+            
+            <div id="game-paused-screen" class="game-overlay">
+                <h2>游戏暂停</h2>
+                <button id="resume-btn" class="btn">继续游戏</button>
+            </div>
+            
+            <div id="game-start-screen" class="game-overlay active">
+                <h2>贪吃蛇</h2>
+                <p>使用方向键或WASD控制蛇的移动</p>
+                <p>P键暂停游戏</p>
+                <button id="start-btn" class="btn">开始游戏</button>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <div class="mobile-controls">
+                <div class="direction-buttons">
+                    <button id="up-btn" class="direction-btn">↑</button>
+                    <div class="horizontal-btns">
+                        <button id="left-btn" class="direction-btn">←</button>
+                        <button id="right-btn" class="direction-btn">→</button>
+                    </div>
+                    <button id="down-btn" class="direction-btn">↓</button>
+                </div>
+                <div class="action-buttons">
+                    <button id="pause-btn" class="action-btn">暂停</button>
+                    <button onclick="snakeGameSave()">保存游戏</button>
+                    <button onclick="snakeGameLoad()">加载游戏</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>游戏规则</h3>
+            <p>控制蛇吃食物，每吃一个食物，蛇的长度会增加，得分也会增加。</p>
+            <p>蛇不能撞到墙壁或自己的身体，否则游戏结束。</p>
+            <p>随着得分的增加，蛇的移动速度会逐渐加快，难度会增加。</p>
+            <p><strong>电脑控制：</strong> 方向键或WASD移动，P键暂停</p>
+            <p><strong>手机控制：</strong> 触摸屏幕上的方向按钮移动</p>
+        </div>
+        
+        <!-- 高分榜 -->
+        <div class="highscores-panel">
+            <h2>高分榜</h2>
+            <table class="highscores-list">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>玩家</th>
+                        <th>分数</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody id="highscores-body">
+                    <!-- 高分数据将在这里动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script src="game-memory-manager.js"></script>
+    <script src="GameLifecycle.js"></script>
+    <script src="game-error-handler.js"></script>
+    <script src="game-performance-monitor.js?v=1"></script>
+    <script src="game-performance-optimizer.js"></script>
+    <script src="game-state-manager.js"></script>
+    <script src="game-analytics.js"></script>
+    <script src="snake.js?v=5"></script>
+</body>
+</html>

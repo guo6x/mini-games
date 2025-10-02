@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反应测试 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .reaction-area {
+            width: 400px;
+            height: 300px;
+            margin: 20px auto;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        .reaction-area.waiting {
+            background: #e74c3c;
+            color: white;
+        }
+        .reaction-area.ready {
+            background: #2ecc71;
+            color: white;
+        }
+        .reaction-area.too-early {
+            background: #f39c12;
+            color: white;
+        }
+        .results {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .result-item {
+            margin: 5px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">⚡ 反应测试</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>⚡ 反应测试</h1>
+        <p>当区域变绿时立即点击！测试你的反应速度</p>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>平均反应时间</div>
+                <div id="average-time">-- ms</div>
+            </div>
+            <div class="stat-box">
+                <div>最快反应时间</div>
+                <div id="best-time">-- ms</div>
+            </div>
+            <div class="stat-box">
+                <div>测试次数</div>
+                <div id="test-count">0</div>
+            </div>
+        </div>
+        
+        <div class="reaction-area" id="reaction-area" onclick="handleClick()">
+            点击开始测试
+        </div>
+        
+        <div class="results" id="results" style="display: none;">
+            <h3>测试结果</h3>
+            <div id="results-list"></div>
+        </div>
+        
+        <button onclick="resetTest()" class="play-button">重新开始</button>
+        <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+    </div>
+    
+    <script>
+        let gameState = 'waiting'; // waiting, ready, clicked
+        let startTime = 0;
+        let reactionTimes = [];
+        let timeout;
+        
+        function handleClick() {
+            const reactionArea = document.getElementById('reaction-area');
+            
+            if (gameState === 'waiting') {
+                startTest();
+            } else if (gameState === 'ready') {
+                // 正确点击
+                const reactionTime = Date.now() - startTime;
+                recordReaction(reactionTime);
+                
+                reactionArea.className = 'reaction-area';
+                reactionArea.textContent = `反应时间: ${reactionTime} ms\n\n点击继续测试`;
+                gameState = 'waiting';
+                
+            } else if (gameState === 'too-early') {
+                // 点击过早，重新开始
+                startTest();
+            }
+        }
+        
+        function startTest() {
+            const reactionArea = document.getElementById('reaction-area');
+            gameState = 'too-early';
+            
+            reactionArea.className = 'reaction-area waiting';
+            reactionArea.textContent = '等待绿色出现...';
+            
+            // 清除之前的定时器
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            
+            // 随机延迟2-6秒后变绿
+            const delay = Math.random() * 4000 + 2000;
+            
+            timeout = setTimeout(() => {
+                if (gameState === 'too-early') {
+                    gameState = 'ready';
+                    startTime = Date.now();
+                    reactionArea.className = 'reaction-area ready';
+                    reactionArea.textContent = '点击！';
+                }
+            }, delay);
+        }
+        
+        function recordReaction(time) {
+            reactionTimes.push(time);
+            updateStats();
+            updateResults();
+            
+            // 显示结果区域
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function updateStats() {
+            const count = reactionTimes.length;
+            const average = count > 0 ? Math.round(reactionTimes.reduce((a, b) => a + b, 0) / count) : 0;
+            const best = count > 0 ? Math.min(...reactionTimes) : 0;
+            
+            document.getElementById('test-count').textContent = count;
+            document.getElementById('average-time').textContent = average > 0 ? average + ' ms' : '-- ms';
+            document.getElementById('best-time').textContent = best > 0 ? best + ' ms' : '-- ms';
+        }
+        
+        function updateResults() {
+            const resultsList = document.getElementById('results-list');
+            resultsList.innerHTML = '';
+            
+            reactionTimes.slice(-5).reverse().forEach((time, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                let rating = '';
+                if (time < 200) rating = '🚀 超快';
+                else if (time < 300) rating = '⚡ 很快';
+                else if (time < 400) rating = '👍 不错';
+                else if (time < 500) rating = '😐 一般';
+                else rating = '🐌 较慢';
+                
+                resultItem.innerHTML = `
+                    <span>第 ${reactionTimes.length - index} 次</span>
+                    <span>${time} ms ${rating}</span>
+                `;
+                
+                resultsList.appendChild(resultItem);
+            });
+        }
+        
+        function resetTest() {
+            reactionTimes = [];
+            gameState = 'waiting';
+            
+            const reactionArea = document.getElementById('reaction-area');
+            reactionArea.className = 'reaction-area';
+            reactionArea.textContent = '点击开始测试';
+            
+            document.getElementById('results').style.display = 'none';
+            
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            
+            updateStats();
+        }
+        
+        // 防止过早点击
+        document.addEventListener('click', function(e) {
+            if (gameState === 'too-early' && e.target.id === 'reaction-area') {
+                const reactionArea = document.getElementById('reaction-area');
+                reactionArea.className = 'reaction-area too-early';
+                reactionArea.textContent = '点击过早！等待重新开始...';
+                
+                setTimeout(() => {
+                    if (gameState === 'too-early') {
+                        reactionArea.className = 'reaction-area';
+                        reactionArea.textContent = '点击开始测试';
+                        gameState = 'waiting';
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

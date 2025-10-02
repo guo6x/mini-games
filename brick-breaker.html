@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打砖块游戏</title>
+    <link rel="stylesheet" href="brick-breaker.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">记忆配对</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+        </ul>
+    </nav>
+    <div class="game-container">
+        <h1>经典打砖块</h1>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="game-controls">
+            <div class="score-board">
+                得分: <span id="score">0</span>
+            </div>
+            <button id="startGame">开始游戏</button>
+            <a href="index.html" class="back-link">返回主菜单</a>
+        </div>
+    </div>
+    <script src="brick-breaker.js"></script>
+</body>
+</html>

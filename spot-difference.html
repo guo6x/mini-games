@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>找不同 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .images-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .image-panel {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        .game-image {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            position: relative;
+        }
+        .difference-spot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e74c3c;
+            border-radius: 50%;
+            background: rgba(231, 76, 60, 0.3);
+            animation: pulse 1s infinite;
+            pointer-events: none;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        .hint-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .hint-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .differences-found {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .difference-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .difference-indicator.found {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🔍 找不同</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🔍 找不同</h1>
+        <p>仔细观察两张图片，找出5个不同之处</p>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>已找到</div>
+                <div id="found-count">0</div>
+            </div>
+            <div class="stat-box">
+                <div>总计</div>
+                <div id="total-count">5</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+            <div class="stat-box">
+                <div>提示</div>
+                <div id="hints-left">3</div>
+            </div>
+        </div>
+        
+        <div class="differences-found">
+            <div class="difference-indicator" id="diff-1">1</div>
+            <div class="difference-indicator" id="diff-2">2</div>
+            <div class="difference-indicator" id="diff-3">3</div>
+            <div class="difference-indicator" id="diff-4">4</div>
+            <div class="difference-indicator" id="diff-5">5</div>
+        </div>
+        
+        <div class="images-container">
+            <div class="image-panel">
+                <div class="game-image" id="image1" onclick="checkClick(event, 1)">
+                    <!-- 左图内容 -->
+                    <div style="position: absolute; top: 20px; left: 20px; width: 50px; height: 50px; background: #e74c3c; border-radius: 50%;"></div>
+                    <div style="position: absolute; top: 80px; left: 100px; width: 60px; height: 40px; background: #3498db; border-radius: 10px;"></div>
+                    <div style="position: absolute; top: 150px; left: 50px; width: 80px; height: 30px; background: #2ecc71;"></div>
+                    <div style="position: absolute; top: 200px; left: 200px; width: 40px; height: 60px; background: #f39c12; border-radius: 20px;"></div>
+                    <div style="position: absolute; top: 100px; left: 250px; width: 70px; height: 50px; background: #9b59b6; transform: rotate(45deg);"></div>
+                    <div style="position: absolute; top: 50px; left: 300px; width: 30px; height: 30px; background: #e67e22; border-radius: 50%;"></div>
+                    <div style="position: absolute; top: 180px; left: 120px; width: 50px; height: 20px; background: #1abc9c;"></div>
+                </div>
+            </div>
+            
+            <div class="image-panel">
+                <div class="game-image" id="image2" onclick="checkClick(event, 2)">
+                    <!-- 右图内容（有5个不同） -->
+                    <div style="position: absolute; top: 20px; left: 20px; width: 50px; height: 50px; background: #2ecc71; border-radius: 50%;" data-diff="1"></div> <!-- 不同1：颜色 -->
+                    <div style="position: absolute; top: 80px; left: 100px; width: 60px; height: 40px; background: #3498db; border-radius: 10px;"></div>
+                    <div style="position: absolute; top: 150px; left: 50px; width: 80px; height: 30px; background: #2ecc71;"></div>
+                    <div style="position: absolute; top: 200px; left: 200px; width: 40px; height: 60px; background: #f39c12;"></div> <!-- 不同2：形状 -->
+                    <div style="position: absolute; top: 100px; left: 250px; width: 70px; height: 50px; background: #9b59b6; transform: rotate(45deg);"></div>
+                    <div style="position: absolute; top: 50px; left: 320px; width: 30px; height: 30px; background: #e67e22; border-radius: 50%;" data-diff="3"></div> <!-- 不同3：位置 -->
+                    <div style="position: absolute; top: 180px; left: 120px; width: 50px; height: 20px; background: #e74c3c;" data-diff="4"></div> <!-- 不同4：颜色 -->
+                    <!-- 不同5：缺少一个元素 -->
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="useHint()" class="hint-btn" id="hint-btn">使用提示</button>
+            <button onclick="startNewGame()" class="play-button">新游戏</button>
+            <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let foundDifferences = [];
+        let startTime = Date.now();
+        let hintsLeft = 3;
+        let gameActive = true;
+        
+        const differences = [
+            { id: 1, x: 45, y: 45, description: "圆形颜色不同" },
+            { id: 2, x: 220, y: 230, description: "形状不同" },
+            { id: 3, x: 335, y: 65, description: "位置不同" },
+            { id: 4, x: 145, y: 190, description: "颜色不同" },
+            { id: 5, x: 275, y: 125, description: "缺少元素" }
+        ];
+        
+        function checkClick(event, imageNum) {
+            if (!gameActive) return;
+            
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // 检查是否点击了差异点
+            for (let diff of differences) {
+                if (foundDifferences.includes(diff.id)) continue;
+                
+                const distance = Math.sqrt(Math.pow(x - diff.x, 2) + Math.pow(y - diff.y, 2));
+                if (distance < 25) {
+                    foundDifference(diff, x, y);
+                    return;
+                }
+            }
+            
+            // 错误点击效果
+            showWrongClick(x, y, imageNum);
+        }
+        
+        function foundDifference(diff, x, y) {
+            foundDifferences.push(diff.id);
+            
+            // 在两张图上都标记
+            markDifference(x, y, 1);
+            markDifference(diff.x, diff.y, 2);
+            
+            // 更新指示器
+            document.getElementById(`diff-${diff.id}`).classList.add('found');
+            
+            updateStats();
+            
+            if (foundDifferences.length === 5) {
+                setTimeout(() => {
+                    gameActive = false;
+                    const timeUsed = Math.floor((Date.now() - startTime) / 1000);
+                    alert(`恭喜！你找到了所有不同之处！\n用时: ${timeUsed} 秒`);
+                }, 500);
+            }
+        }
+        
+        function markDifference(x, y, imageNum) {
+            const spot = document.createElement('div');
+            spot.className = 'difference-spot';
+            spot.style.left = (x - 15) + 'px';
+            spot.style.top = (y - 15) + 'px';
+            
+            document.getElementById(`image${imageNum}`).appendChild(spot);
+        }
+        
+        function showWrongClick(x, y, imageNum) {
+            const wrongSpot = document.createElement('div');
+            wrongSpot.style.position = 'absolute';
+            wrongSpot.style.left = (x - 10) + 'px';
+            wrongSpot.style.top = (y - 10) + 'px';
+            wrongSpot.style.width = '20px';
+            wrongSpot.style.height = '20px';
+            wrongSpot.style.background = '#e74c3c';
+            wrongSpot.style.borderRadius = '50%';
+            wrongSpot.style.opacity = '0.8';
+            wrongSpot.style.pointerEvents = 'none';
+            
+            document.getElementById(`image${imageNum}`).appendChild(wrongSpot);
+            
+            setTimeout(() => {
+                wrongSpot.remove();
+            }, 500);
+        }
+        
+        function useHint() {
+            if (hintsLeft <= 0 || !gameActive) return;
+            
+            hintsLeft--;
+            
+            // 找到一个未发现的差异
+            const unfoundDiffs = differences.filter(d => !foundDifferences.includes(d.id));
+            if (unfoundDiffs.length > 0) {
+                const hintDiff = unfoundDiffs[0];
+                
+                // 显示提示圈
+                const hintCircle = document.createElement('div');
+                hintCircle.style.position = 'absolute';
+                hintCircle.style.left = (hintDiff.x - 30) + 'px';
+                hintCircle.style.top = (hintDiff.y - 30) + 'px';
+                hintCircle.style.width = '60px';
+                hintCircle.style.height = '60px';
+                hintCircle.style.border = '3px dashed #f39c12';
+                hintCircle.style.borderRadius = '50%';
+                hintCircle.style.animation = 'pulse 2s infinite';
+                hintCircle.style.pointerEvents = 'none';
+                
+                document.getElementById('image1').appendChild(hintCircle);
+                document.getElementById('image2').appendChild(hintCircle.cloneNode());
+                
+                setTimeout(() => {
+                    hintCircle.remove();
+                    const clonedCircle = document.getElementById('image2').querySelector('div[style*="dashed"]');
+                    if (clonedCircle) clonedCircle.remove();
+                }, 3000);
+            }
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('found-count').textContent = foundDifferences.length;
+            document.getElementById('hints-left').textContent = hintsLeft;
+            
+            const timeUsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('time').textContent = timeUsed + 's';
+            
+            if (hintsLeft <= 0) {
+                document.getElementById('hint-btn').disabled = true;
+            }
+        }
+        
+        function startNewGame() {
+            foundDifferences = [];
+            startTime = Date.now();
+            hintsLeft = 3;
+            gameActive = true;
+            
+            // 清除所有标记
+            document.querySelectorAll('.difference-spot').forEach(spot => spot.remove());
+            
+            // 重置指示器
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`diff-${i}`).classList.remove('found');
+            }
+            
+            document.getElementById('hint-btn').disabled = false;
+            updateStats();
+        }
+        
+        // 定时更新时间显示
+        setInterval(() => {
+            if (gameActive) {
+                updateStats();
+            }
+        }, 1000);
+        
+        // 初始化
+        updateStats();
+    </script>
+</body>
+</html>

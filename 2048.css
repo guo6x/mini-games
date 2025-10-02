@@ -1,0 +1,278 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    font-size: 18px;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.game-container {
+    margin: 0 auto;
+    max-width: 500px;
+    padding: 0 20px;
+}
+
+h1 {
+    font-size: 80px;
+    font-weight: bold;
+    margin: 0;
+    display: block;
+    text-align: center;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.scores-container {
+    display: flex;
+    gap: 10px;
+}
+
+.score-box {
+    position: relative;
+    background: var(--secondary-color);
+    padding: 10px 15px;
+    border-radius: 3px;
+    color: white;
+    text-align: center;
+    min-width: 80px;
+    transition: background-color 0.3s;
+}
+
+.title {
+    font-size: 16px;
+    color: #eee4da;
+}
+
+#score, #best-score {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+button {
+    background: #8f7a66;
+    border-radius: 3px;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #9f8b77;
+}
+
+.game-intro {
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.65;
+    color: var(--text-color);
+    transition: color 0.3s;
+}
+
+.grid-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 正方形容器 */
+    background: var(--secondary-color);
+    border-radius: 6px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+}
+
+.grid-background, .grid-tiles {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-gap: 15px;
+}
+
+.grid-cell {
+    background: rgba(238, 228, 218, 0.35);
+    border-radius: 3px;
+}
+
+.tile {
+    position: absolute;
+    width: calc(25% - 15px);
+    height: calc(25% - 15px);
+    background: #eee4da;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 35px;
+    transition: all 0.1s ease-in-out;
+    z-index: 1;
+}
+
+/* 不同数值的方块颜色 */
+.tile-2 {
+    background: #eee4da;
+}
+
+.tile-4 {
+    background: #ede0c8;
+}
+
+.tile-8 {
+    background: #f2b179;
+    color: white;
+}
+
+.tile-16 {
+    background: #f59563;
+    color: white;
+}
+
+.tile-32 {
+    background: #f67c5f;
+    color: white;
+}
+
+.tile-64 {
+    background: #f65e3b;
+    color: white;
+}
+
+.tile-128 {
+    background: #edcf72;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.31746);
+}
+
+.tile-256 {
+    background: #edcc61;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.39683);
+}
+
+.tile-512 {
+    background: #edc850;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.47619);
+}
+
+.tile-1024 {
+    background: #edc53f;
+    color: white;
+    font-size: 25px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556);
+}
+
+.tile-2048 {
+    background: #edc22e;
+    color: white;
+    font-size: 25px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.63492);
+}
+
+.game-message {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(238, 228, 218, 0.73);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.game-message p {
+    font-size: 60px;
+    font-weight: bold;
+    margin: 0 0 20px;
+}
+
+.game-message.game-won {
+    background: rgba(237, 194, 46, 0.5);
+    color: #f9f6f2;
+}
+
+.game-message.game-over {
+    background: rgba(238, 228, 218, 0.73);
+}
+
+.game-message.show {
+    display: flex;
+}
+
+.game-message-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+}
+
+@media screen and (max-width: 520px) {
+    h1 {
+        font-size: 48px;
+    }
+    
+    .game-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .scores-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .game-message p {
+        font-size: 40px;
+    }
+    
+    .tile {
+        font-size: 30px;
+    }
+    
+    .tile-128, .tile-256, .tile-512 {
+        font-size: 25px;
+    }
+    
+    .tile-1024, .tile-2048 {
+        font-size: 20px;
+    }
+} 

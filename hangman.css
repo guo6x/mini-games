@@ -1,0 +1,234 @@
+.game-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.game-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.difficulty-selector,
+.category-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.difficulty-selector select,
+.category-selector select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    padding: 8px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.score, .high-score, .remaining-tries {
+    padding: 8px 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.game-board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.hangman-drawing {
+    margin-bottom: 20px;
+}
+
+.hangman-part {
+    stroke: #333;
+    stroke-width: 3;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.hangman-part.show {
+    opacity: 1;
+}
+
+.word-display {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.letter-box {
+    width: 40px;
+    height: 40px;
+    border-bottom: 3px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    margin: 20px 0;
+    max-width: 600px;
+}
+
+.key {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.key:hover {
+    background-color: #e9ecef;
+    transform: scale(1.05);
+}
+
+.key.used {
+    background-color: #adb5bd;
+    color: #fff;
+    cursor: default;
+}
+
+.key.correct {
+    background-color: #28a745;
+    color: #fff;
+    cursor: default;
+}
+
+.key.wrong {
+    background-color: #dc3545;
+    color: #fff;
+    cursor: default;
+}
+
+/* 游戏结束模态框 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.help-section {
+    margin: 30px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.help-section h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #95a5a6;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #7f8c8d;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .game-options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .game-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .letter-box {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+    
+    .key {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+} 

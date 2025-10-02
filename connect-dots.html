@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连连看 - 小游戏大全</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(6, 50px);
+            gap: 2px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .tile {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .tile:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .tile.selected {
+            border-color: #007bff;
+            background: #e3f2fd;
+            transform: scale(1.1);
+        }
+        .tile.matched {
+            background: #d4edda;
+            border-color: #28a745;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .tile.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">🏠 首页</a>
+        <a href="#" class="active">🔗 连连看</a>
+    </nav>
+    
+    <div class="game-container">
+        <h1>🔗 连连看</h1>
+        <p>点击两个相同的图案来消除它们</p>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>剩余</div>
+                <div id="remaining">24</div>
+            </div>
+            <div class="stat-box">
+                <div>时间</div>
+                <div id="time">0</div>
+            </div>
+            <div class="stat-box">
+                <div>得分</div>
+                <div id="score">0</div>
+            </div>
+        </div>
+        
+        <div class="game-board" id="game-board">
+            <!-- 游戏板块将通过JavaScript生成 -->
+        </div>
+        
+        <button onclick="startGame()" class="play-button" id="start-btn">开始游戏</button>
+        <button onclick="shuffleTiles()" class="play-button" id="shuffle-btn" disabled>重新洗牌</button>
+        <button onclick="window.location.href='index.html'" class="play-button">返回首页</button>
+    </div>
+    
+    <script>
+        let board = [];
+        let selectedTile = null;
+        let matchedPairs = 0;
+        let totalPairs = 12;
+        let score = 0;
+        let startTime = 0;
+        let gameActive = false;
+        let timer;
+        
+        const symbols = ['🍎', '🍌', '🍇', '🍊', '🍓', '🥝', '🍑', '🍒', '🥭', '🍍', '🥥', '🍉'];
+        
+        function startGame() {
+            board = [];
+            selectedTile = null;
+            matchedPairs = 0;
+            score = 0;
+            startTime = Date.now();
+            gameActive = true;
+            
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('shuffle-btn').disabled = false;
+            
+            generateBoard();
+            renderBoard();
+            startTimer();
+            updateStats();
+        }
+        
+        function generateBoard() {
+            // 创建配对的符号
+            const pairs = [];
+            for (let i = 0; i < totalPairs; i++) {
+                pairs.push(symbols[i], symbols[i]);
+            }
+            
+            // 洗牌
+            for (let i = pairs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+            }
+            
+            // 创建8x6的网格
+            board = [];
+            let pairIndex = 0;
+            for (let row = 0; row < 6; row++) {
+                board[row] = [];
+                for (let col = 0; col < 8; col++) {
+                    if (pairIndex < pairs.length) {
+                        board[row][col] = {
+                            symbol: pairs[pairIndex],
+                            matched: false,
+                            row: row,
+                            col: col
+                        };
+                        pairIndex++;
+                    } else {
+                        board[row][col] = null;
+                    }
+                }
+            }
+        }
+        
+        function renderBoard() {
+            const gameBoard = document.getElementById('game-board');
+            gameBoard.innerHTML = '';
+            
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.dataset.row = row;
+                    tile.dataset.col = col;
+                    
+                    if (board[row][col]) {
+                        if (board[row][col].matched) {
+                            tile.className += ' matched';
+                            tile.textContent = '';
+                        } else {
+                            tile.textContent = board[row][col].symbol;
+                            tile.onclick = () => selectTile(row, col);
+                        }
+                    } else {
+                        tile.className += ' empty';
+                    }
+                    
+                    gameBoard.appendChild(tile);
+                }
+            }
+        }
+        
+        function selectTile(row, col) {
+            if (!gameActive || !board[row][col] || board[row][col].matched) return;
+            
+            const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            
+            if (selectedTile) {
+                // 取消之前选择的高亮
+                const prevTile = document.querySelector(`[data-row="${selectedTile.row}"][data-col="${selectedTile.col}"]`);
+                if (prevTile) prevTile.classList.remove('selected');
+                
+                if (selectedTile.row === row && selectedTile.col === col) {
+                    // 点击同一个瓦片，取消选择
+                    selectedTile = null;
+                    return;
+                }
+                
+                // 检查是否匹配
+                if (board[selectedTile.row][selectedTile.col].symbol === board[row][col].symbol) {
+                    // 匹配成功
+                    if (canConnect(selectedTile, {row, col})) {
+                        board[selectedTile.row][selectedTile.col].matched = true;
+                        board[row][col].matched = true;
+                        matchedPairs++;
+                        score += 100;
+                        
+                        setTimeout(() => {
+                            renderBoard();
+                            checkWin();
+                        }, 300);
+                    }
+                }
+                
+                selectedTile = null;
+            } else {
+                // 选择第一个瓦片
+                selectedTile = {row, col};
+                tile.classList.add('selected');
+            }
+        }
+        
+        function canConnect(tile1, tile2) {
+            // 简化的连接检查：只要是相同符号就可以连接
+            // 在真实的连连看中，需要检查路径是否可达
+            return true;
+        }
+        
+        function shuffleTiles() {
+            if (!gameActive) return;
+            
+            // 收集所有未匹配的符号
+            const unmatched = [];
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (board[row][col] && !board[row][col].matched) {
+                        unmatched.push(board[row][col].symbol);
+                    }
+                }
+            }
+            
+            // 洗牌
+            for (let i = unmatched.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [unmatched[i], unmatched[j]] = [unmatched[j], unmatched[i]];
+            }
+            
+            // 重新分配
+            let index = 0;
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (board[row][col] && !board[row][col].matched) {
+                        board[row][col].symbol = unmatched[index++];
+                    }
+                }
+            }
+            
+            selectedTile = null;
+            renderBoard();
+        }
+        
+        function startTimer() {
+            timer = setInterval(() => {
+                if (gameActive) {
+                    updateStats();
+                }
+            }, 1000);
+        }
+        
+        function updateStats() {
+            const remaining = totalPairs - matchedPairs;
+            const timeElapsed = gameActive ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            
+            document.getElementById('remaining').textContent = remaining;
+            document.getElementById('time').textContent = timeElapsed + 's';
+            document.getElementById('score').textContent = score;
+        }
+        
+        function checkWin() {
+            if (matchedPairs === totalPairs) {
+                gameActive = false;
+                clearInterval(timer);
+                
+                const timeUsed = Math.floor((Date.now() - startTime) / 1000);
+                const bonus = Math.max(0, 1000 - timeUsed * 10);
+                score += bonus;
+                
+                document.getElementById('start-btn').disabled = false;
+                document.getElementById('shuffle-btn').disabled = true;
+                
+                setTimeout(() => {
+                    alert(`恭喜完成！\n用时: ${timeUsed} 秒\n最终得分: ${score}`);
+                }, 500);
+            }
+        }
+        
+        // 初始化
+        updateStats();
+    </script>
+</body>
+</html>

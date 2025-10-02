@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏名称 - 小游戏集合</title>
+    <!-- 基础样式 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 游戏特定样式 -->
+    <link rel="stylesheet" href="game-specific.css">
+    <style>
+        /* 可以在这里添加游戏特定的内联样式 */
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="memory-game.html">记忆翻牌</a></li>
+            <li><a href="tic-tac-toe.html">井字棋</a></li>
+            <li><a href="tetris.html">俄罗斯方块</a></li>
+            <li><a href="minesweeper.html">扫雷</a></li>
+            <li><a href="snake.html">贪吃蛇</a></li>
+            <li><a href="brick-breaker.html">打砖块</a></li>
+            <li><a href="sudoku.html">数独</a></li>
+            <li><a href="flappy-bird.html">Flappy Bird</a></li>
+            <li><a href="2048.html">2048</a></li>
+            <li><a href="hangman.html">猜单词</a></li>
+            <li><a href="sliding-puzzle.html">数字华容道</a></li>
+            <li><a href="plane-combat.html">飞机大战</a></li>
+            <li><a href="space-shooter.html">太空射击</a></li>
+            <li><a href="gomoku.html">五子棋</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>游戏名称</h1>
+        
+        <!-- 游戏状态栏 -->
+        <div class="game-stats">
+            <div class="stat">得分: <span id="score">0</span></div>
+            <div class="stat">最高分: <span id="high-score">0</span></div>
+            <div class="stat">时间: <span id="time">0</span></div>
+        </div>
+        
+        <!-- 游戏控制区 -->
+        <div class="game-controls">
+            <button id="start-btn">开始游戏</button>
+            <button id="pause-btn">暂停</button>
+            <button id="reset-btn">重置</button>
+        </div>
+        
+        <!-- 游戏区域 -->
+        <div class="game-container" id="game-container">
+            <!-- 游戏内容将在这里动态生成 -->
+        </div>
+        
+        <!-- 游戏说明 -->
+        <div class="game-instructions">
+            <h2>游戏说明</h2>
+            <p>在这里添加游戏的规则和操作说明。</p>
+        </div>
+        
+        <!-- 高分榜 -->
+        <div class="highscores-panel">
+            <h2>高分榜</h2>
+            <table class="highscores-list">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>玩家</th>
+                        <th>分数</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody id="highscores-body">
+                    <!-- 高分数据将在这里动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- 游戏结束弹窗 -->
+    <div class="controls-container hide" id="result-container">
+        <div id="result">游戏结束</div>
+        <div id="final-score">最终得分: 0</div>
+        <button id="restart-btn">再玩一次</button>
+    </div>
+    
+    <!-- 脚本引用 -->
+    <script src="script.js"></script>
+    <script>
+        // 游戏ID - 用于存储和统计
+        const GAME_ID = 'game-template';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化游戏设置
+            const settings = GameConfig.getSettings();
+            GameConfig.applyTheme(settings.theme);
+            
+            // 加载高分榜
+            loadHighScores();
+            
+            // 游戏初始化代码
+            initGame();
+        });
+        
+        // 加载高分榜
+        function loadHighScores() {
+            const highScores = GameStorage.getHighScores(GAME_ID);
+            const highScoresBody = document.getElementById('highscores-body');
+            
+            // 清空现有内容
+            highScoresBody.innerHTML = '';
+            
+            if (highScores.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4" style="text-align: center;">暂无记录</td>';
+                highScoresBody.appendChild(row);
+                return;
+            }
+            
+            // 添加高分记录
+            highScores.forEach((score, index) => {
+                const row = document.createElement('tr');
+                const date = new Date(score.date);
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${score.name}</td>
+                    <td>${score.score}</td>
+                    <td>${formattedDate}</td>
+                `;
+                
+                highScoresBody.appendChild(row);
+            });
+        }
+        
+        // 游戏初始化
+        function initGame() {
+            // 获取DOM元素
+            const startBtn = document.getElementById('start-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const resultContainer = document.getElementById('result-container');
+            const scoreElement = document.getElementById('score');
+            const highScoreElement = document.getElementById('high-score');
+            const timeElement = document.getElementById('time');
+            
+            // 游戏状态
+            let gameActive = false;
+            let gamePaused = false;
+            let score = 0;
+            let timer = null;
+            let gameTime = 0;
+            
+            // 加载最高分
+            const stats = GameStorage.getGameStats(GAME_ID);
+            highScoreElement.textContent = stats.highestScore;
+            
+            // 事件监听器
+            startBtn.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', togglePause);
+            resetBtn.addEventListener('click', resetGame);
+            restartBtn.addEventListener('click', () => {
+                resultContainer.classList.add('hide');
+                resetGame();
+                startGame();
+            });
+            
+            // 开始游戏
+            function startGame() {
+                if (gameActive) return;
+                
+                gameActive = true;
+                gamePaused = false;
+                
+                // 播放开始音效
+                GameAudio.playSound('click');
+                
+                // 开始计时
+                timer = setInterval(() => {
+                    if (!gamePaused) {
+                        gameTime++;
+                        timeElement.textContent = gameTime;
+                    }
+                }, 1000);
+                
+                // 这里添加游戏开始的具体逻辑
+                console.log('游戏开始');
+            }
+            
+            // 暂停/继续游戏
+            function togglePause() {
+                if (!gameActive) return;
+                
+                gamePaused = !gamePaused;
+                pauseBtn.textContent = gamePaused ? '继续' : '暂停';
+                
+                // 播放点击音效
+                GameAudio.playSound('click');
+                
+                // 这里添加暂停/继续的具体逻辑
+                console.log(gamePaused ? '游戏暂停' : '游戏继续');
+            }
+            
+            // 重置游戏
+            function resetGame() {
+                gameActive = false;
+                gamePaused = false;
+                score = 0;
+                gameTime = 0;
+                
+                // 清除计时器
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+                
+                // 重置显示
+                scoreElement.textContent = '0';
+                timeElement.textContent = '0';
+                pauseBtn.textContent = '暂停';
+                
+                // 播放点击音效
+                GameAudio.playSound('click');
+                
+                // 这里添加游戏重置的具体逻辑
+                console.log('游戏重置');
+            }
+            
+            // 游戏结束
+            function endGame(win = false) {
+                gameActive = false;
+                
+                // 清除计时器
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+                
+                // 保存分数
+                GameStorage.saveScore(GAME_ID, score);
+                
+                // 更新最高分显示
+                const stats = GameStorage.getGameStats(GAME_ID);
+                highScoreElement.textContent = stats.highestScore;
+                
+                // 显示结果
+                document.getElementById('result').textContent = win ? '恭喜获胜！' : '游戏结束';
+                document.getElementById('final-score').textContent = `最终得分: ${score}`;
+                resultContainer.classList.remove('hide');
+                
+                // 播放音效
+                GameAudio.playSound(win ? 'success' : 'failure');
+                
+                // 重新加载高分榜
+                loadHighScores();
+                
+                console.log('游戏结束');
+            }
+            
+            // 更新分数
+            function updateScore(points) {
+                score += points;
+                scoreElement.textContent = score;
+                
+                // 播放得分音效
+                if (points > 0) {
+                    GameAudio.playSound('click');
+                }
+            }
+            
+            // 导出游戏控制函数，以便在游戏特定代码中使用
+            window.gameControls = {
+                start: startGame,
+                pause: togglePause,
+                reset: resetGame,
+                end: endGame,
+                updateScore: updateScore
+            };
+        }
+    </script>
+    
+    <!-- 游戏特定脚本 -->
+    <script src="game-specific.js"></script>
+</body>
+</html> 
