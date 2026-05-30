@@ -479,13 +479,47 @@ class GameErrorHandler {
         this.isEnabled = false;
     }
     
+    // 静态方法 - 兼容两种API风格
     /**
-     * 销毁错误处理器
+     * 静态方法：处理错误
+     * @param {Object} errorInfo - 错误信息
+     * @param {string} gameId - 游戏ID
      */
-    destroy() {
-        this.disable();
-        this.errorCallbacks.clear();
-        this.errorLog = [];
+    static handleError(errorInfo, gameId) {
+        if (!window.gameErrorHandler) {
+            window.gameErrorHandler = new GameErrorHandler(gameId || 'global');
+        }
+        
+        window.gameErrorHandler.handleError(errorInfo);
+    }
+    
+    /**
+     * 静态方法：注册错误回调
+     * @param {string} gameId - 游戏ID
+     * @param {Function} callback - 回调函数
+     */
+    static registerCallback(typeOrId, callback) {
+        if (!window.gameErrorHandler) {
+            window.gameErrorHandler = new GameErrorHandler('global');
+        }
+        
+        // 如果第一个参数是游戏ID，第二个参数是回调，说明是game-error-handler风格
+        if (typeof callback === 'function') {
+            window.gameErrorHandler.registerErrorCallback(typeOrId, callback);
+        } else {
+            // 否则是我们的标准风格
+            window.gameErrorHandler.registerCallback(typeOrId, callback);
+        }
+    }
+    
+    /**
+     * 注册错误回调，兼容game-error-handler风格
+     */
+    registerErrorCallback(gameId, callback) {
+        if (!this.errorCallbacks.has(gameId)) {
+            this.errorCallbacks.set(gameId, []);
+        }
+        this.errorCallbacks.get(gameId).push(callback);
     }
 }
 

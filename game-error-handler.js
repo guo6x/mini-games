@@ -1,68 +1,79 @@
 /**
- * 游戏统一错误处理机制
- * 提供全局错误捕获、错误分类、错误恢复和用户友好的错误提示
+ * 游戏库统一错误处理机制
+ * 提供错误捕获、日志记录、用户友好提示和错误恢复功能
  */
+
 class GameErrorHandler {
-    constructor() {
+    constructor(gameId) {
+        this.gameId = gameId;
         this.errorLog = [];
         this.maxLogSize = 100;
+        this.isEnabled = true;
         this.errorCallbacks = new Map();
-        this.isInitialized = false;
+        this.criticalErrors = new Set(['ReferenceError', 'TypeError', 'SyntaxError']);
         
-        // 错误类型定义
-        this.ERROR_TYPES = {
-            MEMORY_LEAK: 'memory_leak',
-            RENDER_ERROR: 'render_error',
-            GAME_LOGIC: 'game_logic',
-            NETWORK_ERROR: 'network_error',
-            STORAGE_ERROR: 'storage_error',
-            UNKNOWN: 'unknown'
-        };
+        // 存储绑定的事件监听器引用，用于移除
+        this._boundErrorHandler = null;
+        this._boundRejectionHandler = null;
+        this._boundResourceHandler = null;
         
-        // 错误严重程度
-        this.ERROR_SEVERITY = {
-            LOW: 'low',
-            MEDIUM: 'medium',
-            HIGH: 'high',
-            CRITICAL: 'critical'
-        };
-        
-        this.init();
+        // 绑定全局错误处理
+        this.bindGlobalHandlers();
     }
     
     /**
-     * 初始化错误处理器
+     * 注册错误回调函数
+     * @param {string} type - 错误类型
+     * @param {Function} callback - 回调函数
      */
-    init() {
-        if (this.isInitialized) return;
-        
-        // 捕获全局JavaScript错误
-        window.addEventListener('error', (event) => {
+    registerCallback(type, callback) {
+        if (!this.errorCallbacks.has(type)) {
+            this.errorCallbacks.set(type, []);
+        }
+        this.errorCallbacks.get(type).push(callback);
+    }
+    
+    /**
+     * 绑定全局错误处理器
+     */
+    bindGlobalHandlers() {
+        // JavaScript错误处理
+        this._boundErrorHandler = (event) => {
             this.handleError({
-                type: this.ERROR_TYPES.UNKNOWN,
-                severity: this.ERROR_SEVERITY.HIGH,
+                type: 'javascript',
                 message: event.message,
                 filename: event.filename,
                 lineno: event.lineno,
                 colno: event.colno,
                 error: event.error,
-                timestamp: Date.now()
+                stack: event.error?.stack
             });
-        });
+        };
+        window.addEventListener('error', this._boundErrorHandler);
         
-        // 捕获Promise未处理的rejection
-        window.addEventListener('unhandledrejection', (event) => {
+        // Promise未捕获错误处理
+        this._boundRejectionHandler = (event) => {
             this.handleError({
-                type: this.ERROR_TYPES.UNKNOWN,
-                severity: this.ERROR_SEVERITY.MEDIUM,
-                message: 'Unhandled Promise Rejection: ' + event.reason,
+                type: 'promise',
+                message: event.reason?.message || '未处理的Promise拒绝',
                 error: event.reason,
-                timestamp: Date.now()
+                stack: event.reason?.stack
             });
-        });
+        };
+        window.addEventListener('unhandledrejection', this._boundRejectionHandler);
         
-        this.isInitialized = true;
-        console.log('游戏错误处理器已初始化');
+        // 资源加载错误处理
+        this._boundResourceHandler = (event) => {
+            if (event.target !== window) {
+                this.handleError({
+                    type: 'resource',
+                    message: `资源加载失败: ${event.target.src || event.target.href}`,
+                    element: event.target.tagName,
+                    source: event.target.src || event.target.href
+                });
+            }
+        };
+        window.addEventListener('error', this._boundResourceHandler, true);
     }
     
     /**
@@ -70,81 +81,90 @@ class GameErrorHandler {
      * @param {Object} errorInfo - 错误信息对象
      */
     handleError(errorInfo) {
-        // 标准化错误信息
+        if (!this.isEnabled) return;
+        
+        // 创建标准化错误对象
         const standardError = this.standardizeError(errorInfo);
         
-        // 记录错误
+        // 记录错误日志
         this.logError(standardError);
         
-        // 根据错误类型和严重程度决定处理策略
-        this.processError(standardError);
+        // 判断错误严重程度
+        const severity = this.assessSeverity(standardError);
+        
+        // 执行错误处理策略
+        this.executeErrorStrategy(standardError, severity);
         
         // 触发错误回调
-        this.triggerErrorCallbacks(standardError);
+        this.triggerErrorCallbacks(standardError, severity);
         
         // 尝试错误恢复
-        this.attemptRecovery(standardError);
+        if (severity === 'critical') {
+            this.attemptRecovery(standardError);
+        }
     }
     
     /**
-     * 标准化错误信息
+     * 标准化错误对象
      * @param {Object} errorInfo - 原始错误信息
-     * @returns {Object} 标准化后的错误信息
+     * @returns {Object} 标准化错误对象
      */
     standardizeError(errorInfo) {
-        const error = {
+        return {
             id: this.generateErrorId(),
-            type: errorInfo.type || this.ERROR_TYPES.UNKNOWN,
-            severity: errorInfo.severity || this.ERROR_SEVERITY.MEDIUM,
+            gameId: this.gameId,
+            timestamp: new Date().toISOString(),
+            type: errorInfo.type || 'unknown',
             message: errorInfo.message || '未知错误',
-            gameId: errorInfo.gameId || 'unknown',
-            timestamp: errorInfo.timestamp || Date.now(),
-            stack: errorInfo.error?.stack || errorInfo.stack || null,
-            context: errorInfo.context || {},
-            recovered: false
+            stack: errorInfo.stack || '',
+            filename: errorInfo.filename || '',
+            lineno: errorInfo.lineno || 0,
+            colno: errorInfo.colno || 0,
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            gameState: this.captureGameState(),
+            context: errorInfo.context || {}
         };
-        
-        // 根据错误信息自动分类
-        if (!errorInfo.type) {
-            error.type = this.classifyError(error);
-        }
-        
-        return error;
     }
     
     /**
-     * 自动分类错误
-     * @param {Object} error - 错误对象
-     * @returns {string} 错误类型
+     * 生成错误ID
+     * @returns {string} 唯一错误ID
      */
-    classifyError(error) {
-        const message = error.message.toLowerCase();
-        
-        if (message.includes('memory') || message.includes('leak')) {
-            return this.ERROR_TYPES.MEMORY_LEAK;
-        }
-        
-        if (message.includes('render') || message.includes('canvas') || message.includes('draw')) {
-            return this.ERROR_TYPES.RENDER_ERROR;
-        }
-        
-        if (message.includes('network') || message.includes('fetch') || message.includes('xhr')) {
-            return this.ERROR_TYPES.NETWORK_ERROR;
-        }
-        
-        if (message.includes('storage') || message.includes('localstorage') || message.includes('sessionstorage')) {
-            return this.ERROR_TYPES.STORAGE_ERROR;
-        }
-        
-        return this.ERROR_TYPES.UNKNOWN;
+    generateErrorId() {
+        return `${this.gameId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
     
     /**
-     * 记录错误
-     * @param {Object} error - 错误对象
+     * 捕获游戏状态
+     * @returns {Object} 游戏状态快照
+     */
+    captureGameState() {
+        try {
+            return {
+                url: window.location.href,
+                timestamp: Date.now(),
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                },
+                memory: performance.memory ? {
+                    used: performance.memory.usedJSHeapSize,
+                    total: performance.memory.totalJSHeapSize,
+                    limit: performance.memory.jsHeapSizeLimit
+                } : null
+            };
+        } catch (e) {
+            return { error: '无法捕获游戏状态' };
+        }
+    }
+    
+    /**
+     * 记录错误日志
+     * @param {Object} error - 标准化错误对象
      */
     logError(error) {
-        // 添加到错误日志
+        // 添加到内存日志
         this.errorLog.push(error);
         
         // 限制日志大小
@@ -152,277 +172,169 @@ class GameErrorHandler {
             this.errorLog.shift();
         }
         
-        // 控制台输出
-        const logMethod = this.getLogMethod(error.severity);
-        logMethod(`[${error.gameId}] ${error.type}: ${error.message}`, error);
+        // 保存到本地存储
+        this.saveErrorToStorage(error);
         
-        // 持久化存储（可选）
-        this.persistError(error);
+        // 控制台输出（开发模式）
+        if (this.isDevelopmentMode()) {
+            console.group(`🚨 游戏错误 [${error.gameId}]`);
+            console.error('错误信息:', error.message);
+            console.error('错误类型:', error.type);
+            console.error('错误堆栈:', error.stack);
+            console.error('完整错误对象:', error);
+            console.groupEnd();
+        }
     }
     
     /**
-     * 根据严重程度获取日志方法
-     * @param {string} severity - 错误严重程度
-     * @returns {Function} 日志方法
+     * 评估错误严重程度
+     * @param {Object} error - 错误对象
+     * @returns {string} 严重程度 (low|medium|high|critical)
      */
-    getLogMethod(severity) {
+    assessSeverity(error) {
+        // 关键错误类型
+        if (this.criticalErrors.has(error.type)) {
+            return 'critical';
+        }
+        
+        // 资源加载错误
+        if (error.type === 'resource') {
+            return 'medium';
+        }
+        
+        // Promise错误
+        if (error.type === 'promise') {
+            return 'high';
+        }
+        
+        // 根据错误消息判断
+        const criticalKeywords = ['cannot read', 'is not defined', 'is not a function'];
+        if (criticalKeywords.some(keyword => error.message.toLowerCase().includes(keyword))) {
+            return 'high';
+        }
+        
+        return 'low';
+    }
+    
+    /**
+     * 执行错误处理策略
+     * @param {Object} error - 错误对象
+     * @param {string} severity - 严重程度
+     */
+    executeErrorStrategy(error, severity) {
         switch (severity) {
-            case this.ERROR_SEVERITY.LOW:
-                return console.info;
-            case this.ERROR_SEVERITY.MEDIUM:
-                return console.warn;
-            case this.ERROR_SEVERITY.HIGH:
-            case this.ERROR_SEVERITY.CRITICAL:
-                return console.error;
-            default:
-                return console.log;
-        }
-    }
-    
-    /**
-     * 处理错误
-     * @param {Object} error - 错误对象
-     */
-    processError(error) {
-        switch (error.severity) {
-            case this.ERROR_SEVERITY.CRITICAL:
-                this.handleCriticalError(error);
+            case 'critical':
+                this.showCriticalErrorDialog(error);
+                this.pauseGame();
                 break;
-            case this.ERROR_SEVERITY.HIGH:
-                this.handleHighSeverityError(error);
+            case 'high':
+                this.showErrorNotification(error, 'error');
                 break;
-            case this.ERROR_SEVERITY.MEDIUM:
-                this.handleMediumSeverityError(error);
+            case 'medium':
+                this.showErrorNotification(error, 'warning');
                 break;
-            case this.ERROR_SEVERITY.LOW:
-                this.handleLowSeverityError(error);
+            case 'low':
+                // 静默记录，不打扰用户
                 break;
         }
     }
     
     /**
-     * 处理严重错误
+     * 显示关键错误对话框
      * @param {Object} error - 错误对象
      */
-    handleCriticalError(error) {
-        // 显示错误提示
-        this.showErrorNotification({
-            title: '严重错误',
-            message: '游戏遇到严重错误，建议刷新页面',
-            type: 'error',
-            persistent: true
-        });
+    showCriticalErrorDialog(error) {
+        const dialog = document.createElement('div');
+        dialog.className = 'error-dialog critical';
+        dialog.innerHTML = `
+            <div class="error-dialog-content">
+                <h3>🚨 游戏遇到严重错误</h3>
+                <p>游戏运行时遇到了严重错误，已自动暂停。</p>
+                <details>
+                    <summary>错误详情</summary>
+                    <pre>${error.message}</pre>
+                </details>
+                <div class="error-dialog-actions">
+                    <button onclick="this.closest('.error-dialog').remove(); window.gameErrorHandler?.restartGame();">重新开始</button>
+                    <button onclick="this.closest('.error-dialog').remove();">关闭</button>
+                </div>
+            </div>
+        `;
         
-        // 尝试保存游戏状态
-        this.saveGameState(error.gameId);
-    }
-    
-    /**
-     * 处理高严重程度错误
-     * @param {Object} error - 错误对象
-     */
-    handleHighSeverityError(error) {
-        this.showErrorNotification({
-            title: '游戏错误',
-            message: '游戏出现错误，正在尝试恢复',
-            type: 'warning',
-            duration: 5000
-        });
-    }
-    
-    /**
-     * 处理中等严重程度错误
-     * @param {Object} error - 错误对象
-     */
-    handleMediumSeverityError(error) {
-        // 静默处理，仅记录日志
-    }
-    
-    /**
-     * 处理低严重程度错误
-     * @param {Object} error - 错误对象
-     */
-    handleLowSeverityError(error) {
-        // 静默处理
+        document.body.appendChild(dialog);
+        
+        // 5秒后自动关闭
+        setTimeout(() => {
+            if (dialog.parentNode) {
+                dialog.remove();
+            }
+        }, 5000);
     }
     
     /**
      * 显示错误通知
-     * @param {Object} options - 通知选项
+     * @param {Object} error - 错误对象
+     * @param {string} type - 通知类型
      */
-    showErrorNotification(options) {
+    showErrorNotification(error, type = 'error') {
         const notification = document.createElement('div');
-        notification.className = `error-notification ${options.type}`;
+        notification.className = `error-notification ${type}`;
         notification.innerHTML = `
             <div class="error-notification-content">
-                <h4>${options.title}</h4>
-                <p>${options.message}</p>
-                <button class="error-notification-close">×</button>
+                <span class="error-icon">${type === 'error' ? '❌' : '⚠️'}</span>
+                <span class="error-message">${this.getUserFriendlyMessage(error)}</span>
+                <button class="error-close" onclick="this.parentNode.parentNode.remove()">×</button>
             </div>
         `;
         
-        // 添加样式
-        if (!document.getElementById('error-notification-styles')) {
-            const styles = document.createElement('style');
-            styles.id = 'error-notification-styles';
-            styles.textContent = `
-                .error-notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    max-width: 400px;
-                    padding: 15px;
-                    border-radius: 5px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    z-index: 10000;
-                    font-family: Arial, sans-serif;
-                }
-                .error-notification.error {
-                    background: #f8d7da;
-                    border: 1px solid #f5c6cb;
-                    color: #721c24;
-                }
-                .error-notification.warning {
-                    background: #fff3cd;
-                    border: 1px solid #ffeaa7;
-                    color: #856404;
-                }
-                .error-notification-content h4 {
-                    margin: 0 0 8px 0;
-                    font-size: 16px;
-                }
-                .error-notification-content p {
-                    margin: 0;
-                    font-size: 14px;
-                }
-                .error-notification-close {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background: none;
-                    border: none;
-                    font-size: 18px;
-                    cursor: pointer;
-                    color: inherit;
-                }
-            `;
-            document.head.appendChild(styles);
-        }
+        document.body.appendChild(notification);
         
-        // 确保DOM加载完成后再添加通知
-        if (document.body) {
-            document.body.appendChild(notification);
-        } else {
-            document.addEventListener('DOMContentLoaded', () => {
-                document.body.appendChild(notification);
-            });
-        }
-        
-        // 绑定关闭事件
-        const closeBtn = notification.querySelector('.error-notification-close');
-        closeBtn.addEventListener('click', () => {
-            notification.remove();
-        });
-        
-        // 自动关闭
-        if (!options.persistent && options.duration) {
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, options.duration);
-        }
-    }
-    
-    /**
-     * 尝试错误恢复
-     * @param {Object} error - 错误对象
-     */
-    attemptRecovery(error) {
-        switch (error.type) {
-            case this.ERROR_TYPES.MEMORY_LEAK:
-                this.recoverFromMemoryLeak(error);
-                break;
-            case this.ERROR_TYPES.RENDER_ERROR:
-                this.recoverFromRenderError(error);
-                break;
-            case this.ERROR_TYPES.STORAGE_ERROR:
-                this.recoverFromStorageError(error);
-                break;
-        }
-    }
-    
-    /**
-     * 从内存泄漏中恢复
-     * @param {Object} error - 错误对象
-     */
-    recoverFromMemoryLeak(error) {
-        // 尝试清理内存
-        if (window.gc && typeof window.gc === 'function') {
-            try {
-                window.gc();
-                error.recovered = true;
-            } catch (e) {
-                console.warn('无法执行垃圾回收');
+        // 3秒后自动关闭
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
             }
-        }
+        }, 3000);
     }
     
     /**
-     * 从渲染错误中恢复
+     * 获取用户友好的错误消息
      * @param {Object} error - 错误对象
+     * @returns {string} 用户友好消息
      */
-    recoverFromRenderError(error) {
-        // 尝试重新初始化渲染上下文
-        const canvases = document.querySelectorAll('canvas');
-        canvases.forEach(canvas => {
-            try {
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    error.recovered = true;
-                }
-            } catch (e) {
-                console.warn('无法重置canvas上下文');
-            }
-        });
-    }
-    
-    /**
-     * 从存储错误中恢复
-     * @param {Object} error - 错误对象
-     */
-    recoverFromStorageError(error) {
-        // 尝试清理损坏的存储数据
-        try {
-            localStorage.removeItem('corrupted_data');
-            error.recovered = true;
-        } catch (e) {
-            console.warn('无法清理存储数据');
-        }
+    getUserFriendlyMessage(error) {
+        const friendlyMessages = {
+            'resource': '资源加载失败，请检查网络连接',
+            'javascript': '游戏运行出现问题，正在尝试恢复',
+            'promise': '操作执行失败，请重试',
+            'network': '网络连接异常，请检查网络设置'
+        };
+        
+        return friendlyMessages[error.type] || '游戏运行出现异常';
     }
     
     /**
      * 注册错误回调
-     * @param {string} gameId - 游戏ID
+     * @param {string} errorType - 错误类型
      * @param {Function} callback - 回调函数
      */
-    registerErrorCallback(gameId, callback) {
-        if (!this.errorCallbacks.has(gameId)) {
-            this.errorCallbacks.set(gameId, []);
+    onError(errorType, callback) {
+        if (!this.errorCallbacks.has(errorType)) {
+            this.errorCallbacks.set(errorType, []);
         }
-        this.errorCallbacks.get(gameId).push(callback);
+        this.errorCallbacks.get(errorType).push(callback);
     }
     
     /**
      * 触发错误回调
      * @param {Object} error - 错误对象
+     * @param {string} severity - 严重程度
      */
-    triggerErrorCallbacks(error) {
-        const callbacks = this.errorCallbacks.get(error.gameId) || [];
+    triggerErrorCallbacks(error, severity) {
+        const callbacks = this.errorCallbacks.get(error.type) || [];
         callbacks.forEach(callback => {
             try {
-                callback(error);
+                callback(error, severity);
             } catch (e) {
                 console.error('错误回调执行失败:', e);
             }
@@ -430,90 +342,144 @@ class GameErrorHandler {
     }
     
     /**
-     * 持久化错误
+     * 尝试错误恢复
      * @param {Object} error - 错误对象
      */
-    persistError(error) {
+    attemptRecovery(error) {
         try {
-            const errorHistory = JSON.parse(localStorage.getItem('game_error_history') || '[]');
-            errorHistory.push({
-                id: error.id,
-                type: error.type,
-                severity: error.severity,
-                message: error.message,
-                gameId: error.gameId,
-                timestamp: error.timestamp
-            });
+            // 清理可能的内存泄漏
+            this.cleanupResources();
             
-            // 限制历史记录大小
-            if (errorHistory.length > 50) {
-                errorHistory.splice(0, errorHistory.length - 50);
+            // 重置游戏状态
+            if (window.gameInstance && typeof window.gameInstance.reset === 'function') {
+                window.gameInstance.reset();
+            }
+        } catch (e) {
+            console.error('错误恢复失败:', e);
+        }
+    }
+    
+    /**
+     * 清理资源
+     */
+    cleanupResources() {
+        // 清理定时器 - 注意：JavaScript没有直接获取所有定时器的API
+        // 此方法保留是为了向后兼容，主要通过MemoryLeakFix等工具管理
+        console.warn('GameErrorHandler.cleanupResources 被调用，但不建议使用此方法清理定时器');
+    }
+    
+    /**
+     * 销毁错误处理器，清理所有资源
+     */
+    destroy() {
+        this.disable();
+        
+        // 移除事件监听器
+        if (this._boundErrorHandler) {
+            window.removeEventListener('error', this._boundErrorHandler);
+            this._boundErrorHandler = null;
+        }
+        
+        if (this._boundRejectionHandler) {
+            window.removeEventListener('unhandledrejection', this._boundRejectionHandler);
+            this._boundRejectionHandler = null;
+        }
+        
+        if (this._boundResourceHandler) {
+            window.removeEventListener('error', this._boundResourceHandler, true);
+            this._boundResourceHandler = null;
+        }
+        
+        // 清空回调和日志
+        this.errorCallbacks.clear();
+        this.errorLog = [];
+        
+        console.log(`GameErrorHandler for ${this.gameId} has been destroyed`);
+    }
+    
+    /**
+     * 暂停游戏
+     */
+    pauseGame() {
+        if (window.gameInstance && typeof window.gameInstance.pause === 'function') {
+            window.gameInstance.pause();
+        }
+    }
+    
+    /**
+     * 重启游戏
+     */
+    restartGame() {
+        if (window.gameInstance && typeof window.gameInstance.restart === 'function') {
+            window.gameInstance.restart();
+        } else if (window.location) {
+            window.location.reload();
+        }
+    }
+    
+    /**
+     * 保存错误到本地存储
+     * @param {Object} error - 错误对象
+     */
+    saveErrorToStorage(error) {
+        try {
+            const storageKey = `game_errors_${this.gameId}`;
+            const existingErrors = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            existingErrors.push(error);
+            
+            // 只保留最近50个错误
+            if (existingErrors.length > 50) {
+                existingErrors.splice(0, existingErrors.length - 50);
             }
             
-            localStorage.setItem('game_error_history', JSON.stringify(errorHistory));
+            localStorage.setItem(storageKey, JSON.stringify(existingErrors));
         } catch (e) {
-            console.warn('无法保存错误历史:', e);
+            console.error('保存错误日志失败:', e);
         }
     }
     
     /**
-     * 保存游戏状态
-     * @param {string} gameId - 游戏ID
+     * 获取错误日志
+     * @returns {Array} 错误日志数组
      */
-    saveGameState(gameId) {
-        try {
-            // 触发游戏状态保存事件
-            window.dispatchEvent(new CustomEvent('saveGameState', {
-                detail: { gameId, reason: 'error_recovery' }
-            }));
-        } catch (e) {
-            console.warn('无法保存游戏状态:', e);
-        }
+    getErrorLog() {
+        return [...this.errorLog];
     }
     
     /**
-     * 生成错误ID
-     * @returns {string} 错误ID
-     */
-    generateErrorId() {
-        return 'err_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    }
-    
-    /**
-     * 获取错误统计
-     * @returns {Object} 错误统计信息
-     */
-    getErrorStats() {
-        const stats = {
-            total: this.errorLog.length,
-            byType: {},
-            bySeverity: {},
-            byGame: {},
-            recentErrors: this.errorLog.slice(-10)
-        };
-        
-        this.errorLog.forEach(error => {
-            // 按类型统计
-            stats.byType[error.type] = (stats.byType[error.type] || 0) + 1;
-            
-            // 按严重程度统计
-            stats.bySeverity[error.severity] = (stats.bySeverity[error.severity] || 0) + 1;
-            
-            // 按游戏统计
-            stats.byGame[error.gameId] = (stats.byGame[error.gameId] || 0) + 1;
-        });
-        
-        return stats;
-    }
-    
-    /**
-     * 清理错误日志
+     * 清除错误日志
      */
     clearErrorLog() {
         this.errorLog = [];
-        localStorage.removeItem('game_error_history');
+        localStorage.removeItem(`game_errors_${this.gameId}`);
     }
     
+    /**
+     * 检查是否为开发模式
+     * @returns {boolean} 是否为开发模式
+     */
+    isDevelopmentMode() {
+        return window.location.hostname === 'localhost' || 
+               window.location.hostname === '127.0.0.1' ||
+               window.location.protocol === 'file:';
+    }
+    
+    /**
+     * 启用错误处理
+     */
+    enable() {
+        this.isEnabled = true;
+    }
+    
+    /**
+     * 禁用错误处理
+     */
+    disable() {
+        this.isEnabled = false;
+    }
+    
+    // 静态方法 - 兼容两种API风格
     /**
      * 静态方法：处理错误
      * @param {Object} errorInfo - 错误信息
@@ -521,35 +487,48 @@ class GameErrorHandler {
      */
     static handleError(errorInfo, gameId) {
         if (!window.gameErrorHandler) {
-            window.gameErrorHandler = new GameErrorHandler();
+            window.gameErrorHandler = new GameErrorHandler(gameId || 'global');
         }
         
-        window.gameErrorHandler.handleError({
-            ...errorInfo,
-            gameId: gameId
-        });
+        window.gameErrorHandler.handleError(errorInfo);
     }
     
     /**
      * 静态方法：注册错误回调
-     * @param {string} gameId - 游戏ID
+     * @param {string} typeOrId - 错误类型或游戏ID
      * @param {Function} callback - 回调函数
      */
-    static registerCallback(gameId, callback) {
+    static registerCallback(typeOrId, callback) {
         if (!window.gameErrorHandler) {
-            window.gameErrorHandler = new GameErrorHandler();
+            window.gameErrorHandler = new GameErrorHandler('global');
         }
         
-        window.gameErrorHandler.registerErrorCallback(gameId, callback);
+        // 如果第二个参数是回调，说明是game-error-handler风格
+        if (typeof callback === 'function') {
+            window.gameErrorHandler.registerErrorCallback(typeOrId, callback);
+        } else {
+            // 否则是标准风格
+            window.gameErrorHandler.registerCallback(typeOrId, callback);
+        }
+    }
+    
+    /**
+     * 注册错误回调，兼容game-error-handler风格
+     */
+    registerErrorCallback(gameId, callback) {
+        if (!this.errorCallbacks.has(gameId)) {
+            this.errorCallbacks.set(gameId, []);
+        }
+        this.errorCallbacks.get(gameId).push(callback);
     }
 }
 
 // 全局实例
 if (typeof window !== 'undefined') {
     // 延迟初始化，确保所有脚本都加载完成
-    window.initGameErrorHandler = function() {
+    window.initGameErrorHandler = function(gameId) {
         if (!window.gameErrorHandler) {
-            window.gameErrorHandler = new GameErrorHandler();
+            window.gameErrorHandler = new GameErrorHandler(gameId || 'global');
             console.log('Game Error Handler initialized');
         }
         return window.gameErrorHandler;
@@ -559,6 +538,6 @@ if (typeof window !== 'undefined') {
 // 导出类
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = GameErrorHandler;
+} else {
+    window.GameErrorHandler = GameErrorHandler;
 }
-
-console.log('游戏错误处理器已加载');
