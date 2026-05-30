@@ -56,6 +56,9 @@ class GamePerformanceOptimizer {
             textureQuality: 'high'
         };
         
+        // 存储事件监听器引用，用于正确清理
+        this._pageEventHandlers = null;
+        
         // 初始化
         this.init();
     }
@@ -194,16 +197,22 @@ class GamePerformanceOptimizer {
      * 绑定页面可见性事件
      */
     bindVisibilityEvents() {
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.handlePageHidden();
-            } else {
-                this.handlePageVisible();
-            }
-        });
+        // 存储事件监听器引用
+        this._pageEventHandlers = {
+            visibilityChange: () => {
+                if (document.hidden) {
+                    this.handlePageHidden();
+                } else {
+                    this.handlePageVisible();
+                }
+            },
+            blur: () => this.handlePageHidden(),
+            focus: () => this.handlePageVisible()
+        };
         
-        window.addEventListener('blur', () => this.handlePageHidden());
-        window.addEventListener('focus', () => this.handlePageVisible());
+        document.addEventListener('visibilitychange', this._pageEventHandlers.visibilityChange);
+        window.addEventListener('blur', this._pageEventHandlers.blur);
+        window.addEventListener('focus', this._pageEventHandlers.focus);
     }
     
     /**
@@ -502,10 +511,13 @@ class GamePerformanceOptimizer {
     destroy() {
         this.stop();
         
-        // 清理事件监听器
-        document.removeEventListener('visibilitychange', this.handlePageHidden);
-        window.removeEventListener('blur', this.handlePageHidden);
-        window.removeEventListener('focus', this.handlePageVisible);
+        // 正确移除事件监听器
+        if (this._pageEventHandlers) {
+            document.removeEventListener('visibilitychange', this._pageEventHandlers.visibilityChange);
+            window.removeEventListener('blur', this._pageEventHandlers.blur);
+            window.removeEventListener('focus', this._pageEventHandlers.focus);
+            this._pageEventHandlers = null;
+        }
         
         // 清理回调
         this.callbacks = {};

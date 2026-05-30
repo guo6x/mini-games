@@ -188,7 +188,8 @@ class GameUtils {
      * @returns {string} 十六进制颜色值
      */
     static getRandomColor() {
-        return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        // 更安全的实现，确保总是6位十六进制
+        return '#' + (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
     }
     
     /**

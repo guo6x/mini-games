@@ -16,6 +16,9 @@ class GameLifecycle {
         this.stateHistory = [];
         this.maxHistorySize = 50;
         
+        // 存储页面生命周期事件处理器引用
+        this._pageEventHandlers = null;
+        
         // 绑定页面生命周期事件
         this.bindPageLifecycleEvents();
         
@@ -38,29 +41,37 @@ class GameLifecycle {
      * 绑定页面生命周期事件
      */
     bindPageLifecycleEvents() {
-        // 页面可见性变化
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.handlePageHidden();
-            } else {
-                this.handlePageVisible();
+        // 存储所有页面事件处理器的引用
+        this._pageEventHandlers = {
+            visibilityChange: () => {
+                if (document.hidden) {
+                    this.handlePageHidden();
+                } else {
+                    this.handlePageVisible();
+                }
+            },
+            beforeUnload: () => {
+                this.destroy();
+            },
+            blur: () => {
+                this.handlePageBlur();
+            },
+            focus: () => {
+                this.handlePageFocus();
             }
-        });
+        };
+        
+        // 页面可见性变化
+        document.addEventListener('visibilitychange', this._pageEventHandlers.visibilityChange);
         
         // 页面卸载前清理
-        window.addEventListener('beforeunload', () => {
-            this.destroy();
-        });
+        window.addEventListener('beforeunload', this._pageEventHandlers.beforeUnload);
         
         // 页面失去焦点
-        window.addEventListener('blur', () => {
-            this.handlePageBlur();
-        });
+        window.addEventListener('blur', this._pageEventHandlers.blur);
         
         // 页面获得焦点
-        window.addEventListener('focus', () => {
-            this.handlePageFocus();
-        });
+        window.addEventListener('focus', this._pageEventHandlers.focus);
         
         // 内存压力检测
         if ('memory' in performance) {
@@ -572,8 +583,15 @@ class GameLifecycle {
      * 移除页面事件监听器
      */
     removePageEventListeners() {
-        // 这里应该移除在bindPageLifecycleEvents中添加的监听器
-        // 实际实现中需要保存监听器引用
+        if (this._pageEventHandlers) {
+            document.removeEventListener('visibilitychange', this._pageEventHandlers.visibilityChange);
+            window.removeEventListener('beforeunload', this._pageEventHandlers.beforeUnload);
+            window.removeEventListener('blur', this._pageEventHandlers.blur);
+            window.removeEventListener('focus', this._pageEventHandlers.focus);
+            
+            // 清除引用，防止内存泄漏
+            this._pageEventHandlers = null;
+        }
     }
     
     /**

@@ -376,13 +376,8 @@ class GameStateManager {
         try {
             const key = this.getStorageKey(slotName);
             
-            if (this.options.storageType === 'indexedDB') {
-                // 使用 IndexedDB（暂时使用 localStorage 作为后备）
-                localStorage.setItem(key, JSON.stringify(saveData));
-            } else {
-                // 使用 localStorage
-                localStorage.setItem(key, JSON.stringify(saveData));
-            }
+            // 当前仅支持 localStorage 存储
+            localStorage.setItem(key, JSON.stringify(saveData));
             
             return true;
         } catch (error) {
@@ -398,14 +393,8 @@ class GameStateManager {
         try {
             const key = this.getStorageKey(slotName);
             
-            let dataStr;
-            if (this.options.storageType === 'indexedDB') {
-                // 使用 IndexedDB（暂时使用 localStorage 作为后备）
-                dataStr = localStorage.getItem(key);
-            } else {
-                // 使用 localStorage
-                dataStr = localStorage.getItem(key);
-            }
+            // 当前仅支持 localStorage 存储
+            const dataStr = localStorage.getItem(key);
             
             return dataStr ? JSON.parse(dataStr) : null;
         } catch (error) {
@@ -421,13 +410,8 @@ class GameStateManager {
         try {
             const key = this.getStorageKey(slotName);
             
-            if (this.options.storageType === 'indexedDB') {
-                // 使用 IndexedDB（暂时使用 localStorage 作为后备）
-                localStorage.removeItem(key);
-            } else {
-                // 使用 localStorage
-                localStorage.removeItem(key);
-            }
+            // 当前仅支持 localStorage 存储
+            localStorage.removeItem(key);
             
             return true;
         } catch (error) {

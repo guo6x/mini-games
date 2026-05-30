@@ -12,8 +12,25 @@ class GameErrorHandler {
         this.errorCallbacks = new Map();
         this.criticalErrors = new Set(['ReferenceError', 'TypeError', 'SyntaxError']);
         
+        // 存储绑定的事件监听器引用，用于移除
+        this._boundErrorHandler = null;
+        this._boundRejectionHandler = null;
+        this._boundResourceHandler = null;
+        
         // 绑定全局错误处理
         this.bindGlobalHandlers();
+    }
+    
+    /**
+     * 注册错误回调函数
+     * @param {string} type - 错误类型
+     * @param {Function} callback - 回调函数
+     */
+    registerCallback(type, callback) {
+        if (!this.errorCallbacks.has(type)) {
+            this.errorCallbacks.set(type, []);
+        }
+        this.errorCallbacks.get(type).push(callback);
     }
     
     /**
@@ -21,7 +38,7 @@ class GameErrorHandler {
      */
     bindGlobalHandlers() {
         // JavaScript错误处理
-        window.addEventListener('error', (event) => {
+        this._boundErrorHandler = (event) => {
             this.handleError({
                 type: 'javascript',
                 message: event.message,
@@ -31,20 +48,22 @@ class GameErrorHandler {
                 error: event.error,
                 stack: event.error?.stack
             });
-        });
+        };
+        window.addEventListener('error', this._boundErrorHandler);
         
         // Promise未捕获错误处理
-        window.addEventListener('unhandledrejection', (event) => {
+        this._boundRejectionHandler = (event) => {
             this.handleError({
                 type: 'promise',
                 message: event.reason?.message || '未处理的Promise拒绝',
                 error: event.reason,
                 stack: event.reason?.stack
             });
-        });
+        };
+        window.addEventListener('unhandledrejection', this._boundRejectionHandler);
         
         // 资源加载错误处理
-        window.addEventListener('error', (event) => {
+        this._boundResourceHandler = (event) => {
             if (event.target !== window) {
                 this.handleError({
                     type: 'resource',
@@ -53,7 +72,8 @@ class GameErrorHandler {
                     source: event.target.src || event.target.href
                 });
             }
-        }, true);
+        };
+        window.addEventListener('error', this._boundResourceHandler, true);
     }
     
     /**
@@ -343,16 +363,38 @@ class GameErrorHandler {
      * 清理资源
      */
     cleanupResources() {
-        // 清理定时器
-        const highestTimeoutId = setTimeout(() => {}, 0);
-        for (let i = 0; i < highestTimeoutId; i++) {
-            clearTimeout(i);
+        // 清理定时器 - 注意：JavaScript没有直接获取所有定时器的API
+        // 此方法保留是为了向后兼容，主要通过MemoryLeakFix等工具管理
+        console.warn('GameErrorHandler.cleanupResources 被调用，但不建议使用此方法清理定时器');
+    }
+    
+    /**
+     * 销毁错误处理器，清理所有资源
+     */
+    destroy() {
+        this.disable();
+        
+        // 移除事件监听器
+        if (this._boundErrorHandler) {
+            window.removeEventListener('error', this._boundErrorHandler);
+            this._boundErrorHandler = null;
         }
         
-        const highestIntervalId = setInterval(() => {}, 0);
-        for (let i = 0; i < highestIntervalId; i++) {
-            clearInterval(i);
+        if (this._boundRejectionHandler) {
+            window.removeEventListener('unhandledrejection', this._boundRejectionHandler);
+            this._boundRejectionHandler = null;
         }
+        
+        if (this._boundResourceHandler) {
+            window.removeEventListener('error', this._boundResourceHandler, true);
+            this._boundResourceHandler = null;
+        }
+        
+        // 清空回调和日志
+        this.errorCallbacks.clear();
+        this.errorLog = [];
+        
+        console.log(`GameErrorHandler for ${this.gameId} has been destroyed`);
     }
     
     /**

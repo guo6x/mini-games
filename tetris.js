@@ -1,38 +1,42 @@
 // 俄罗斯方块核心逻辑
 document.addEventListener('DOMContentLoaded', function() {
     // 初始化内存管理器和生命周期管理器
-    const gameMemoryManager = new GameMemoryManager();
-    const gameLifecycle = new GameLifecycle();
+    const gameId = 'tetris';
+    const gameMemoryManager = new GameMemoryManager(gameId);
+    const gameLifecycle = new GameLifecycle(gameId, null);
     
-    // 注册统一错误处理
-    GameErrorHandler.registerCallback('tetris', (error) => {
+    // 创建游戏错误处理器
+    const gameErrorHandler = new GameErrorHandler(gameId);
+    window.gameErrorHandler = gameErrorHandler;
+    
+    // 注册错误回调
+    gameErrorHandler.registerCallback('javascript', (error) => {
         console.error('俄罗斯方块游戏错误:', error);
         if (error.severity === 'critical') {
             // 重置游戏状态
-            resetGame();
+            tetris.resetGame();
         }
     });
     
-    // 注册错误处理回调
+    // 注册内存管理器错误回调
     gameMemoryManager.onError = (error) => {
-        GameErrorHandler.handleError({
+        gameErrorHandler.handleError({
             type: 'memory_leak',
             severity: 'high',
-            message: '内存管理器错误: ' + error.message,
-            error: error,
-            context: { component: 'GameMemoryManager' }
-        }, 'tetris');
+            message: '内存管理器错误: ' + (error.message || 'Unknown error'),
+            error: error
+        });
     };
     
-    gameLifecycle.onError = (error) => {
-        GameErrorHandler.handleError({
+    // 注册生命周期管理器错误回调
+    gameLifecycle.onStateChange('error', (error) => {
+        gameErrorHandler.handleError({
             type: 'game_logic',
             severity: 'medium',
-            message: '生命周期管理器错误: ' + error.message,
-            error: error,
-            context: { component: 'GameLifecycle' }
-        }, 'tetris');
-    };
+            message: '生命周期管理器错误: ' + (error.message || 'Unknown error'),
+            error: error
+        });
+    });
     
     const SHAPES = [
       [[1,1,1,1]], // I型
@@ -342,13 +346,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       checkCollision(offsetX, offsetY) {
-        return this.currentPiece.shape.some((row, y) => 
-          row.some((value, x) => {
-            if(!value) return false;
-            const newX = this.currentPiece.x + x + offsetX;
-            const newY = this.currentPiece.y + y + offsetY;
-            return newX < 0 || newX >= 10 || newY >= 20 || this.board[newY]?.[newX];
-          })
+        const collided = this.currentPiece.shape.some((row, y) => 
+            row.some((value, x) => {
+                if(!value) return false;
+                const newX = this.currentPiece.x + x + offsetX;
+                const newY = this.currentPiece.y + y + offsetY;
+                return newX < 0 || newX >= 10 || newY >= 20 || this.board[newY]?.[newX];
+            })
         );
         
         // 更新状态管理器的当前状态
@@ -356,9 +360,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 测量帧性能
         if (this.performanceMonitor) {
-          this.performanceMonitor.measureFrame();
+            this.performanceMonitor.measureFrame();
         }
-      }
+        
+        return collided;
+    }
 
       mergePiece() {
         this.currentPiece.shape.forEach((row, y) => {
