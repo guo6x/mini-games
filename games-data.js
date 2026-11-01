@@ -1,4 +1,4 @@
-/* Canonical catalog. Every entry matches a real HTML file. */
+/* Canonical catalog: real game HTML only. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -45,8 +45,8 @@ const GAMES_DATA = [
     ],
     "file": "bubble-shooter.html",
     "featured": true,
-    "status": "prototype",
-    "revamped": false
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "card-memory",
@@ -102,9 +102,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "city-builder.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "color-match",
@@ -199,9 +199,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "fishing.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "flappy-bird",
@@ -428,9 +428,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "pet-care.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "pinball",

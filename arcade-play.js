@@ -16,6 +16,7 @@ const map={
  'math-game':{name:'极速心算',sub:'限时 75 秒 · 四选一 · 连对加成',instruction:'点击答案，或按数字键 1–4 作答。加减乘除混合，答对有连击奖励。',hint:'先确保正确，再追求速度与连续得分。',accent:'#ffcf87'}
 
 };
+Object.assign(map,window.ORBIT_EXTRA_META||{});
 if(!map[MODE])return;
 const meta=map[MODE], keys=new Set();
 let engine,playing=false,paused=false,ended=false,last=0,score=0,best=0,elapsed=0;
@@ -171,6 +172,7 @@ nonogram:()=>({
  draw(){fill(0,0,W,H,'#161427');const bar=clamp(this.time/75,0,1);fill(135,46,530,12,'#334261',6);fill(135,46,530*bar,12,'#9fe7c3',6);text('TIME '+Math.ceil(this.time)+'s',400,26,17,'#d5edfc','center');text('QUESTION '+(this.round+1)+' / 24',400,110,13,'#9eb6d9','center');text(this.question,400,188,55,'#fff','center');for(let i=0;i<4;i++){const x=155+(i%2)*255,y=265+Math.floor(i/2)*92;fill(x,y,230,74,'#293653',14);fill(x+9,y+12,28,28,'#587aa4',8);text(String(i+1),x+23,y+27,17,'#ebf7ff','center');text(String(this.options[i]),x+123,y+37,27,'#fff','center');}text('连击 '+this.combo,30,465,20,'#bce9ff');text('正确 '+this.correct,670,465,19,'#bce9ff');}
 })
 };
+if(window.ORBIT_EXTRA)Object.assign(engines,window.ORBIT_EXTRA({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 engine=engines[MODE]();engine.init();engine.draw();
 requestAnimationFrame(frame);
 })();
