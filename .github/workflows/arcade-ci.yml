@@ -27,3 +27,4 @@ jobs:
           python3 -m http.server 4173 > /tmp/arcade-server.log 2>&1 &
           sleep 2
           node tests/browser-smoke.cjs
+          node tests/legacy-audit.cjs
