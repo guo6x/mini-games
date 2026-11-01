@@ -18,6 +18,7 @@ const map={
 };
 Object.assign(map,window.ORBIT_EXTRA_META||{});
 Object.assign(map,window.ORBIT_MORE_META||{});
+Object.assign(map,window.ORBIT_FINAL_META||{});
 if(!map[MODE])return;
 const meta=map[MODE], keys=new Set();
 let engine,playing=false,paused=false,ended=false,last=0,score=0,best=0,elapsed=0;
@@ -175,6 +176,7 @@ nonogram:()=>({
 };
 if(window.ORBIT_EXTRA)Object.assign(engines,window.ORBIT_EXTRA({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 if(window.ORBIT_MORE)Object.assign(engines,window.ORBIT_MORE({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
+if(window.ORBIT_FINAL)Object.assign(engines,window.ORBIT_FINAL({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 engine=engines[MODE]();engine.init();engine.draw();
 requestAnimationFrame(frame);
 })();

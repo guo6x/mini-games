@@ -1,4 +1,4 @@
-/* Catalog corresponds exactly to 57 HTML pages. */
+/* Canonical catalog for all 57 real pages. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -173,9 +173,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "dress-up.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "farm",
@@ -290,8 +290,8 @@ const GAMES_DATA = [
     ],
     "file": "mahjong.html",
     "featured": true,
-    "status": "prototype",
-    "revamped": false
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "match3",
@@ -441,9 +441,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "pinball.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "plane-combat",
@@ -683,9 +683,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "sudoku-killer.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "sudoku",
