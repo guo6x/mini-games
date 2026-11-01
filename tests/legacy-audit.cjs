@@ -20,4 +20,5 @@ const {chromium}=require('playwright'),fs=require('node:fs'),vm=require('node:vm
  }finally{await browser.close()}
  console.log('LEGACY AUDIT SUMMARY '+JSON.stringify({count:results.length,pageErrors:results.filter(x=>x.errors.length).length,missingResources:results.filter(x=>x.missing.length).length,mobileOverflow:results.filter(x=>x.overflow>20).length}));
  for(const x of results.filter(x=>x.errors.length||x.missing.length||x.overflow>20))console.log('LEGACY AUDIT ISSUE '+JSON.stringify(x));
+ if(results.some(x=>x.page!=='loaded'||x.errors.length||x.missing.length||x.overflow>20))process.exitCode=1;
 })();
