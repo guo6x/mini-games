@@ -1,4 +1,4 @@
-/* Canonical catalog: real game HTML only. */
+/* Catalog corresponds exactly to 57 HTML pages. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -228,9 +228,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "geography.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "gomoku",
@@ -273,9 +273,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "jigsaw-puzzle.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "mahjong",
@@ -512,9 +512,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "quiz.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "racing",
@@ -825,8 +825,8 @@ const GAMES_DATA = [
       "搜索"
     ],
     "file": "word-search.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   }
 ];

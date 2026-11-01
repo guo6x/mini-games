@@ -5,13 +5,13 @@ const assert=require('node:assert/strict');
  try{
   const page=await browser.newPage({viewport:{width:1440,height:960}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'networkidle'});
-  assert.equal(await page.locator('.game-card').count(),45);
+  assert.equal(await page.locator('.game-card').count(),49);
   await page.locator('[data-view="prototype"]').click();
-  assert.equal(await page.locator('.game-card').count(),12);
+  assert.equal(await page.locator('.game-card').count(),8);
   await page.locator('[data-view="playable"]').click();
   await page.locator('#gameSearch').fill('赛车');
   assert.equal(await page.locator('.game-card').count(),1);
-  for(const id of ['racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care']){
+  for(const id of ['racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle']){
    await page.goto('http://127.0.0.1:4173/'+id+'.html',{waitUntil:'domcontentloaded'});
    assert.equal(await page.locator('canvas#stage').count(),1);
    await page.locator('#startBtn').click();
