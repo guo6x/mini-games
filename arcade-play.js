@@ -127,7 +127,54 @@ sokoban:()=>({
  ['#########','#       #','# .   . #','# $   $ #','#   @   #','#       #','#########']
  ],
  init(){this.stage=0;this.totalMoves=0;this.load();},
- load(){const rows=this.layouts[this.stage];this.w=rows[0].length;this.h=rows.length;this.walls=new Set();this.goals=new Set();this.boxes=new Set();this.history=[];this.moves=0;for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){const s=rows[y][x],key=y*this.w+x;if(s==='#')this.walls.add(key);if(s==='.'||s==='*')this.goals.add(key);if(s==='this.boxes.add(key);if(s==='@'||s==='+')this.p={x,y};}notify('关卡 '+(this.stage+1)+'：将所有箱子推到光圈上');level('LEVEL '+(this.stage+1));},
+ load(){const rows=this.layouts[this.stage];this.w=rows[0].length;this.h=rows.length;this.walls=new Set();this.goals=new Set();this.boxes=new Set();this.history=[];this.moves=0;for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){const s=rows[y][x],key=y*this.w+x;if(s==='#')this.walls.add(key);if(s==='.'||s==='*')this.goals.add(key);if(s==='if(s==='@'||s==='+')this.p={x,y};}notify('关卡 '+(this.stage+1)+'：将所有箱子推到光圈上');level('LEVEL '+(this.stage+1));},
+ key(c){if(c==='KeyZ'){const h=this.history.pop();if(h){this.p=h.p;this.boxes=h.boxes;this.moves--;this.totalMoves=Math.max(0,this.totalMoves-1);notify('已撤销一步');}return;}const d={ArrowLeft:[-1,0],KeyA:[-1,0],ArrowRight:[1,0],KeyD:[1,0],ArrowUp:[0,-1],KeyW:[0,-1],ArrowDown:[0,1],KeyS:[0,1]}[c];if(!d)return;const nx=this.p.x+d[0],ny=this.p.y+d[1],id=ny*this.w+nx;if(this.walls.has(id))return;const next=new Set(this.boxes);if(next.has(id)){const tx=nx+d[0],ty=ny+d[1],tid=ty*this.w+tx;if(this.walls.has(tid)||next.has(tid))return;next.delete(id);next.add(tid);tone(470);}
+ this.history.push({p:{...this.p},boxes:new Set(this.boxes)});this.boxes=next;this.p={x:nx,y:ny};this.moves++;this.totalMoves++;points(Math.max(0,(this.stage+1)*450-this.totalMoves*3));if([...this.goals].every(k=>this.boxes.has(k))){tone(850);if(this.stage===this.layouts.length-1){points(Math.max(100,1500-this.totalMoves*6));finish('所有星箱归位！');return;}this.stage++;this.load();}},
+ update(){},
+ draw(){fill(0,0,W,H,'#121626');const cell=52,ox=(W-this.w*cell)/2,oy=(H-this.h*cell)/2;for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){const key=y*this.w+x,px=ox+x*cell,py=oy+y*cell;fill(px+1,py+1,cell-2,cell-2,this.walls.has(key)?'#304362':'#1a2741',6);if(this.walls.has(key)){fill(px+5,py+4,cell-10,7,'#5f779b',3);}else{if(this.goals.has(key)){ctx.beginPath();ctx.arc(px+26,py+26,13,0,2*Math.PI);ctx.strokeStyle='#a4ffd9';ctx.lineWidth=4;ctx.stroke();ctx.lineWidth=1;}if(this.boxes.has(key)){ctx.shadowColor='#e3bb80';ctx.shadowBlur=12;fill(px+7,py+7,cell-14,cell-14,'#d7a76d',8);ctx.shadowBlur=0;fill(px+18,py+18,cell-36,cell-36,'#714f33',3);}}}
+ const px=ox+this.p.x*cell,py=oy+this.p.y*cell;ctx.fillStyle='#76e9ff';ctx.shadowColor='#76e9ff';ctx.shadowBlur=18;ctx.beginPath();ctx.arc(px+26,py+26,17,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;text('步数 '+this.totalMoves,27,35,16,'#cadbee');text('Z = 撤销',662,35,15,'#cfe4ff');}
+}),
+'snake-ladder':()=>({
+ snakes:{16:6,47:26,49:11,56:53,62:19,64:60,87:24,93:73,95:75,98:78},
+ ladders:{1:38,4:14,9:31,21:42,28:84,36:44,51:67,71:91,80:100},
+ init(){this.you=0;this.bot=0;this.turn=1;this.dice=0;this.steps=0;this.timer=0;this.last='点击棋盘或按空格掷骰';},
+ key(c){if(c==='Space'||c==='ArrowUp')this.roll();},
+ click(){this.roll();},
+ roll(){if(this.turn!==1)return;this.dice=Math.floor(rand(1,7));this.you=Math.min(100,this.you+this.dice);this.you=this.snakes[this.you]||this.ladders[this.you]||this.you;this.steps++;points(this.you*10);level(this.you+' / 100');this.last='你掷出 '+this.dice+' 点';notify(this.last);tone(470);if(this.you>=100){finish('你赢了蛇梯棋！');return;}this.turn=2;this.timer=.8;},
+ update(dt){if(this.turn!==2)return;this.timer-=dt;if(this.timer>0)return;this.dice=Math.floor(rand(1,7));this.bot=Math.min(100,this.bot+this.dice);this.bot=this.snakes[this.bot]||this.ladders[this.bot]||this.bot;this.last='电脑掷出 '+this.dice+' 点';notify(this.last);if(this.bot>=100){finish('电脑先到终点，再战一次');return;}this.turn=1;},
+ pos(n){if(n<=0)return{x:100,y:460};const row=Math.floor((n-1)/10),within=(n-1)%10,col=row%2===0?within:9-within;return{x:185+col*44+22,y:42+(9-row)*44+22};},
+ draw(){fill(0,0,W,H,'#101d2c');for(let n=1;n<=100;n++){const q=this.pos(n);fill(q.x-22,q.y-22,43,43,(Math.floor((n-1)/10)+n)%2?'#304b66':'#3c5674',4);text(String(n),q.x-14,q.y-10,11,'#b7cde1');if(this.snakes[n])text('↓',q.x,q.y+7,19,'#fc9cb0','center');if(this.ladders[n])text('↑',q.x,q.y+7,19,'#99f1bb','center');}for(const [n,c] of [[this.you,'#72e6ff'],[this.bot,'#ffafbb']]){const p=this.pos(n);ctx.beginPath();ctx.arc(p.x+(c==='#72e6ff'?-8:9),p.y+7,11,0,2*Math.PI);ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;}text('你',31,60,17,'#72e6ff');text(String(this.you),31,90,32,'#fff');text('电脑',655,60,17,'#ffb8c8');text(String(this.bot),655,90,32,'#fff');text('骰子',650,350,16,'#9cb9d8');text(this.dice?'⚄ '+this.dice:'—',650,395,24,'#fff');text(this.turn===1?'轮到你':'电脑回合',637,453,15,'#bfefff');}
+}),
+nonogram:()=>({
+ patterns:[
+ ['0110110','1111111','1111111','0111110','0011100','0001000','0000000'],
+ ['0001000','0011100','0111110','0011100','0111110','0100010','1000001'],
+ ['0111110','1000001','1010101','1000001','1011101','1000001','0111110']
+ ],
+ init(){this.stage=0;this.total=0;this.load();},
+ load(){this.solution=this.patterns[this.stage].map(s=>s.split('').map(Number));this.mark=Array.from({length:7},()=>Array(7).fill(false));this.clicks=0;level('PUZZLE '+(this.stage+1));notify('观察边上的数字，补全像素图案');},
+ hints(arr){const runs=[];let n=0;for(const x of arr){if(x)n++;else if(n){runs.push(n);n=0;}}if(n)runs.push(n);return runs.join(' ')||'0';},
+ click(px,py){const x=Math.floor((px-246)/49),y=Math.floor((py-86)/49);if(x<0||y<0||x>6||y>6)return;this.mark[y][x]=!this.mark[y][x];this.clicks++;if(this.mark.every((row,i)=>row.every((v,j)=>Number(v)===this.solution[i][j]))){this.total+=Math.max(80,500-this.clicks*5);points(this.total);tone(900);if(this.stage===2){finish('三张数织全部完成！');return;}this.stage++;this.load();}else{points(this.total);}},
+ update(){},
+ draw(){fill(0,0,W,H,'#0c1629');fill(232,72,371,371,'#1b304d',16);for(let y=0;y<7;y++)for(let x=0;x<7;x++){const px=246+x*49,py=86+y*49;fill(px+1,py+1,47,47,this.mark[y][x]?'#84c9ff':'#263957',5);if(this.mark[y][x])text('✦',px+24,py+25,21,'#0c3155','center');}
+ for(let i=0;i<7;i++){text(this.hints(this.solution[i]),231,86+i*49+25,15,'#b0d6f8','right');const col=this.solution.map(r=>r[i]);text(this.hints(col),246+i*49+24,55,14,'#b0d6f8','center');}
+ text('画 '+(this.stage+1)+' / 3',26,45,21,'#c9e7ff');text('已填 '+this.mark.flat().filter(Boolean).length+' 格',26,85,16,'#a4c3e8');text('数字代表连续色块',612,86,13,'#a5c7e8');text('点击填充 / 取消',612,117,13,'#a5c7e8');}
+}),
+'math-game':()=>({
+ init(){this.time=75;this.round=0;this.combo=0;this.correct=0;this.total=0;this.flash=0;this.create();},
+ create(){const rank=1+Math.floor(this.round/5),op=Math.floor(rand(0,4));let a,b,answer,symbol;if(op===0){a=Math.floor(rand(4,15*rank));b=Math.floor(rand(4,15*rank));answer=a+b;symbol='+';}else if(op===1){a=Math.floor(rand(10,22*rank));b=Math.floor(rand(3,a));answer=a-b;symbol='−';}else if(op===2){a=Math.floor(rand(2,5+rank*3));b=Math.floor(rand(2,10));answer=a*b;symbol='×';}else{b=Math.floor(rand(2,10));answer=Math.floor(rand(2,8+rank*2));a=b*answer;symbol='÷';}
+ this.question=a+' '+symbol+' '+b+' = ?';this.answer=answer;const set=new Set([answer]);while(set.size<4){const diff=Math.floor(rand(-15-rank*3,16+rank*3));if(diff&&answer+diff>=0)set.add(answer+diff);}this.options=[...set].sort(()=>Math.random()-.5);},
+ answerAt(n){if(n<0||n>=4)return;this.round++;if(this.options[n]===this.answer){this.combo++;this.correct++;this.total+=100+Math.min(10,this.combo)*20;this.flash=1;notify('正确！连对 '+this.combo+' 次');tone(750);}else{this.combo=0;this.total=Math.max(0,this.total-25);this.flash=-1;notify('答错了！正确答案是 '+this.answer);tone(180);}points(this.total);level('第 '+(this.round+1)+' 题');if(this.round>=24){finish('极速心算挑战完成！');return;}this.create();},
+ key(c){const m={Digit1:0,Digit2:1,Digit3:2,Digit4:3};if(c in m)this.answerAt(m[c]);},
+ click(x,y){for(let i=0;i<4;i++){const px=155+(i%2)*255,py=265+Math.floor(i/2)*92;if(x>=px&&x<px+230&&y>=py&&y<py+74){this.answerAt(i);return;}}},
+ update(dt){this.time-=dt;this.flash*=Math.max(0,1-dt*3);if(this.time<=0){this.time=0;finish('时间到！心算挑战结束');}},
+ draw(){fill(0,0,W,H,'#161427');const bar=clamp(this.time/75,0,1);fill(135,46,530,12,'#334261',6);fill(135,46,530*bar,12,'#9fe7c3',6);text('TIME '+Math.ceil(this.time)+'s',400,26,17,'#d5edfc','center');text('QUESTION '+(this.round+1)+' / 24',400,110,13,'#9eb6d9','center');text(this.question,400,188,55,'#fff','center');for(let i=0;i<4;i++){const x=155+(i%2)*255,y=265+Math.floor(i/2)*92;fill(x,y,230,74,'#293653',14);fill(x+9,y+12,28,28,'#587aa4',8);text(String(i+1),x+23,y+27,17,'#ebf7ff','center');text(String(this.options[i]),x+123,y+37,27,'#fff','center');}text('连击 '+this.combo,30,465,20,'#bce9ff');text('正确 '+this.correct,670,465,19,'#bce9ff');}
+})
+};
+engine=engines[MODE]();engine.init();engine.draw();
+requestAnimationFrame(frame);
+})();
+||s==='*')this.boxes.add(key);if(s==='@'||s==='+')this.p={x,y};}notify('关卡 '+(this.stage+1)+'：将所有箱子推到光圈上');level('LEVEL '+(this.stage+1));},
  key(c){if(c==='KeyZ'){const h=this.history.pop();if(h){this.p=h.p;this.boxes=h.boxes;this.moves--;this.totalMoves=Math.max(0,this.totalMoves-1);notify('已撤销一步');}return;}const d={ArrowLeft:[-1,0],KeyA:[-1,0],ArrowRight:[1,0],KeyD:[1,0],ArrowUp:[0,-1],KeyW:[0,-1],ArrowDown:[0,1],KeyS:[0,1]}[c];if(!d)return;const nx=this.p.x+d[0],ny=this.p.y+d[1],id=ny*this.w+nx;if(this.walls.has(id))return;const next=new Set(this.boxes);if(next.has(id)){const tx=nx+d[0],ty=ny+d[1],tid=ty*this.w+tx;if(this.walls.has(tid)||next.has(tid))return;next.delete(id);next.add(tid);tone(470);}
  this.history.push({p:{...this.p},boxes:new Set(this.boxes)});this.boxes=next;this.p={x:nx,y:ny};this.moves++;this.totalMoves++;points(Math.max(0,(this.stage+1)*450-this.totalMoves*3));if([...this.goals].every(k=>this.boxes.has(k))){tone(850);if(this.stage===this.layouts.length-1){points(Math.max(100,1500-this.totalMoves*6));finish('所有星箱归位！');return;}this.stage++;this.load();}},
  update(){},
