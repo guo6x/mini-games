@@ -1,4 +1,4 @@
-/* Canonical catalog. Entries are derived from existing HTML game pages. */
+/* Canonical catalog. Every entry matches a real HTML file. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -318,9 +318,9 @@ const GAMES_DATA = [
       "计算"
     ],
     "file": "math-game.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "maze-runner",
@@ -389,9 +389,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "nonogram.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "number-memory",
@@ -554,9 +554,9 @@ const GAMES_DATA = [
       "策略"
     ],
     "file": "reversi.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "sliding-puzzle",
@@ -583,9 +583,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "snake-ladder.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "snake",
@@ -612,9 +612,9 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "sokoban.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "solitaire",

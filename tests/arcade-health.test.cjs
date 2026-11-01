@@ -12,12 +12,12 @@ test('catalog is exactly the game HTML pages, with no missing links or duplicate
  assert.equal(new Set(catalog).size,catalog.length);
 });
 test('catalog statuses reflect the static placeholder audit',()=>{
- assert.equal(games.filter(g=>g.status==='prototype').length,21);
- assert.equal(games.filter(g=>g.status==='playable').length,36);
+ assert.equal(games.filter(g=>g.status==='prototype').length,16);
+ assert.equal(games.filter(g=>g.status==='playable').length,41);
  for(const g of games){assert.ok(['playable','prototype'].includes(g.status));assert.ok(g.id);assert.ok(g.name);assert.ok(g.icon)}
 });
 test('all rebuilt games are wired to a canvas and common gameplay engine',()=>{
- const ids=['racing','platformer','tower-defense','match3','maze-runner'];
+ const ids=['racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game'];
  for(const id of ids){
  const g=games.find(x=>x.id===id);
  assert.equal(g.revamped,true);assert.equal(g.status,'playable');
