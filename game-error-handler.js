@@ -541,3 +541,16 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
     window.GameErrorHandler = GameErrorHandler;
 }
+
+
+/* Legacy static error-handler API retained for older pages. */
+GameErrorHandler.registerCallback=function(type,callback){
+  const handler=window.initGameErrorHandler('legacy');
+  if(typeof type==='function'){callback=type;type='javascript';}
+  if(typeof callback==='function')handler.registerCallback(type,callback);
+};
+GameErrorHandler.handleError=function(errorInfo,gameId){
+  return window.initGameErrorHandler(typeof gameId==='string'?gameId:'legacy').handleError(
+    errorInfo && typeof errorInfo==='object'?errorInfo:{type:'legacy',message:String(errorInfo)}
+  );
+};
