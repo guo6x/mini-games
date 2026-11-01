@@ -7,7 +7,7 @@ const sandbox={};vm.runInNewContext(read('games-data.js')+'\n;globalThis.games=G
 const games=sandbox.games;
 test('catalog is exactly the game HTML pages, with no missing links or duplicates',()=>{
  const pages=fs.readdirSync(root).filter(s=>s.endsWith('.html')&&!['index.html','game-template.html'].includes(s)).sort();
- const catalog=games.map(g=>g.file).sort();
+ const catalog=Array.from(games,g=>g.file).sort();
  assert.equal(pages.length,57);assert.deepEqual(catalog,pages);
  assert.equal(new Set(catalog).size,catalog.length);
 });
