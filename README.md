@@ -60,3 +60,6 @@ CI 对 57 款逐个执行桌面和移动端启动与基本操作回归；有界�
 
 ### NEBULA STRIKE（第一款旗舰候选）
 `space-shooter.html` 独立使用 `orbit-nebula-core.js` 与 `orbit-nebula-strike.js`，实现三波战斗、武装升级、相位冲刺、Boss 和明确终局。不调用外部媒体接口。运行 `node --test tests/nebula-strike.test.cjs` 执行确定性玩法测试。此项目仍处于编辑候选阶段，尚无真人试玩结论。
+
+### VECTOR RUN 3D 航线实验版
+直接打开 `vector-run.html`。这是首个使用独立 `orbit-vector-core.js`、WebGL 透视投影与真正三维空间碰撞的小游戏，不依赖 Three.js/CDN。支持电脑方向键/WASD、移动端拖动、12 道星门、三段渐进难度、护盾冷却、游戏胜负与本地最佳分。无法启动 WebGL 的设备自动降级为软件透视显示，但玩法的 3D 物理状态保持一致。项目暂在“公开实验室”，尚未完成玩家和中低端 Android 真机体验验证。执行 `node --test tests/vector-run.test.cjs` 运行核心规则测试。
