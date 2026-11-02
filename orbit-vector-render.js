@@ -74,8 +74,8 @@ function Renderer(canvas,hud){
   const x=g.x,y=g.y,z=g.z,xx=g.halfW,yy=g.halfH;
   // A full rectangular blocking plane with an authentic 3D opening.
   const left=-4.4,right=4.4,bottom=-3.2,top=3.2;
-  cube((left+x-xx)/2,y,z,(x-xx)-left,6.4,.28,colors.dark);
-  cube((x+xx+right)/2,y,z,right-(x+xx),6.4,.28,colors.dark);
+  cube((left+x-xx)/2,0,z,(x-xx)-left,6.4,.28,colors.dark);
+  cube((x+xx+right)/2,0,z,right-(x+xx),6.4,.28,colors.dark);
   cube(x,(top+y+yy)/2,z,xx*2,top-(y+yy),.28,colors.dark);
   cube(x,(bottom+y-yy)/2,z,xx*2,(y-yy)-bottom,.28,colors.dark);
   cube(x-xx,y,z,.13,yy*2+.2,.4,c);cube(x+xx,y,z,.13,yy*2+.2,.4,c);

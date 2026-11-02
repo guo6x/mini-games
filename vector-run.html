@@ -21,13 +21,15 @@
    <div class="overlay-card">
     <span class="overline" id="overlayKicker">MISSION 01 // STARGATE COURSE</span>
     <h2 id="overlayTitle">穿越星门，夺回航线。</h2>
-    <p id="overlayText">12 道星门，3 组速度递进的航段。使用方向键或 WASD、移动端拖动战机，空格启动短时间相位护盾。</p>
+    <p id="overlayText">12 道星门，3 组速度递进的航段。准确穿越或使用护盾成功通过至少 8 门才能完成任务。上下左右飞行、空格启动相位护盾。</p>
+    <div class="mode-switch" role="group" aria-label="选择飞行难度"><button data-flight-mode="training" type="button" aria-pressed="false">训练 · 宽星门 / 5 HP</button><button data-flight-mode="standard" class="selected" type="button" aria-pressed="true">标准 · 4 HP</button></div>
     <button id="startBtn" type="button">启动 3D 飞行 →</button>
    </div>
   </div>
   <div id="fallbackNotice" class="fallback" hidden>当前环境无法启用 WebGL：已自动使用软件三维透视降级模式，空间坐标和碰撞规则保持不变。</div>
  </div>
  <div class="hud"><span id="statusLine" role="status">等待驾驶员接管</span><span id="rendererText">3D 加载中</span></div>
+ <p id="aimHint" class="aim-hint" aria-label="下一道星门方向引导">星门雷达扫描中 · 保持航线</p>
  <div class="touch-panel" role="group" aria-label="手机方向操作">
   <button type="button" data-dir="left" aria-label="向左">←</button>
   <button type="button" data-dir="up" aria-label="向上">↑</button>
@@ -38,12 +40,12 @@
  <div class="actions"><button type="button" id="pauseBtn">暂停</button><button type="button" id="resetBtn">重新开始 ↻</button><span>支持键盘、拖动与触控方向键</span></div>
 </section>
 <aside class="sidebar">
- <div class="stat hero"><small>GATES CLEARED</small><strong id="progressValue">00 <em>/ 12</em></strong><div class="track"><i id="progressBar"></i></div></div>
+ <div class="stat hero"><small>GATES ENCOUNTERED</small><strong id="progressValue">00 <em>/ 12</em></strong><div class="track"><i id="progressBar"></i></div><p class="gate-ledger">安全穿越 <b id="passValue">00</b> · 撞击 <b id="missValue">00</b></p></div>
  <div class="stat"><small>HULL INTEGRITY</small><strong id="lifeValue">04 / 04</strong></div>
  <div class="stat"><small>SCORE</small><strong id="scoreValue">000000</strong></div>
  <div class="stat"><small>GATE COMBO</small><strong id="comboValue">x00</strong></div>
  <div class="stat"><small>PHASE SHIELD</small><strong id="abilityText">READY</strong></div>
- <div class="instructions"><b>飞行员指南</b><p>左右 + 上下，真正的二维方向操控发生在三维航道中。对准星门内部的开口；撞上门框会损失 1 点船体值。</p><p>空格 / 护盾键：短时穿越危险星门。每经过 4 道星门会恢复 1 点船体值，最多恢复至 4 点。</p><p>阶段 1：导航；阶段 2：精确穿越；阶段 3：高速航线。12 门全部通过即完成战役。</p></div>
+ <div class="instructions"><b>飞行员指南</b><p>左右 + 上下，真正的二维方向操控发生在三维航道中。对准星门内部的开口；撞上门框会损失 1 点船体值。</p><p>空格 / 护盾键：短时穿越危险星门。每经过 4 道星门会恢复 1 点船体值，最多恢复至当前模式的上限。</p><p>阶段 1：导航；阶段 2：精确穿越；阶段 3：高速航线。安全穿越至少 8 门，且船体值不归零，才能完成战役。</p></div>
 </aside>
 </div>
 <footer><span>ORBIT ARCADE / FIRST 3D PROTOTYPE</span><span>无需账号 · 不依赖外部资源 · 技术验证版</span></footer>

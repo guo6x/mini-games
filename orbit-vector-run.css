@@ -53,3 +53,13 @@ footer{margin-top:30px;display:flex;justify-content:space-between;gap:13px;color
 @media(max-width:790px){.layout{padding:27px 13px 50px}.content{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.sidebar .instructions{grid-column:1/-1}.stat strong{font-size:22px}.heading{display:block}.state{display:inline-block}.viewport{border-radius:13px}.bar{padding:15px 13px}}
 @media(max-width:530px){.heading h1{font-size:48px}.heading p{font-size:12px}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar .hero{grid-column:1/-1}.touch-panel{gap:6px}.touch-panel button{width:49px;height:49px}.touch-panel .pulse{width:102px}.overlay-card{padding:19px 14px;border-radius:16px}.overlay p{font-size:12px}.overlay h2{font-size:25px}.toplinks .chip{display:none}.toplinks{gap:6px}.toplinks button,.toplinks a{padding:8px;font-size:10px}footer{display:block;line-height:2}.hud{font-size:10px}.actions span{display:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+/* Honest 3D flight HUD, coaching and difficulty selection. */
+.mode-switch{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:17px 0 4px}
+.mode-switch button{background:#18283f;border:1px solid #6785ae80;color:#b8cce8;border-radius:11px;padding:10px 12px;font-weight:700;font-size:12px}
+.mode-switch button.selected{background:#205a59;border-color:#9cf5df;color:#edfff8}
+.mode-switch button:focus-visible{outline:2px solid #b8f9ec;outline-offset:2px}
+.aim-hint{margin:0 3px 9px;color:#bde8f4;background:#12273b;border:1px solid #7ae6e43b;border-radius:12px;padding:9px 13px;font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}
+.aim-hint[data-aligned="true"]{color:#b0ffde;border-color:#82ffc477;background:#173e3f}
+.gate-ledger{font-size:11px;line-height:1.55;color:#b9d9e6;margin:10px 0 0}
+.gate-ledger b{font-size:14px;color:#f2fffb}
+@media(max-width:530px){.aim-hint{font-size:10px}.mode-switch button{font-size:10px;padding:9px}}
