@@ -12,7 +12,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),vm=require('node:vm
   page.on('pageerror',e=>errors.push(e.message.slice(0,180)));
   page.on('response',r=>{if(r.status()>=400)missing.push(r.status()+' '+r.url().split('/').pop())});
   let status='loaded';
-  try{const r=await page.goto('http://127.0.0.1:4173/'+g.file,{waitUntil:'domcontentloaded',timeout:9000});if(!r||!r.ok())status='http-error';await page.waitForTimeout(220);}catch(e){status=e.message.slice(0,90)}
+  try{const r=await page.goto('http://127.0.0.1:4173/'+g.file,{waitUntil:'domcontentloaded',timeout:9000});if(!r||!r.ok())status='http-error';await page.waitForTimeout(220);const start=page.locator('#start-btn,#startBtn,#startGame,#start-button,#new-game-btn,#new-game-button,#newGame,#shuffle,#new-game').first();if(await start.count()){try{await start.click({timeout:1800});await page.waitForTimeout(180);await page.keyboard.press('ArrowRight');await page.waitForTimeout(100);}catch(e){errors.push('interaction: '+e.message.slice(0,110));}}}catch(e){status=e.message.slice(0,90)}
   const metrics=await page.evaluate(()=>({overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),title:document.title.slice(0,80)})).catch(()=>({overflow:-1,title:''}));
   results.push({id:g.id,status:g.status,page:status,errors:[...new Set(errors)],missing:[...new Set(missing)],overflow:metrics.overflow,title:metrics.title});
   await page.close();

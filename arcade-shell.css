@@ -21,3 +21,14 @@ body.arcade-game .stats .stat-box{border-color:#82b6f741;box-shadow:0 8px 25px #
 .arcade-dialog::backdrop{background:#050a16bc}.arcade-dialog h2{margin:0 0 10px;font-size:22px}.arcade-dialog p{color:#b3c9e5}.arcade-dialog button{background:#81baff!important;color:#0b1832!important;border:0;border-radius:10px;padding:11px 16px;font:inherit!important;cursor:pointer}
 @media(max-width:550px){.arcade-utility{top:7px;right:7px;padding:3px;gap:2px}.arcade-utility a,.arcade-utility button{padding:8px 9px!important}.arcade-virtual{grid-template-columns:repeat(3,43px);grid-template-rows:repeat(2,43px)}body.arcade-game h1{font-size:clamp(27px,8vw,42px)!important}}
 @media(min-width:950px) and (pointer:fine){.arcade-virtual{display:none}}@media(prefers-reduced-motion:reduce){.arcade-utility *{transition:none!important}}
+/* Unified legacy gameplay affordances and responsive panels. */
+body.arcade-game{font-family:system-ui,-apple-system,'PingFang SC',sans-serif;scroll-behavior:smooth}
+body.arcade-game canvas{display:block;max-width:100%;height:auto;touch-action:manipulation}
+body.arcade-game button:not(:disabled){cursor:pointer}
+body.arcade-game :where(.container,.game-container,.tetris-container){padding-bottom:max(80px,env(safe-area-inset-bottom))}
+body.arcade-game :where(.game-container,.container,.tetris-container) :where(h1,h2){text-wrap:balance}
+body.arcade-game :where(.game-board-container,.game-wrapper,.game-area){max-width:100%;min-width:0}
+body.arcade-game .game-nav ul{padding-right:150px}
+body.arcade-game .game-nav li{margin:2px}
+body.arcade-game .game-nav a{font-size:13px}
+@media(max-width:650px){body.arcade-game{overflow-x:hidden}body.arcade-game .game-nav ul{padding-right:10px}body.arcade-game .game-nav li:nth-child(n+7){display:none}body.arcade-game .arcade-utility{position:sticky;top:0;margin:0 4px 6px auto;width:max-content}body.arcade-game :where(.game-board,.game-wrapper,.game-area){max-width:100%!important}body.arcade-game .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
