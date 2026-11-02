@@ -5,8 +5,16 @@ try{
  const desktop=await browser.newPage({viewport:{width:1440,height:960}});
  desktop.on('pageerror',e=>errors.push('desktop: '+e.message));
  await desktop.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded'});
- assert.equal(await desktop.locator('.game-card').count(),57);
- assert.equal(await desktop.locator('canvas.game-poster').count(),57,'All 57 posters must render');
+ 
+ assert.equal(await desktop.locator('.game-card').count(),40,'Main catalog must avoid showing laboratory games');
+ await desktop.locator('[data-view="lab"]').click();
+ assert.equal(await desktop.locator('.game-card').count(),17,'17 lab games must remain reachable');
+ assert.equal(await desktop.locator('.quality-note').count(),17,'Each lab game should declare its limitations');
+ await desktop.locator('[data-view="all"]').click();
+ assert.equal(await desktop.locator('.game-card').count(),57,'All 57 games remain browseable');
+ await desktop.locator('[data-view="playable"]').click();
+
+ assert.equal(await desktop.locator('canvas.game-poster').count(),40,'Curated homepage posters should render');
  const posterPixels=await desktop.locator('canvas.game-poster').first().evaluate(c=>{const d=c.getContext('2d').getImageData(15,20,1,1).data;return d[3]});
  assert.ok(posterPixels>0,'Poster canvas must actually draw pixels');
  await desktop.locator('#gameSearch').fill('赛车');assert.equal(await desktop.locator('.game-card').count(),1);
@@ -23,7 +31,15 @@ try{
   await desktop.locator('#resetBtn').click();
   assert.equal(await desktop.locator('#statusPill').textContent(),'进行中','Reset '+g.id);
  }
- const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+
+ await desktop.goto('http://127.0.0.1:4173/crossword.html',{waitUntil:'domcontentloaded'});
+ await desktop.locator('#startBtn').click();
+ await desktop.keyboard.press('KeyR');
+ await desktop.keyboard.press('KeyP');
+ assert.equal(await desktop.locator('#statusPill').textContent(),'进行中','R/P typing must not restart or pause crossword');
+ await desktop.goto('http://127.0.0.1:4173/music-rhythm.html',{waitUntil:'domcontentloaded'});
+ assert.equal(await desktop.locator('.lab-notice').count(),1,'Lab game must carry experimental status on its own page');
+  const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
  mobile.on('pageerror',e=>errors.push('mobile: '+e.message));
  for(const g of games){
   await mobile.goto('http://127.0.0.1:4173/'+g.file,{waitUntil:'domcontentloaded'});

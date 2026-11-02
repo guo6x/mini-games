@@ -29,6 +29,24 @@ let engine,playing=false,paused=false,ended=false,last=0,score=0,best=0,elapsed=
 try{best=Number(localStorage.getItem('orbit-best-'+MODE))||0;}catch(e){}
 document.documentElement.style.setProperty('--game-accent',meta.accent);
 document.title=meta.name+' · ORBIT ARCADE';
+
+const labModes=new Set(["music-rhythm","farm","cooking","word-chain","connect-dots","spot-difference","color-match","number-memory","reaction-test","typing-game","snake-ladder","dress-up","pet-care","city-builder","memory-game","geography","quiz"]);
+if(labModes.has(MODE)){
+ const eyebrow=document.querySelector('.game-intro .eyebrow');
+ if(eyebrow)eyebrow.textContent='PLAY / EXPERIMENTAL EDITION';
+ const msg=document.createElement('p');
+ msg.className='lab-notice';
+ msg.setAttribute('role','note');
+ msg.textContent='公开实验版：可直接试玩；玩法深度、画面或手感仍在迭代，暂不作为精品推荐。';
+ document.querySelector('.game-intro')?.insertAdjacentElement('afterend',msg);
+}
+if(['chess','sudoku','sudoku-killer'].includes(MODE)){
+ const hint=document.createElement('p');
+ hint.className='touch-zoom-hint';
+ hint.textContent='手机棋盘格较小，建议横屏并点击「沉浸游玩」。';
+ document.querySelector('.game-intro')?.insertAdjacentElement('afterend',hint);
+}
+
 $('gameName').textContent=meta.name;$('gameSubtitle').textContent=meta.sub;$('gameInstructions').textContent=meta.instruction;$('gameHint').textContent=meta.hint;
 $('bestValue').textContent=best;
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
@@ -48,7 +66,7 @@ const controlKeys=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space
 for(let i=65;i<=90;i++)controlKeys.add('Key'+String.fromCharCode(i));
 for(let i=1;i<=9;i++)controlKeys.add('Digit'+i);
 controlKeys.add('Backspace');controlKeys.add('Delete');
-document.addEventListener('keydown',e=>{if(!controlKeys.has(e.code)||e.target.closest('input,textarea,select'))return;e.preventDefault();if(e.code==='KeyR'&&MODE!=='hangman'){begin();return;}if(e.code==='KeyP'&&MODE!=='hangman'){togglePause();return;}if(!playing||paused)return;if(!keys.has(e.code)&&engine.key)engine.key(e.code);keys.add(e.code);});
+document.addEventListener('keydown',e=>{if(!controlKeys.has(e.code)||e.target.closest('input,textarea,select'))return;e.preventDefault();if(e.code==='KeyR'&&!['hangman','crossword'].includes(MODE)){begin();return;}if(e.code==='KeyP'&&!['hangman','crossword'].includes(MODE)){togglePause();return;}if(!playing||paused)return;if(!keys.has(e.code)&&engine.key)engine.key(e.code);keys.add(e.code);});
 document.addEventListener('keyup',e=>keys.delete(e.code));
 const swipeGames=new Set(['2048','snake','pac-man','tetris','puzzle','sliding-puzzle']);
 let swipeOrigin=null;

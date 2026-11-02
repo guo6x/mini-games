@@ -3,7 +3,7 @@
 window.ORBIT_KINETIC_META={
  'brick-breaker':{name:'霓虹破壁',sub:'弹射反弹 · 清空砖阵 · 三条生命',instruction:'←→或 A/D 移动挡板；用击球位置控制反弹角度，清空砖阵进下一关。',hint:'球打在挡板边缘会获得更大的横向速度。',accent:'#90ffda'},
  'flappy-bird':{name:'星翼穿梭',sub:'一键飞行 · 穿越能量门 · 连续得分',instruction:'点击游戏画面、空格或↑让飞翼上升；别碰能量柱或屏幕边缘。',hint:'节奏稳定的小幅上升比连续狂点更容易控制。',accent:'#ffc48d'},
- 'music-rhythm':{name:'脉冲节奏',sub:'A S D F 四轨打击 · 连击评分 · 90 秒',instruction:'按 A、S、D、F 或点击四轨下方判定区域，在音符抵达发光判定线附近击打。',hint:'观察音符落下速度，按节拍预判击打，不要过早。',accent:'#f7acfc'},
+ 'music-rhythm':{name:'脉冲节奏',sub:'A S D F 四轨音符练习 · 连击评分 · 75 秒',instruction:'按 A、S、D、F 或点击四轨下方判定区域，在音符抵达发光判定线附近击打。',hint:'观察音符落下速度，按节拍预判击打，不要过早。',accent:'#f7acfc'},
  'pac-man':{name:'星际迷宫追逐',sub:'吃点 · 追踪幽灵 · 能量反击',instruction:'方向键 / WASD 在迷宫穿行，吃完光点过关。吃大能量球后可短暂反制追踪幽灵。',hint:'留意幽灵位置，利用岔路和能量球。',accent:'#f7d882'},
  'plane-combat':{name:'空域拦截者',sub:'纵向空战 · 自动射击 · 三次护盾',instruction:'方向键或 WASD 躲避敌机和弹幕；持续自动射击，击落敌机得分并累积波次。',hint:'别在原地停留太久，先清掉离自己最近的敌机。',accent:'#9ce8ff'},
  pong:{name:'脉冲乒乓',sub:'经典双挡板 · AI 对战 · 先得 7 分',instruction:'使用 ↑↓ 或 W/S 控制左侧挡板，迎击 AI 控制的右侧挡板。先得 7 分获胜。',hint:'击球的位置决定反弹角度，尽量打向球场的边缘。',accent:'#9bffd8'},
