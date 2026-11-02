@@ -20,6 +20,9 @@ Object.assign(map,window.ORBIT_EXTRA_META||{});
 Object.assign(map,window.ORBIT_MORE_META||{});
 Object.assign(map,window.ORBIT_FINAL_META||{});
 Object.assign(map,window.ORBIT_COMPLETION_META||{});
+Object.assign(map,window.ORBIT_CORTEX_META||{});
+Object.assign(map,window.ORBIT_KINETIC_META||{});
+Object.assign(map,window.ORBIT_STRATEGY_META||{});
 if(!map[MODE])return;
 const meta=map[MODE], keys=new Set();
 let engine,playing=false,paused=false,ended=false,last=0,score=0,best=0,elapsed=0;
@@ -42,10 +45,54 @@ function begin(){engine=engines[MODE]();points(0);level('01');elapsed=0;engine.i
 function togglePause(){if(!playing||ended)return;paused=!paused;keys.clear();$('pauseBtn').textContent=paused?'继续':'暂停';$('statusPill').textContent=paused?'已暂停':'进行中';notify(paused?'游戏暂停':'继续挑战');}
 function frame(t){requestAnimationFrame(frame);if(!engine)return;const dt=last?Math.min(.04,(t-last)/1000):0;last=t;if(playing&&!paused){elapsed+=dt;engine.update(dt);}engine.draw();}
 const controlKeys=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD','KeyP','KeyR','KeyZ','Digit1','Digit2','Digit3','Digit4']);
-if(MODE==='crossword'){for(let i=65;i<=90;i++)controlKeys.add('Key'+String.fromCharCode(i));controlKeys.add('Backspace');}
-document.addEventListener('keydown',e=>{if(!controlKeys.has(e.code)||e.target.closest('input,textarea,select'))return;e.preventDefault();if(e.code==='KeyR'){begin();return;}if(e.code==='KeyP'){togglePause();return;}if(!playing||paused)return;if(!keys.has(e.code)&&engine.key)engine.key(e.code);keys.add(e.code);});
-document.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();if(playing&&!paused)togglePause();});
-canvas.addEventListener('pointerdown',e=>{if(!playing||paused||!engine.click)return;const r=canvas.getBoundingClientRect();engine.click((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);});
+for(let i=65;i<=90;i++)controlKeys.add('Key'+String.fromCharCode(i));
+for(let i=1;i<=9;i++)controlKeys.add('Digit'+i);
+controlKeys.add('Backspace');controlKeys.add('Delete');
+document.addEventListener('keydown',e=>{if(!controlKeys.has(e.code)||e.target.closest('input,textarea,select'))return;e.preventDefault();if(e.code==='KeyR'&&MODE!=='hangman'){begin();return;}if(e.code==='KeyP'&&MODE!=='hangman'){togglePause();return;}if(!playing||paused)return;if(!keys.has(e.code)&&engine.key)engine.key(e.code);keys.add(e.code);});
+document.addEventListener('keyup',e=>keys.delete(e.code));
+const swipeGames=new Set(['2048','snake','pac-man','tetris','puzzle','sliding-puzzle']);
+let swipeOrigin=null;
+if(swipeGames.has(MODE)){
+ canvas.addEventListener('pointerdown',e=>{swipeOrigin={x:e.clientX,y:e.clientY};});
+ canvas.addEventListener('pointerup',e=>{
+  if(!swipeOrigin||!playing||paused)return;
+  const dx=e.clientX-swipeOrigin.x,dy=e.clientY-swipeOrigin.y;swipeOrigin=null;
+  if(Math.hypot(dx,dy)<28)return;
+  const key=Math.abs(dx)>Math.abs(dy)?(dx>0?'ArrowRight':'ArrowLeft'):(dy>0?'ArrowDown':'ArrowUp');
+  engine.key?.(key);
+ });
+ canvas.addEventListener('pointercancel',()=>{swipeOrigin=null;});
+}window.addEventListener('blur',()=>{keys.clear();if(playing&&!paused)togglePause();});
+canvas.addEventListener('pointerdown',e=>{if(MODE==='2048'||!playing||paused||!engine.click)return;const r=canvas.getBoundingClientRect();engine.click((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);});
+/* Optional landscape/fullscreen stage; safe fallback when unsupported. */
+const wrap=document.querySelector('.stage-wrap');
+const immersiveBtn=document.createElement('button');
+immersiveBtn.type='button';immersiveBtn.id='immersiveBtn';immersiveBtn.textContent='沉浸游玩';
+immersiveBtn.setAttribute('aria-label','进入或退出游戏全屏模式');
+document.querySelector('.top-right').append(immersiveBtn);
+const immersion=document.createElement('div');immersion.className='immersive-controls';
+const playingWithPad=new Set(['2048','snake','pac-man','tetris','puzzle','sliding-puzzle','brick-breaker','flappy-bird','music-rhythm','racing','platformer','sokoban','pong','plane-combat','space-shooter','space-invaders','time-guardian','maze-runner','snake-ladder']);
+if(!playingWithPad.has(MODE))immersion.classList.add('minimal');
+const immersionPad=document.createElement('div');immersionPad.className='immersive-dpad';
+for(const [code,label] of [['ArrowLeft','←'],['ArrowUp','↑'],['ArrowDown','↓'],['ArrowRight','→'],['Space','动作']]){
+ const b=document.createElement('button');b.type='button';b.dataset.key=code;b.textContent=label;b.setAttribute('aria-label','屏内操作 '+label);immersionPad.append(b);
+}
+immersion.append(immersionPad);
+const immersionActions=document.createElement('div');immersionActions.className='immersive-actions';
+const pauseImm=document.createElement('button');pauseImm.type='button';pauseImm.textContent='暂停 / 继续';pauseImm.addEventListener('click',togglePause);
+const exitImm=document.createElement('button');exitImm.type='button';exitImm.textContent='退出全屏';exitImm.addEventListener('click',()=>document.exitFullscreen?.().catch(()=>{}));
+immersionActions.append(pauseImm,exitImm);immersion.append(immersionActions);wrap.append(immersion);
+immersiveBtn.addEventListener('click',async()=>{
+ if(document.fullscreenElement){await document.exitFullscreen?.().catch(()=>{});return;}
+ try{await wrap.requestFullscreen();try{await screen.orientation?.lock?.('landscape');}catch(_){}}
+ catch(_){notify('当前浏览器不支持全屏，可手动横屏获得更大的游戏画面。');}
+});
+document.addEventListener('fullscreenchange',()=>{
+ immersiveBtn.textContent=document.fullscreenElement?'退出沉浸':'沉浸游玩';
+ if(!document.fullscreenElement){keys.clear();try{screen.orientation?.unlock?.();}catch(_){}}
+});
+
+const actionButton=document.querySelector('.touch-panel [data-key="Space"]');const immersionAction=document.querySelector('.immersive-dpad [data-key="Space"]');if(immersionAction)immersionAction.textContent='动作';if(actionButton){actionButton.textContent=( {'flappy-bird':'拍翼','music-rhythm':'节拍','space-invaders':'射击','space-shooter':'射击','plane-combat':'射击','tetris':'直落','reaction-test':'抢答','minesweeper':'插旗','time-guardian':'时缓','tic-tac-toe':'难度'}[MODE]||'动作');}
 document.querySelectorAll('[data-key]').forEach(b=>{const code=b.dataset.key;const down=e=>{e.preventDefault();if(!playing||paused)return;keys.add(code);if(engine.key)engine.key(code);b.classList.add('pressed');try{b.setPointerCapture(e.pointerId);}catch(_){}};const up=e=>{e.preventDefault();keys.delete(code);b.classList.remove('pressed');};b.addEventListener('pointerdown',down);['pointerup','pointercancel','lostpointercapture'].forEach(k=>b.addEventListener(k,up));});
 $('startBtn').addEventListener('click',begin);$('resetBtn').addEventListener('click',begin);$('pauseBtn').addEventListener('click',togglePause);
 $('soundToggle').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',String(on));e.currentTarget.textContent=on?'声音开':'静音';});
@@ -180,6 +227,9 @@ if(window.ORBIT_EXTRA)Object.assign(engines,window.ORBIT_EXTRA({ctx,fill,text,po
 if(window.ORBIT_MORE)Object.assign(engines,window.ORBIT_MORE({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 if(window.ORBIT_FINAL)Object.assign(engines,window.ORBIT_FINAL({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 if(window.ORBIT_COMPLETION)Object.assign(engines,window.ORBIT_COMPLETION({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
+if(window.ORBIT_CORTEX)Object.assign(engines,window.ORBIT_CORTEX({ctx,fill,text,points,level,finish,notify,tone,clamp,rand,keys}));
+if(window.ORBIT_KINETIC)Object.assign(engines,window.ORBIT_KINETIC({ctx,fill,text,points,level,finish,notify,tone,clamp,rand,keys}));
+if(window.ORBIT_STRATEGY)Object.assign(engines,window.ORBIT_STRATEGY({ctx,fill,text,points,level,finish,notify,tone,clamp,rand,keys}));
 engine=engines[MODE]();engine.init();engine.draw();
 requestAnimationFrame(frame);
 })();
