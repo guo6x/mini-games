@@ -12,7 +12,7 @@ test('31 newly rewritten games are distinct, catalogued, and loaded with the rig
  const fresh=Object.values(newGroups).flat();assert.equal(fresh.length,31);assert.equal(new Set(fresh).size,31);
  for(const [module,ids] of Object.entries(newGroups)){assert.ok(fs.existsSync(path.join(root,module)));
   const content=read(module);assert.match(content,/ORBIT_/);
-  for(const id of ids){assert.ok(content.includes("'"+id+"'")||content.includes(id+':'));const g=games.find(x=>x.id===id);assert.equal(g.revamped,true);assert.equal(g.edition,'unified-v3');const page=read(id+'.html');assert.match(page,new RegExp('data-game="'+id+'"'));assert.ok(page.indexOf(module)>0&&page.indexOf(module)<page.indexOf('arcade-play.js'));assert.doesNotMatch(page,/模拟游戏逻辑|游戏特定逻辑可以在这里添加/);}
+  for(const id of ids){assert.ok(content.includes("'"+id+"'")||content.includes(id+':'));const g=games.find(x=>x.id===id);assert.equal(g.revamped,true);assert.equal(g.edition,id==='space-shooter'?'flagship-v1':'unified-v3');const page=read(id+'.html');assert.match(page,new RegExp('data-game="'+id+'"'));if(id!=='space-shooter')assert.ok(page.indexOf(module)>0&&page.indexOf(module)<page.indexOf('arcade-play.js'));else assert.ok(page.includes('orbit-nebula-core.js')&&page.includes('orbit-nebula-strike.js'));assert.doesNotMatch(page,/模拟游戏逻辑|游戏特定逻辑可以在这里添加/);}
  }
 });
 test('all 57 pages share the stage, overlay, help, pause, reset and accessibility labels',()=>{
