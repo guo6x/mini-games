@@ -6,3 +6,13 @@
 .card-cover{background-image:radial-gradient(circle at 45% 30%,#ffffff25,transparent 65%),linear-gradient(145deg,#14243b,#263b62)}
 .tiny-status{backdrop-filter:blur(6px)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Every game now has an original procedural micro-poster rather than a plain emoji. */
+.card-cover{overflow:hidden;isolation:isolate}
+.card-cover .game-poster{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;z-index:0;filter:saturate(1.06)}
+.card-cover .poster-emblem{position:relative;z-index:1;font-size:29px;width:55px;height:55px;display:grid;place-items:center;border:1px solid #ffffff66;border-radius:17px;background:#08152866;backdrop-filter:blur(10px);box-shadow:0 8px 20px #0006;text-shadow:0 0 25px #c6edff;transform:rotate(-6deg);transition:transform .2s ease}
+.game-card:hover .poster-emblem{transform:translateY(-3px) rotate(0)}
+.card-cover .tiny-status{z-index:2;background:#071427d0;border:1px solid #c8ebff54;font-weight:750}
+.card-cover::after{z-index:1}
+@media(max-width:410px){.card-cover .poster-emblem{width:48px;height:48px;font-size:25px}}
+@media(prefers-reduced-motion:reduce){.poster-emblem{transform:none!important}}

@@ -10,11 +10,44 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({favorites:[...state
 const label=g=>({action:'动作',puzzle:'益智',strategy:'策略',casual:'休闲',classic:'经典'})[g.category]||'探索';
 const toast=s=>{const el=$('toast');el.textContent=s;el.classList.add('show');window.clearTimeout(toast.id);toast.id=window.setTimeout(()=>el.classList.remove('show'),2200);};
 const el=(name,cl,text)=>{const x=document.createElement(name);if(cl)x.className=cl;if(text!==undefined)x.textContent=text;return x;};
+
+/* Procedural arcade covers: original, self-contained illustrations. No external images. */
+function renderPoster(canvas,g){
+ const c=canvas.getContext('2d');if(!c)return;
+ const W=canvas.width,H=canvas.height,seed=Array.from(g.id).reduce((n,ch)=>((n*33+ch.charCodeAt(0))>>>0),5381);
+ let k=seed;const random=()=>{k=(1664525*k+1013904223)>>>0;return k/4294967296;};
+ const palettes={action:['#203769','#091a39','#80e6ff'],puzzle:['#33325f','#121e40','#b9a9ff'],strategy:['#184c55','#091c35','#91fbd5'],classic:['#2f426a','#0b1b37','#a5d3ff'],casual:['#3b3154','#17223b','#f9c5a1']};
+ const [top,bottom,glow]=palettes[g.category]||palettes.action;
+ let bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,top);bg.addColorStop(1,bottom);c.fillStyle=bg;c.fillRect(0,0,W,H);
+ let halo=c.createRadialGradient(W*.7,H*.36,2,W*.7,H*.36,156);halo.addColorStop(0,glow+'55');halo.addColorStop(1,glow+'00');c.fillStyle=halo;c.fillRect(0,0,W,H);
+ c.strokeStyle='#b5e9ff19';c.lineWidth=1;
+ for(let x=-60;x<W+60;x+=36){c.beginPath();c.moveTo(x,0);c.lineTo(x+34,H);c.stroke();}
+ for(let y=18;y<H;y+=34){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+ for(let i=0;i<42;i++){const x=random()*W,y=random()*H,r=random()*1.4+.4;c.fillStyle=i%4?'#d6ecff55':glow;c.beginPath();c.arc(x,y,r,0,7);c.fill();}
+ c.save();c.translate(W*.52,H*.52);c.rotate((seed%9-4)*.055);c.shadowColor=glow;c.shadowBlur=18;
+ if(g.id==='snake'||g.id==='pac-man'||g.id==='flappy-bird'){
+  for(let i=0;i<8;i++){c.fillStyle=i%2?'#84f3d9':'#a9c3ff';c.beginPath();c.arc(-85+i*23,Math.sin(i*.8)*23,13,0,7);c.fill();}
+ }else if(g.id==='tetris'||g.id==='2048'||g.category==='puzzle'){
+  for(let y=0;y<3;y++)for(let x=0;x<4;x++){const v=(x+y*4+seed)%7;c.fillStyle=['#6f9ce5','#72dcbe','#c3a9ff','#edc18d','#9dd8f8','#bdc5fa','#f2a3cd'][v];const xx=-90+x*47,yy=-65+y*43;c.beginPath();c.roundRect(xx,yy,39,35,6);c.fill();c.globalAlpha=.28;c.fillStyle='#ffffff';c.fillRect(xx+5,yy+5,28,2);c.globalAlpha=1;}
+ }else if(g.category==='strategy'){
+  for(let y=0;y<5;y++)for(let x=0;x<7;x++){c.fillStyle=(x+y)%2?'#2c5470':'#7790a9';c.fillRect(-95+x*28,-72+y*28,28,28);}
+  for(let i=0;i<7;i++){c.fillStyle=i%2?'#d7b5f5':'#90f3db';c.beginPath();c.arc(-70+i*22,-40+(i%3)*31,9,0,7);c.fill();}
+ }else if(g.category==='casual'){
+  c.fillStyle='#6bdac770';c.beginPath();c.ellipse(0,68,134,37,0,0,7);c.fill();
+  for(let i=0;i<6;i++){const x=-108+i*42;c.strokeStyle=glow;c.lineWidth=5;c.beginPath();c.moveTo(x,38);c.lineTo(x+4,4-random()*45);c.stroke();c.fillStyle='#c9edb4';c.beginPath();c.arc(x+4,9-random()*36,10,0,7);c.fill();}
+ }else{
+  c.fillStyle=glow;c.beginPath();c.moveTo(0,-61);c.lineTo(33,28);c.lineTo(0,9);c.lineTo(-33,28);c.closePath();c.fill();
+  c.fillStyle='#e6eefd';c.beginPath();c.moveTo(0,-32);c.lineTo(12,-6);c.lineTo(-12,-6);c.fill();
+  c.strokeStyle='#ffdea1';c.lineWidth=4;for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(i*19,48);c.lineTo(i*22,74);c.stroke();}
+ }
+ c.restore();
+ let vignette=c.createLinearGradient(0,0,W,0);vignette.addColorStop(0,'#0910209c');vignette.addColorStop(.38,'#09102000');vignette.addColorStop(1,'#09102038');c.fillStyle=vignette;c.fillRect(0,0,W,H);
+}
 function navigate(g){state.recent=[g.id,...state.recent.filter(x=>x!==g.id)].slice(0,12);state.visits++;save();location.href=g.file;}
 function playable(){return games.filter(g=>g.status==='playable');}
 function card(g){
   const article=el('article','game-card');
-  const cover=el('div','card-cover',g.icon);cover.style.setProperty('--glow',['#243c7c','#1f5670','#543a85','#28505f'][Math.abs(g.id.length*13)%4]);
+  const cover=el('div','card-cover');cover.style.setProperty('--glow',['#243c7c','#1f5670','#543a85','#28505f'][Math.abs(g.id.length*13)%4]);const poster=el('canvas','game-poster');poster.width=350;poster.height=168;poster.setAttribute('aria-hidden','true');cover.append(poster);renderPoster(poster,g);const emblem=el('span','poster-emblem',g.icon);emblem.setAttribute('aria-hidden','true');cover.append(emblem);
   cover.setAttribute('aria-hidden','true');cover.append(el('span','tiny-status',g.revamped?'玩法重制':g.status==='playable'?'可探索':'待完善'));
   const b=el('div','game-body');b.append(el('h3','',g.name),el('p','',g.description));
   const end=el('div','game-bottom');end.append(el('span','category',label(g)));

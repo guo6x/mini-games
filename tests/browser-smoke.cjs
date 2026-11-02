@@ -6,6 +6,7 @@ try{
  desktop.on('pageerror',e=>errors.push('desktop: '+e.message));
  await desktop.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded'});
  assert.equal(await desktop.locator('.game-card').count(),57);
+ assert.equal(await desktop.locator('canvas.game-poster').count(),57,'All 57 posters must render');
  await desktop.locator('#gameSearch').fill('赛车');assert.equal(await desktop.locator('.game-card').count(),1);
  for(const g of games){
   await desktop.goto('http://127.0.0.1:4173/'+g.file,{waitUntil:'domcontentloaded'});
