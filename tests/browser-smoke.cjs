@@ -7,10 +7,13 @@ try{
  await desktop.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded'});
  assert.equal(await desktop.locator('.game-card').count(),57);
  assert.equal(await desktop.locator('canvas.game-poster').count(),57,'All 57 posters must render');
+ const posterPixels=await desktop.locator('canvas.game-poster').first().evaluate(c=>{const d=c.getContext('2d').getImageData(15,20,1,1).data;return d[3]});
+ assert.ok(posterPixels>0,'Poster canvas must actually draw pixels');
  await desktop.locator('#gameSearch').fill('赛车');assert.equal(await desktop.locator('.game-card').count(),1);
  for(const g of games){
   await desktop.goto('http://127.0.0.1:4173/'+g.file,{waitUntil:'domcontentloaded'});
   assert.equal(await desktop.locator('#stage').count(),1,'Missing stage '+g.id);
+  assert.equal(await desktop.locator('#immersiveBtn').count(),1,'Missing fullscreen control '+g.id);
   await desktop.locator('#startBtn').click();
   assert.equal(await desktop.locator('#statusPill').textContent(),'进行中','Start '+g.id);
   await desktop.keyboard.press('ArrowRight');

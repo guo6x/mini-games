@@ -16,3 +16,16 @@ button:active{transform:scale(.98)}
 #kineticTyping,#crossInput{outline-color:var(--game-accent)}
 @media(max-width:520px){.top-right{gap:4px}.top-right button,.top-right a{padding:8px 6px;font-size:10px}.game-layout{padding-left:10px;padding-right:10px}.stage-wrap{border-radius:15px}.touch-panel{margin-top:13px;gap:7px}.touch-panel button{min-width:49px;min-height:49px;font-size:20px}.game-actions{gap:7px}.game-actions button,.game-actions a{padding:10px 13px}.game-intro h1{font-size:29px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Accessible fullscreen game stage with independent touch controls. */
+.immersive-controls{display:none}
+.stage-wrap:fullscreen,.stage-wrap:-webkit-full-screen{width:100vw;height:100dvh;max-width:none;border:0;border-radius:0;background:#040b18;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.stage-wrap:fullscreen canvas,.stage-wrap:-webkit-full-screen canvas{width:min(100vw,160dvh);height:auto;max-height:100dvh;max-width:100vw;flex:none;object-fit:contain}
+.stage-wrap:fullscreen .overlay{z-index:45}
+.stage-wrap:fullscreen .immersive-controls{display:block;position:absolute;inset:0;pointer-events:none;z-index:65}
+.immersive-dpad{position:absolute;left:20px;bottom:16px;display:flex;gap:7px;align-items:center;pointer-events:auto}
+.immersive-dpad button,.immersive-actions button{border:1px solid #96c8f466;background:#102746c9;color:#e7faff;border-radius:12px;min-width:49px;min-height:44px;font-weight:800;padding:9px 12px;backdrop-filter:blur(8px)}
+.immersive-dpad button:active,.immersive-actions button:active{background:#8fe3e9;color:#081c31}
+.immersive-actions{position:absolute;top:12px;right:12px;display:flex;gap:7px;pointer-events:auto}
+.immersive-controls.minimal .immersive-dpad{display:none}
+@media(max-width:650px){.immersive-dpad{left:9px;bottom:8px;gap:4px}.immersive-dpad button{min-width:36px;min-height:35px;padding:6px 8px;font-size:13px}.immersive-actions{top:7px;right:7px}.immersive-actions button{min-height:34px;padding:6px 9px;font-size:11px}}
