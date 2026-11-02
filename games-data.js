@@ -1,4 +1,4 @@
-/* Canonical catalog for all 57 real pages. */
+/* 57 coherent game editions: every catalog entry points to a shipped HTML page. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -14,7 +14,8 @@ const GAMES_DATA = [
     "file": "2048.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "brick-breaker",
@@ -30,7 +31,8 @@ const GAMES_DATA = [
     "file": "brick-breaker.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "bubble-shooter",
@@ -46,7 +48,8 @@ const GAMES_DATA = [
     "file": "bubble-shooter.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "card-memory",
@@ -59,7 +62,8 @@ const GAMES_DATA = [
     "file": "card-memory.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "checkers",
@@ -75,7 +79,8 @@ const GAMES_DATA = [
     "file": "checkers.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "chess",
@@ -92,7 +97,8 @@ const GAMES_DATA = [
     "file": "chess.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "city-builder",
@@ -105,7 +111,8 @@ const GAMES_DATA = [
     "file": "city-builder.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "color-match",
@@ -121,7 +128,8 @@ const GAMES_DATA = [
     "file": "color-match.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "connect-dots",
@@ -134,7 +142,8 @@ const GAMES_DATA = [
     "file": "connect-dots.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "cooking",
@@ -147,7 +156,8 @@ const GAMES_DATA = [
     "file": "cooking.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "crossword",
@@ -164,7 +174,8 @@ const GAMES_DATA = [
     "file": "crossword.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "dress-up",
@@ -177,7 +188,8 @@ const GAMES_DATA = [
     "file": "dress-up.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "farm",
@@ -190,7 +202,8 @@ const GAMES_DATA = [
     "file": "farm.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "fishing",
@@ -203,7 +216,8 @@ const GAMES_DATA = [
     "file": "fishing.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "flappy-bird",
@@ -219,7 +233,8 @@ const GAMES_DATA = [
     "file": "flappy-bird.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "geography",
@@ -232,7 +247,8 @@ const GAMES_DATA = [
     "file": "geography.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "gomoku",
@@ -248,7 +264,8 @@ const GAMES_DATA = [
     "file": "gomoku.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "hangman",
@@ -264,7 +281,8 @@ const GAMES_DATA = [
     "file": "hangman.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "jigsaw-puzzle",
@@ -277,7 +295,8 @@ const GAMES_DATA = [
     "file": "jigsaw-puzzle.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "mahjong",
@@ -293,7 +312,8 @@ const GAMES_DATA = [
     "file": "mahjong.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "match3",
@@ -306,7 +326,8 @@ const GAMES_DATA = [
     "file": "match3.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "math-game",
@@ -322,7 +343,8 @@ const GAMES_DATA = [
     "file": "math-game.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "maze-runner",
@@ -335,7 +357,8 @@ const GAMES_DATA = [
     "file": "maze-runner.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "memory-game",
@@ -351,7 +374,8 @@ const GAMES_DATA = [
     "file": "memory-game.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "minesweeper",
@@ -367,7 +391,8 @@ const GAMES_DATA = [
     "file": "minesweeper.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "music-rhythm",
@@ -380,7 +405,8 @@ const GAMES_DATA = [
     "file": "music-rhythm.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "nonogram",
@@ -393,7 +419,8 @@ const GAMES_DATA = [
     "file": "nonogram.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "number-memory",
@@ -406,7 +433,8 @@ const GAMES_DATA = [
     "file": "number-memory.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "pac-man",
@@ -419,7 +447,8 @@ const GAMES_DATA = [
     "file": "pac-man.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "pet-care",
@@ -432,7 +461,8 @@ const GAMES_DATA = [
     "file": "pet-care.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "pinball",
@@ -445,7 +475,8 @@ const GAMES_DATA = [
     "file": "pinball.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "plane-combat",
@@ -461,7 +492,8 @@ const GAMES_DATA = [
     "file": "plane-combat.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "platformer",
@@ -474,7 +506,8 @@ const GAMES_DATA = [
     "file": "platformer.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "pong",
@@ -490,7 +523,8 @@ const GAMES_DATA = [
     "file": "pong.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "puzzle",
@@ -503,7 +537,8 @@ const GAMES_DATA = [
     "file": "puzzle.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "quiz",
@@ -516,7 +551,8 @@ const GAMES_DATA = [
     "file": "quiz.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "racing",
@@ -529,7 +565,8 @@ const GAMES_DATA = [
     "file": "racing.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "reaction-test",
@@ -542,7 +579,8 @@ const GAMES_DATA = [
     "file": "reaction-test.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "reversi",
@@ -558,7 +596,8 @@ const GAMES_DATA = [
     "file": "reversi.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "sliding-puzzle",
@@ -574,7 +613,8 @@ const GAMES_DATA = [
     "file": "sliding-puzzle.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "snake-ladder",
@@ -587,7 +627,8 @@ const GAMES_DATA = [
     "file": "snake-ladder.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "snake",
@@ -603,7 +644,8 @@ const GAMES_DATA = [
     "file": "snake.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "sokoban",
@@ -616,7 +658,8 @@ const GAMES_DATA = [
     "file": "sokoban.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "solitaire",
@@ -633,7 +676,8 @@ const GAMES_DATA = [
     "file": "solitaire.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "space-invaders",
@@ -646,7 +690,8 @@ const GAMES_DATA = [
     "file": "space-invaders.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "space-shooter",
@@ -662,7 +707,8 @@ const GAMES_DATA = [
     "file": "space-shooter.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "spot-difference",
@@ -675,7 +721,8 @@ const GAMES_DATA = [
     "file": "spot-difference.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "sudoku-killer",
@@ -688,7 +735,8 @@ const GAMES_DATA = [
     "file": "sudoku-killer.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "sudoku",
@@ -704,7 +752,8 @@ const GAMES_DATA = [
     "file": "sudoku.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "tangram",
@@ -721,7 +770,8 @@ const GAMES_DATA = [
     "file": "tangram.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "tetris",
@@ -737,7 +787,8 @@ const GAMES_DATA = [
     "file": "tetris.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "tic-tac-toe",
@@ -753,7 +804,8 @@ const GAMES_DATA = [
     "file": "tic-tac-toe.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "time-guardian",
@@ -770,7 +822,8 @@ const GAMES_DATA = [
     "file": "time-guardian.html",
     "featured": true,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "tower-defense",
@@ -786,7 +839,8 @@ const GAMES_DATA = [
     "file": "tower-defense.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   },
   {
     "id": "typing-game",
@@ -802,7 +856,8 @@ const GAMES_DATA = [
     "file": "typing-game.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "word-chain",
@@ -819,7 +874,8 @@ const GAMES_DATA = [
     "file": "word-chain.html",
     "featured": false,
     "status": "playable",
-    "revamped": false
+    "revamped": true,
+    "edition": "unified-v3"
   },
   {
     "id": "word-search",
@@ -835,6 +891,7 @@ const GAMES_DATA = [
     "file": "word-search.html",
     "featured": true,
     "status": "playable",
-    "revamped": true
+    "revamped": true,
+    "edition": "unified-v2"
   }
 ];

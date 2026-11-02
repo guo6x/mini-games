@@ -1,7 +1,7 @@
-name: Arcade quality gate
+name: ORBIT ARCADE v3 quality gate
 on:
   push:
-    branches: [master, "codex/arcade-quality-rebuild-20261102"]
+    branches: [master, "feat/arcade-all57-quality-pass-20261102"]
   pull_request:
 jobs:
   static-checks:
@@ -11,15 +11,14 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
       - run: |
-          node --check arcade-home.js
           node --check arcade-play.js
-          node --check arcade-shell.js
+          node --check arcade-home.js
+          node --check arcade-cortex.js
+          node --check arcade-kinetic.js
+          node --check arcade-strategy.js
           node --check arcade-completion.js
-          node --check tic-tac-toe.js
-          node --check brick-breaker.js
-          node --check puzzle.js
           node --test tests/arcade-health.test.cjs
-  browser-smoke:
+  browser-regression:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
