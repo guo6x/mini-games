@@ -806,13 +806,14 @@ const GAMES_DATA = [
   },
   {
     "id": "word-chain",
-    "name": "单词接龙",
-    "icon": "🔗",
+    "name": "成语接龙",
+    "icon": "🀄",
     "category": "puzzle",
     "difficulty": "medium",
-    "description": "用前一个单词的最后一个字母开始新单词。",
+    "description": "四字成语首尾汉字接龙，挑战词汇与记忆。",
     "tags": [
-      "单词",
+      "中文",
+      "成语",
       "接龙"
     ],
     "file": "word-chain.html",

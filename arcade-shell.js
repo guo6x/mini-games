@@ -33,7 +33,7 @@ const guides={
 'spot-difference':'细看两幅画面中的细节差异，点击不一样的位置；提示次数有限。',
 'tic-tac-toe':'在九宫格轮流落子，先连成横、竖或斜三子获胜；防守对手的双线威胁。',
 'typing-game':'根据显示文本输入准确的字母，关注正确率，再逐步提高速度。',
-'word-chain':'根据前一个单词最后一个字母，输入以该字母开头的新单词，避免重复。'
+'word-chain':'成语接龙：根据上一个成语的末尾汉字，输入以该字开头的四字成语。'
 };
 function init(){
 document.body.classList.add('arcade-game');

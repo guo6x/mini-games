@@ -66,16 +66,18 @@ class BrickBreakerGame {
             }
         });
         
-        document.addEventListener('mousemove', (e) => {
+        const movePaddle = (e) => {
             if (!this.gameRunning) return;
             
             const rect = this.canvas.getBoundingClientRect();
-            const relativeX = e.clientX - rect.left;
-            if (relativeX > 0 && relativeX < this.canvas.width) {
-                this.paddle.x = relativeX - this.paddle.width / 2;
-                this.paddle.x = Math.max(0, Math.min(this.paddle.x, this.canvas.width - this.paddle.width));
+            const relativeX = (e.clientX - rect.left) * this.canvas.width / rect.width;
+            if (relativeX >= 0 && relativeX <= this.canvas.width) {
+                this.paddle.x = Math.max(0, Math.min(relativeX-this.paddle.width/2, this.canvas.width-this.paddle.width));
             }
-        });
+        };
+        this.canvas.addEventListener('pointermove', movePaddle);
+        this.canvas.addEventListener('pointerdown', e=>{this.canvas.setPointerCapture?.(e.pointerId);movePaddle(e);});
+        this.canvas.style.touchAction='none';
     }
     
     startGame() {
@@ -130,10 +132,14 @@ class BrickBreakerGame {
         }
         
         // 球与挡板碰撞检测
-        if (this.ball.y + this.ball.radius > this.paddle.y && 
-            this.ball.x > this.paddle.x && 
-            this.ball.x < this.paddle.x + this.paddle.width) {
-            this.ball.dy = -this.ball.dy;
+        if (this.ball.dy>0 && this.ball.y + this.ball.radius >= this.paddle.y &&
+            this.ball.y-this.ball.radius <= this.paddle.y+this.paddle.height &&
+            this.ball.x >= this.paddle.x && this.ball.x <= this.paddle.x + this.paddle.width) {
+            const offset=(this.ball.x-(this.paddle.x+this.paddle.width/2))/(this.paddle.width/2);
+            const speed=Math.min(9,Math.hypot(this.ball.dx,this.ball.dy)+0.08);
+            this.ball.dx=speed*Math.sin(offset*1.12);
+            this.ball.dy=-Math.max(2.2,speed*Math.cos(offset*1.12));
+            this.ball.y=this.paddle.y-this.ball.radius-1;
         }
         
         // 球与砖块碰撞检测
@@ -223,7 +229,7 @@ class BrickBreakerGame {
     
     drawLives() {
         this.ctx.font = '16px Arial';
-        this.ctx.fillStyle = '#333';
+        this.ctx.fillStyle = '#e2f5ff';
         this.ctx.fillText('生命: ' + this.lives, this.canvas.width - 80, 20);
     }
     
