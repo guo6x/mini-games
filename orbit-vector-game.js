@@ -120,7 +120,7 @@ document.addEventListener('keydown',e=>{
  e.preventDefault();
  if(e.repeat&&['Space','KeyP','Escape'].includes(e.code))return;
  if(e.code==='KeyP'||e.code==='Escape'){pause();return;}
- if(e.code==='Space'){if(core.state==='running')core.pulse();return;}
+ if(e.code==='Space'){if(core.state==='running'){core.pulse();renderHud();}return;}
  held.add(e.code);
 });
 document.addEventListener('keyup',e=>held.delete(e.code));
@@ -130,7 +130,7 @@ document.querySelectorAll('[data-dir]').forEach(b=>{
  const clear=()=>{held.delete(d);b.classList.remove('is-down');};
  b.addEventListener('pointerup',clear);b.addEventListener('pointercancel',clear);b.addEventListener('lostpointercapture',clear);
 });
-$('pulseBtn').addEventListener('click',()=>{core.pulse();});
+$('pulseBtn').addEventListener('click',()=>{core.pulse();renderHud();});
 $('pauseBtn').addEventListener('click',pause);
 $('resetBtn').addEventListener('click',start);
 dom.start.addEventListener('click',start);
