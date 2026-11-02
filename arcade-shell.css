@@ -115,3 +115,23 @@ body.arcade-game ::selection{background:#5be6c9;color:#071322}
  body.arcade-game :where(.stats .stat-box,.stats .stat-item){min-width:0;overflow-wrap:anywhere;padding:8px!important}
  body.arcade-game .checkerboard .piece{width:min(60px,80%);height:auto;aspect-ratio:1}
 }
+
+/* Touch launch screen must remain operable, independent of older 600px canvas layout. */
+@media (pointer:coarse), (max-width:650px) {
+ body.arcade-game #game-start-screen.game-overlay.active {
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:12px;
+  padding:20px!important;overflow:auto!important;border-radius:0!important;
+  background:#091529f5!important;z-index:12000!important;
+ }
+ body.arcade-game #game-start-screen.game-overlay.active :is(h2,p){
+  position:static!important;max-width:100%!important;margin:0!important;
+  text-align:center!important;overflow-wrap:anywhere!important;
+ }
+ body.arcade-game #game-start-screen.game-overlay.active #start-btn {
+  position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;display:block!important;flex:none!important;min-width:150px!important;
+  max-width:100%!important;margin:14px auto 0!important;z-index:12001!important;
+ }
+}
