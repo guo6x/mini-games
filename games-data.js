@@ -1,4 +1,4 @@
-/* Catalog: quality curation is independent of technical playability. */
+/* Catalog: independently assessed playability, quality tier and dimension. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -406,11 +406,11 @@ const GAMES_DATA = [
     "description": "穿越随机迷宫，在时间归零前找到出口。",
     "tags": [],
     "file": "maze-runner.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
     "edition": "unified-v2",
-    "qualityTier": "candidate",
+    "qualityTier": "standard",
     "dimension": "2d"
   },
   {
@@ -799,21 +799,27 @@ const GAMES_DATA = [
   },
   {
     "id": "space-shooter",
-    "name": "深空弹幕",
+    "name": "NEBULA STRIKE · 星云突围",
     "icon": "🚀",
     "category": "action",
     "difficulty": "hard",
-    "description": "自由飞行、连续射击、躲避追踪敌机与弹幕。",
+    "description": "三波星云战役、三选一武装升级、相位冲刺和多阶段 Boss。独立规则内核与原创霓虹画面。",
     "tags": [
       "太空",
-      "射击"
+      "射击",
+      "2D",
+      "Boss",
+      "波次",
+      "弹幕",
+      "升级",
+      "冲刺"
     ],
     "file": "space-shooter.html",
-    "featured": false,
+    "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3",
-    "qualityTier": "standard",
+    "edition": "flagship-v1",
+    "qualityTier": "candidate",
     "dimension": "2d"
   },
   {

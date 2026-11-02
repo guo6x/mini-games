@@ -38,3 +38,16 @@ test('crossword letter modes cannot be swallowed by restart/pause shortcuts',()=
  const source=read('arcade-play.js');
  assert.match(source,/\['hangman','crossword'\]\.includes\(MODE\)/);
 });
+
+test('2D flagship has original rules/renderer scripts and remains one of ten candidates',()=>{
+ const g=games.find(g=>g.id==='space-shooter');
+ assert.equal(g.qualityTier,'candidate');assert.equal(g.edition,'flagship-v1');
+ assert.equal(g.dimension,'2d');
+ assert.equal(games.filter(g=>g.qualityTier==='candidate').length,10);
+ const s=read('space-shooter.html');
+ for(const p of ['orbit-nebula-core.js','orbit-nebula-strike.js','arcade-play.js'])assert.ok(s.includes(p),p);
+ assert.ok(s.indexOf('orbit-nebula-core.js')<s.indexOf('orbit-nebula-strike.js'));
+ assert.ok(s.indexOf('orbit-nebula-strike.js')<s.indexOf('arcade-play.js'));
+ assert.ok(!s.includes('arcade-kinetic.js'));
+ assert.ok(fs.existsSync(path.join(root,'tests/nebula-strike.test.cjs')));
+});
