@@ -32,7 +32,7 @@ window.ORBIT_COMPLETION=api=>{
  crossword:()=>({
   sets:[
    {rows:['BALL','AREA','LEAD','LADY'],across:['圆形玩具','某个区域的面积','带领团队','女士'],down:['球类运动器材','某块地域','金属铅（英文）','礼貌称呼女性']},
-   {rows:['TIME','IDEA','MEAN','EARN'],across:['时间','想法、创意','意思是','通过劳动获得'],down:['时刻','主意','刻薄的','赚取']},
+   {rows:['SAND','AREA','NEAR','DART'],across:['沙子','地区、范围','附近的','飞镖'],down:['沙子','地区、范围','附近的','飞镖']},
    {rows:['HEART','EMBER','ABUSE','RESIN','TREND'],across:['心脏','余烬','滥用','树脂','趋势'],down:['身体的泵','燃烧后仍红亮的炭','虐待','植物分泌的黏性物质','流行方向']}
   ],
   init(){this.round=0;this.total=0;this.build();if(!document.getElementById('crossInput')){const i=document.createElement('input');i.id='crossInput';i.type='text';i.maxLength=1;i.autocomplete='off';i.autocapitalize='characters';i.spellcheck=false;i.placeholder='手机输入字母';i.setAttribute('aria-label','输入选中格字母');i.style.cssText='display:block;width:190px;max-width:100%;padding:12px 16px;margin:12px auto;border-radius:12px;background:#1f3656;border:1px solid #6a9bb5;color:white;font-size:16px;';i.addEventListener('input',e=>{const v=e.target.value.toUpperCase().replace(/[^A-Z]/g,'');if(v)this.type(v[0]);e.target.value='';});document.querySelector('.game-actions').append(i);}},
