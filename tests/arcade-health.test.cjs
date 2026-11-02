@@ -5,7 +5,7 @@ const newGroups={"arcade-cortex.js":["2048","card-memory","memory-game","color-m
 test('exactly 58 unique concrete game pages and all catalog statuses are playable',()=>{
  const pages=fs.readdirSync(root).filter(x=>x.endsWith('.html')&&!['index.html','game-template.html'].includes(x)).sort();
  assert.equal(pages.length,58);assert.deepEqual(games.map(x=>x.file).sort(),pages);
- assert.equal(new Set(games.map(x=>x.id)).size,57);
+ assert.equal(new Set(games.map(x=>x.id)).size,58);
  assert.equal(games.filter(x=>x.status==='playable').length,58);
 });
 test('31 newly rewritten games are distinct, catalogued, and loaded with the right module',()=>{
