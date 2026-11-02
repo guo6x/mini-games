@@ -256,9 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // 注册到全局性能监控器
-        if (window.GlobalPerformanceMonitor) {
-            window.GlobalPerformanceMonitor.register('sliding-puzzle', performanceOptimizer);
-        }
+        // The actual frame monitor is registered via globalPerformanceMonitor below.
         
         // 初始化性能监控器
         performanceMonitor = new GamePerformanceMonitor('sliding-puzzle');
@@ -284,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 从全局监控器注销
             if (window.GlobalPerformanceMonitor) {
-                window.GlobalPerformanceMonitor.unregister('sliding-puzzle');
+                window.globalPerformanceMonitor?.unregisterMonitor('sliding-puzzle');
             }
         }
         

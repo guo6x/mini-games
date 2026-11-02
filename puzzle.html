@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数字拼图</title>
     <link rel="stylesheet" href="puzzle.css">
+<link rel="stylesheet" href="arcade-shell.css"><script src="arcade-shell.js" defer></script>
 </head>
 <body>
     <nav class="game-nav">
@@ -18,10 +19,13 @@
         <div class="puzzle-board" id="puzzleBoard"></div>
         <div class="game-info">
             <span>移动次数: <span id="moveCount">0</span></span>
-            <button id="shuffle">开始游戏</button>
+            <label style="display:inline-flex;gap:7px;align-items:center;margin:8px;color:#e6f5ff">难度 <select id="puzzle-difficulty" aria-label="拼图难度"><option value="60">休闲</option><option value="160" selected>经典</option><option value="350">专家</option></select></label><button id="shuffle">开始游戏</button>
             <a href="index.html" class="back-link">返回主菜单</a>
         </div>
     </div>
-    <script src="puzzle.js"></script>
+    <script src="game-memory-manager.js"></script>
+<script src="GameLifecycle.js"></script>
+<script src="game-error-handler.js"></script>
+<script src="puzzle.js"></script>
 </body>
 </html>

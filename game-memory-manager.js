@@ -486,6 +486,37 @@ class GlobalMemoryManager {
     }
 }
 
+
+/* Legacy game compatibility: track scheduled work and DOM listeners, so reset/unload can release them. */
+GameMemoryManager.prototype._ensureManaged = function(){
+  if(!this._managed)this._managed={timeouts:new Set(),intervals:new Set(),listeners:[]};
+  return this._managed;
+};
+GameMemoryManager.prototype.onError=function(callback){this._managedErrorCallback=callback;};
+GameMemoryManager.prototype.setTimeout=function(callback,delay){
+  const state=this._ensureManaged();
+  const timer=window.setTimeout(()=>{state.timeouts.delete(timer);callback();},delay);
+  state.timeouts.add(timer);return timer;
+};
+GameMemoryManager.prototype.clearTimeout=function(timer){window.clearTimeout(timer);this._ensureManaged().timeouts.delete(timer);};
+GameMemoryManager.prototype.setInterval=function(callback,delay){
+  const timer=window.setInterval(callback,delay);this._ensureManaged().intervals.add(timer);return timer;
+};
+GameMemoryManager.prototype.clearInterval=function(timer){window.clearInterval(timer);this._ensureManaged().intervals.delete(timer);};
+GameMemoryManager.prototype.addEventListener=function(target,type,listener,options){
+  target.addEventListener(type,listener,options);this._ensureManaged().listeners.push({target,type,listener,options});
+  return listener;
+};
+GameMemoryManager.prototype.cleanup=function(){
+  const state=this._ensureManaged();
+  for(const t of state.timeouts)window.clearTimeout(t);
+  for(const t of state.intervals)window.clearInterval(t);
+  for(const l of state.listeners)l.target.removeEventListener(l.type,l.listener,l.options);
+  state.timeouts.clear();state.intervals.clear();state.listeners.length=0;
+};
+const _legacyDestroyMemory=GameMemoryManager.prototype.destroy;
+GameMemoryManager.prototype.destroy=function(){this.cleanup();return _legacyDestroyMemory.call(this);};
+
 // 创建全局实例
 if (!window.GlobalMemoryManager) {
     window.GlobalMemoryManager = new GlobalMemoryManager();

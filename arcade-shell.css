@@ -1,0 +1,137 @@
+/* Shared non-invasive presentation layer for legacy games. */
+body.arcade-game{background:#090f20!important;background-image:radial-gradient(ellipse at 80% 0%,#263d77 0%,transparent 56%)!important;color:#eef6ff;min-height:100vh}
+body.arcade-game h1{color:#eaf3ff!important;text-shadow:none!important;-webkit-text-fill-color:initial!important;letter-spacing:-.04em}
+body.arcade-game nav:not(.arcade-utility),body.arcade-game .game-nav{background:#162741c9!important;border-color:#ffffff26!important;backdrop-filter:blur(15px)}
+body.arcade-game nav a{color:#e5efff}
+body.arcade-game button:not(.arcade-tool),body.arcade-game .game-btn{border-radius:13px;touch-action:manipulation}
+body.arcade-game button:focus-visible,body.arcade-game a:focus-visible{outline:3px solid #81dfff;outline-offset:3px}
+body.arcade-game .game-container{max-width:calc(100vw - 18px)}
+body.arcade-game .game-area{max-width:100%}
+body.arcade-game .stats .stat-box{border-color:#82b6f741;box-shadow:0 8px 25px #0002}
+.arcade-utility{position:fixed;z-index:10000;top:13px;right:13px;display:flex;align-items:center;gap:7px;padding:6px;border:1px solid #89bfff5a;background:#091729e8;backdrop-filter:blur(16px);box-shadow:0 8px 36px #0008;border-radius:14px;font:600 12px system-ui,"PingFang SC",sans-serif}
+.arcade-utility a,.arcade-utility button{font:inherit!important;text-decoration:none!important;border:1px solid transparent!important;background:transparent!important;color:#d6ecff!important;display:flex;align-items:center;justify-content:center;padding:9px 11px!important;min-width:34px;min-height:34px;border-radius:9px!important;box-shadow:none!important;letter-spacing:0!important;text-transform:none!important;transition:background .2s}
+.arcade-utility a:hover,.arcade-utility button:hover{background:#4771a055!important;transform:none!important}
+.arcade-utility button:before{display:none!important}
+.arcade-virtual{position:fixed;right:12px;bottom:max(12px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(2,50px);gap:7px;z-index:9999;opacity:.86}
+.arcade-virtual button{font:750 20px system-ui!important;background:#172d4ee8!important;color:#d8f8ff!important;border:1px solid #83c9fb72!important;border-radius:13px!important;box-shadow:0 5px 21px #0008!important;padding:0!important;touch-action:none;user-select:none}
+.arcade-virtual button:active{background:#729ed7!important;color:#06152b!important}
+.arcade-virtual button:before{display:none!important}
+.arcade-virtual button[data-code="ArrowUp"]{grid-column:2}.arcade-virtual button[data-code="ArrowLeft"]{grid-column:1;grid-row:2}.arcade-virtual button[data-code="ArrowDown"]{grid-column:2;grid-row:2}.arcade-virtual button[data-code="ArrowRight"]{grid-column:3;grid-row:2}
+.arcade-dialog{border:1px solid #7999d8;background:#101d35;color:white;border-radius:18px;max-width:min(520px,calc(100vw - 24px));padding:26px;font:14px system-ui;line-height:1.8;box-shadow:0 20px 60px #000b}
+.arcade-dialog::backdrop{background:#050a16bc}.arcade-dialog h2{margin:0 0 10px;font-size:22px}.arcade-dialog p{color:#b3c9e5}.arcade-dialog button{background:#81baff!important;color:#0b1832!important;border:0;border-radius:10px;padding:11px 16px;font:inherit!important;cursor:pointer}
+@media(max-width:550px){.arcade-utility{top:7px;right:7px;padding:3px;gap:2px}.arcade-utility a,.arcade-utility button{padding:8px 9px!important}.arcade-virtual{grid-template-columns:repeat(3,43px);grid-template-rows:repeat(2,43px)}body.arcade-game h1{font-size:clamp(27px,8vw,42px)!important}}
+@media(min-width:950px) and (pointer:fine){.arcade-virtual{display:none}}@media(prefers-reduced-motion:reduce){.arcade-utility *{transition:none!important}}
+/* Unified legacy gameplay affordances and responsive panels. */
+body.arcade-game{font-family:system-ui,-apple-system,'PingFang SC',sans-serif;scroll-behavior:smooth}
+body.arcade-game canvas{display:block;max-width:100%;height:auto;touch-action:manipulation}
+body.arcade-game button:not(:disabled){cursor:pointer}
+body.arcade-game :where(.container,.game-container,.tetris-container){padding-bottom:max(80px,env(safe-area-inset-bottom))}
+body.arcade-game :where(.game-container,.container,.tetris-container) :where(h1,h2){text-wrap:balance}
+body.arcade-game :where(.game-board-container,.game-wrapper,.game-area){max-width:100%;min-width:0}
+body.arcade-game .game-nav ul{padding-right:150px}
+body.arcade-game .game-nav li{margin:2px}
+body.arcade-game .game-nav a{font-size:13px}
+@media(max-width:650px){body.arcade-game{overflow-x:hidden}body.arcade-game .game-nav ul{padding-right:10px}body.arcade-game .game-nav li:nth-child(n+7){display:none}body.arcade-game .arcade-utility{position:sticky;top:0;margin:0 4px 6px auto;width:max-content}body.arcade-game :where(.game-board,.game-wrapper,.game-area){max-width:100%!important}body.arcade-game .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
+
+/* On narrow devices, some older fixed-height game surfaces overlapped the action row.
+   Keep real start/pause/restart buttons above those rendering layers. */
+body.arcade-game :where(.game-container,.container) > .controls,
+body.arcade-game :where(.game-container,.container) > .game-actions,
+body.arcade-game .controls:not(.controls-container){position:relative;z-index:45}
+body.arcade-game :where(.game-container,.container) > .game-area,
+body.arcade-game :where(.game-container,.container) > .game-board-container{position:relative;z-index:1}
+body.arcade-game :where(.canvas-container,.game-board-container) > .game-overlay.active,
+body.arcade-game :where(.canvas-container,.game-board-container) > .game-start.active,
+body.arcade-game .game-start-screen.active{position:absolute;z-index:65;pointer-events:auto}
+body.arcade-game :where(.game-overlay.active,.game-start.active,.game-start-screen.active) button{position:relative;z-index:66}
+@media(max-width:650px){
+ body.arcade-game .checkerboard .piece{width:min(60px,80%);height:auto;aspect-ratio:1}
+ body.arcade-game .game-area:has(#gameCanvas){height:auto;aspect-ratio:1}
+ body.arcade-game .game-area:has(#gameCanvas[width="800"]){aspect-ratio:4 / 3}
+ body.arcade-game .game-area canvas{width:100%;height:auto}
+ body.arcade-game .controls:not(.controls-container){display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:12px 3px;background:#101f35e8;border-radius:15px}
+}
+
+/* Legacy visual system: stronger contrast and coherent controls without altering game mechanics. */
+body.arcade-game :where(.stats .stat-box,.stats .stat-item,.score-box,.next-box,.stat-block){
+ background:#172a43!important;color:#edf7ff!important;border:1px solid #46648c!important;
+ border-radius:14px!important;box-shadow:0 10px 24px #0209182a!important;
+}
+body.arcade-game :where(.stats .stat-box,.stats .stat-item,.score-box,.next-box,.stat-block) :where(span,strong,div){
+ color:inherit;
+}
+body.arcade-game :where(.instructions,.results,.game-options){
+ background:#182c47;color:#deedff;border-color:#719bc154;border-radius:16px;
+}
+body.arcade-game :where(.game-area,.canvas-container,.game-board-container){
+ border-color:#7296c066;border-radius:16px;box-shadow:0 18px 42px #02061655;
+}
+body.arcade-game :where(input,select){
+ max-width:100%;border-radius:10px;accent-color:#85e8f8;
+}
+body.arcade-game :where(button,.game-btn,.play-button,.btn):not(:disabled){
+ transition:filter .15s,transform .15s;touch-action:manipulation;
+}
+body.arcade-game :where(button,.game-btn,.play-button,.btn):not(:disabled):active{
+ transform:scale(.98);filter:brightness(1.09)
+}
+body.arcade-game :where(.game-overlay.active,.game-start.active,.game-start-screen.active){
+ overflow:auto;overscroll-behavior:contain;
+}
+body.arcade-game ::selection{background:#5be6c9;color:#071322}
+@media(prefers-reduced-motion:reduce){
+ body.arcade-game *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* Actual mobile viewport containment: old fixed 600–1000px boards could enlarge
+   the layout viewport despite a viewport meta tag and hide real buttons. */
+@media (pointer:coarse), (max-width:650px) {
+ html,body.arcade-game{width:100%!important;max-width:100vw!important;min-width:0!important;overflow-x:clip!important}
+ body.arcade-game :where(.container,.game-container,.tetris-container){
+   width:100%!important;max-width:100vw!important;min-width:0!important;
+   box-sizing:border-box!important;padding-left:10px!important;padding-right:10px!important;margin-left:auto!important;margin-right:auto!important;
+ }
+ body.arcade-game :where(.game-area,.canvas-container,.game-board-container,.game-wrapper,.game-board,.checkerboard){
+   max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+ }
+ body.arcade-game .game-area{width:100%!important;max-width:100%!important}
+ body.arcade-game .game-area:has(.checkerboard){width:100%!important;height:auto!important;aspect-ratio:1}
+ body.arcade-game .game-area:has(#farmGrid){width:100%!important;height:auto!important;aspect-ratio:8 / 5;min-height:360px}
+ body.arcade-game .game-area:has(#gameCanvas){width:100%!important;height:auto!important;aspect-ratio:1}
+ body.arcade-game .game-area:has(#gameCanvas[width="800"]){aspect-ratio:4 / 3}
+ body.arcade-game .game-area:not(:has(canvas,.checkerboard,#farmGrid)){height:auto!important;min-height:230px}
+ body.arcade-game .canvas-container{width:100%!important;height:auto!important;aspect-ratio:3 / 4}
+ body.arcade-game .game-board-container{width:100%!important;height:auto!important;aspect-ratio:1}
+ body.arcade-game :where(.game-area,.canvas-container,.game-board-container) canvas{width:100%!important;height:100%!important;max-width:100%!important;object-fit:contain}
+ body.arcade-game nav:not(.arcade-utility),body.arcade-game .game-nav{position:static!important}
+ body.arcade-game .arcade-utility{position:relative!important;inset:auto!important;margin:6px 6px 8px auto!important}
+ body.arcade-game .game-nav ul{max-height:84px;overflow:auto;flex-wrap:nowrap;justify-content:flex-start}
+ body.arcade-game .game-nav li{flex-shrink:0!important}
+ body.arcade-game .controls:not(.controls-container){position:relative!important;z-index:100!important;transform:none!important}
+ body.arcade-game :where(.game-area,.canvas-container,.game-board-container){z-index:1}
+ body.arcade-game .game-overlay.active{z-index:200!important}
+ body.arcade-game .game-overlay.active button{z-index:201!important}
+ body.arcade-game :where(.stats,.game-stats){max-width:100%;min-width:0}
+ body.arcade-game :where(.stats .stat-box,.stats .stat-item){min-width:0;overflow-wrap:anywhere;padding:8px!important}
+ body.arcade-game .checkerboard .piece{width:min(60px,80%);height:auto;aspect-ratio:1}
+}
+
+/* Touch launch screen must remain operable, independent of older 600px canvas layout. */
+@media (pointer:coarse), (max-width:650px) {
+ body.arcade-game #game-start-screen.game-overlay.active {
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:12px;
+  padding:20px!important;overflow:auto!important;border-radius:0!important;
+  background:#091529f5!important;z-index:12000!important;
+ }
+ body.arcade-game #game-start-screen.game-overlay.active :is(h2,p){
+  position:static!important;max-width:100%!important;margin:0!important;
+  text-align:center!important;overflow-wrap:anywhere!important;
+ }
+ body.arcade-game #game-start-screen.game-overlay.active #start-btn {
+  position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;display:block!important;flex:none!important;min-width:150px!important;
+  max-width:100%!important;margin:14px auto 0!important;z-index:12001!important;
+ }
+}

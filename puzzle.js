@@ -66,14 +66,16 @@ class PuzzleGame {
         this.initGame();
         
         // 执行随机移动来打乱拼图
-        const shuffleMoves = 1000;
+        const control=document.getElementById('puzzle-difficulty');
+        const shuffleMoves = control?Number(control.value):160;
+        let previousEmpty=-1;
         for (let i = 0; i < shuffleMoves; i++) {
-            const validMoves = this.getValidMoves();
-            if (validMoves.length > 0) {
-                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
-                this.swapTiles(this.emptyIndex, randomMove);
-                this.emptyIndex = randomMove;
-            }
+            const moves = this.getValidMoves().filter(index=>index!==previousEmpty);
+            const validMoves=moves.length?moves:this.getValidMoves();
+            const randomMove=validMoves[Math.floor(Math.random()*validMoves.length)];
+            previousEmpty=this.emptyIndex;
+            this.swapTiles(this.emptyIndex,randomMove);
+            this.emptyIndex=randomMove;
         }
         
         this.moveCount = 0;

@@ -53,6 +53,7 @@
             min-height: 100px;
         }
     </style>
+<link rel="stylesheet" href="arcade-shell.css"><script src="arcade-shell.js" defer></script>
 </head>
 <body>
     <nav>
@@ -61,7 +62,7 @@
     </nav>
     
     <div class="game-container">
-        <h1>🔤 成语接龙</h1>
+        <h1>🀄 成语接龙</h1><p style="color:#c5def4">精选词库 · 接对一个 +20 分 · 全链通关 +50 分</p>
         <div class="score">得分: <span id="score">0</span></div>
         
         <div class="word-display" id="current-word">开始游戏</div>
@@ -80,74 +81,65 @@
     </div>
     
     <script>
-        let score = 0;
-        let currentWord = '';
-        let wordChain = [];
-        let gameStarted = false;
-        
-        const idioms = [
-            '一心一意', '意气风发', '发愤图强', '强词夺理', '理直气壮',
-            '壮志凌云', '云开雾散', '散兵游勇', '勇往直前', '前功尽弃',
-            '弃暗投明', '明察秋毫', '毫不犹豫', '豫章故郡', '郡县制度',
-            '度日如年', '年富力强', '强人所难', '难以置信', '信口开河'
-        ];
-        
-        function startGame() {
-            score = 0;
-            wordChain = [];
-            gameStarted = true;
-            
-            // 随机选择一个成语开始
-            currentWord = idioms[Math.floor(Math.random() * idioms.length)];
-            wordChain.push(currentWord);
-            
-            updateDisplay();
-            document.getElementById('word-input').focus();
-        }
-        
-        function submitWord() {
-            if (!gameStarted) {
-                alert('请先开始游戏！');
-                return;
-            }
-            
-            const input = document.getElementById('word-input');
-            const newWord = input.value.trim();
-            
-            if (newWord.length !== 4) {
-                alert('请输入4个字的成语！');
-                return;
-            }
-            
-            // 检查是否能接龙
-            const lastChar = currentWord[currentWord.length - 1];
-            const firstChar = newWord[0];
-            
-            if (lastChar === firstChar) {
-                // 接龙成功
-                currentWord = newWord;
-                wordChain.push(newWord);
-                score += 10;
-                input.value = '';
-                updateDisplay();
-            } else {
-                alert(`接龙失败！需要以"${lastChar}"开头的成语`);
-            }
-        }
-        
-        function updateDisplay() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('current-word').textContent = currentWord;
-            document.getElementById('word-chain').innerHTML = 
-                '<p>成语链: ' + wordChain.join(' → ') + '</p>';
-        }
-        
-        // 回车键提交
-        document.getElementById('word-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                submitWord();
-            }
-        });
-    </script>
+'use strict';
+const idioms=[
+ '一心一意','意气风发','发奋图强','强人所难','难以置信','信口开河',
+ '河清海晏','晏然自若','若无其事','事半功倍','倍道而进','进退两难',
+ '难能可贵','贵人多忘','忘恩负义','义无反顾','顾名思义','义薄云天',
+ '天长地久','久别重逢','逢凶化吉','吉人天相','相得益彰','彰明较著'
+];
+let score=0,currentWord='',wordChain=[],gameStarted=false,hintWord='',errors=0;
+const input=document.getElementById('word-input');
+const tip=document.createElement('p');
+tip.id='chain-tip';tip.setAttribute('role','status');tip.style.cssText='min-height:1.6em;color:#e6eefd;font-size:14px;margin:10px auto;';
+document.querySelector('.input-area').append(tip);
+const hintButton=document.createElement('button');
+hintButton.type='button';hintButton.className='submit-btn';hintButton.textContent='提示（-5分）';
+hintButton.addEventListener('click',hint);
+document.querySelector('.input-area').append(hintButton);
+const chains=document.getElementById('word-chain');
+chains.style.cssText='background:#1b304d;color:#edf7ff;line-height:1.8;';
+const used=new Set();
+function say(message,color='#d8eafb'){tip.textContent=message;tip.style.color=color;}
+function options(){const last=currentWord.at(-1);return idioms.filter(w=>w[0]===last&&!used.has(w));}
+function startGame(){
+ score=0;errors=0;used.clear();wordChain=[];
+ const start=Math.floor(Math.random()*Math.min(5,idioms.length));
+ currentWord=idioms[start];used.add(currentWord);wordChain.push(currentWord);
+ gameStarted=true;hintWord='';input.value='';hintButton.disabled=false;
+ say('规则：仅使用本关词库中的成语；不可重复。点“提示”获得一个有效接龙。');
+ updateDisplay();input.focus();
+}
+function hint(){
+ if(!gameStarted)return;
+ const next=options();if(!next.length){finish();return;}
+ hintWord=next[0];score=Math.max(0,score-5);updateDisplay();
+ say('提示：下一条可以接「'+hintWord+'」；本次提示扣 5 分。','#ffdda4');
+}
+function submitWord(){
+ if(!gameStarted){say('请先点击“开始新游戏”。','#ffdca2');return;}
+ const w=input.value.trim();
+ if(!/^[\u3400-\u9fff]{4}$/.test(w)){say('请输入四个汉字。','#ffb3b3');return;}
+ if(w[0]!==currentWord.at(-1)){errors++;say('首字应为「'+currentWord.at(-1)+'」，请重试。','#ffc5ae');return;}
+ if(used.has(w)){errors++;say('这个成语已经用过。','#ffc5ae');return;}
+ if(!idioms.includes(w)){errors++;say('本关只收录了有限的精选成语；试试提示。','#ffc5ae');return;}
+ currentWord=w;used.add(w);wordChain.push(w);
+ score+=hintWord===w?10:20;hintWord='';
+ input.value='';updateDisplay();say('接龙成功！当前连击 '+(wordChain.length-1)+' 次。','#9aefcf');
+ if(!options().length)finish();
+}
+function finish(){
+ gameStarted=false;hintButton.disabled=true;
+ score+=50;updateDisplay();say('本轮成语链已到终点！最终得分 '+score+'，点击“开始新游戏”再挑战。','#95efc8');
+}
+function updateDisplay(){
+ document.getElementById('score').textContent=score;
+ document.getElementById('current-word').textContent=currentWord;
+ chains.replaceChildren();
+ const title=document.createElement('strong');title.textContent='本轮成语链（'+wordChain.length+'）';chains.append(title);
+ const list=document.createElement('p');list.textContent=wordChain.join(' → ');list.style.cssText='overflow-wrap:anywhere;margin-top:8px';chains.append(list);
+}
+input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitWord();}});
+</script>
 </body>
 </html>

@@ -636,6 +636,16 @@ class GameLifecycle {
     }
 }
 
+
+/* Compatibility for games using onError(callback). */
+GameLifecycle.prototype.onError=function(callback){this._registeredErrorCallback=callback;};
+const _legacyHandleLifecycle=GameLifecycle.prototype.handleError;
+GameLifecycle.prototype.handleError=function(message,error){
+  const cb=this._registeredErrorCallback || (Object.prototype.hasOwnProperty.call(this,'onError')?this.onError:null);
+  if(typeof cb==='function'){try{cb(error||new Error(message));}catch(e){console.error('Error callback failed',e);}}
+  return _legacyHandleLifecycle.call(this,message,error);
+};
+
 // 导出游戏生命周期管理类
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = GameLifecycle;

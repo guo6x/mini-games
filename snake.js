@@ -129,10 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 记录游戏开始
             if (window.gameAnalytics) {
-                window.gameAnalytics.trackGameStart('snake', '贪吃蛇', {
-                    difficulty: difficultySelect.value,
-                    gridSize: config.gridSize
-                });
+                window.gameAnalytics.startGameTracking('snake', '贪吃蛇');
             }
         } else if (gameState.isPaused) {
             resumeGame();
@@ -168,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 从全局监控器注销
         if (window.GlobalPerformanceMonitor) {
-            window.GlobalPerformanceMonitor.unregister('snake');
+            window.globalPerformanceMonitor?.unregisterMonitor('snake');
         }
         
         // 停止性能监控
@@ -188,12 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 记录游戏结束
         if (window.gameAnalytics) {
-            window.gameAnalytics.trackGameEnd('snake', {
-                score: gameState.score,
-                level: gameState.level,
-                snakeLength: gameState.snake.length,
-                isNewHighScore: gameState.score === stats.highestScore
-            });
+            window.gameAnalytics.endGameTracking(gameState.score, gameState.level, false);
         }
         
         // 显示游戏结束屏幕
