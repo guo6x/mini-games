@@ -42,7 +42,7 @@ test('12 real gate crossings yield three checkpoint segments and final victory',
   assert.equal(gate.stage,Math.floor(i/4)+1);
   if(i<11)assert.equal(g.state,'running');
  }
- assert.equal(g.state,'won');assert.equal(g.player.hp,4);
+ assert.equal(g.state,'won');assert.equal(g.player.hp,4);assert.equal(g.passed,12);assert.equal(g.missed,0);assert.equal(g.grade,'S');
  assert.equal(g.spawned,12);assert.ok(g.score>12*100);
  assert.equal(events.filter(x=>x.type==='checkpoint').length,2);
  assert.equal(events.filter(x=>x.type==='win').length,1);
@@ -80,4 +80,40 @@ test('three-dimensional WebGL shader and software projection both exist and requ
  assert.match(render,/software-perspective/);
  const html=fs.readFileSync(require('node:path').join(__dirname,'../vector-run.html'),'utf8');
  assert.doesNotMatch(html,/src="https?:\/\/|href="https?:\/\//);
+});
+
+test('hit gates do not count as successful clearances; a minimum of eight passes is required',()=>{
+ const g=new Core({seed:57,mode:'training'});g.start();
+ // Keep the hull alive to exercise the qualification gate rather than the HP fail state.
+ g.player.hp=100;
+ for(let i=0;i<7;i++)crossAt(g,{aligned:true});
+ for(let i=0;i<5;i++)crossAt(g,{aligned:false});
+ assert.equal(g.resolved,12);assert.equal(g.passed,7);assert.equal(g.missed,5);assert.equal(g.shielded,0);
+ assert.equal(g.state,'lost');assert.equal(g.grade,'INSUFFICIENT PASSES');
+});
+test('a surviving run with eight valid passes can win, with an honest C grade',()=>{
+ const g=new Core({seed:58});g.start();g.player.hp=100;
+ for(let i=0;i<12;i++)crossAt(g,{aligned:![2,6,9,11].includes(i)});
+ assert.equal(g.state,'won');assert.equal(g.passed,8);assert.equal(g.missed,4);assert.equal(g.grade,'C');
+});
+test('training mode has wider gates and additional health, and cannot change mid-flight',()=>{
+ const standard=new Core({seed:101}),training=new Core({seed:101,mode:'training'});
+ standard.start();training.start();
+ const gs=standard.spawn(),gt=training.spawn();
+ assert.equal(standard.player.hp,4);assert.equal(training.player.hp,5);
+ assert.ok(gt.halfW>gs.halfW&&gt.halfH>gs.halfH&&gt.velocity<gs.velocity);
+ assert.equal(training.setMode('standard'),false);
+ training.state='lost';assert.equal(training.setMode('standard'),true);assert.equal(training.mode,'standard');
+ assert.equal(training.player.maxHp,4);
+});
+test('shielded misses are tracked separately from perfectly aligned passages',()=>{
+ const g=new Core({seed:77});g.start();
+ assert.equal(g.pulse(),true);crossAt(g,{aligned:false});
+ assert.equal(g.passed,0);assert.equal(g.shielded,1);assert.equal(g.missed,0);
+ assert.equal(g.resolved,1);assert.equal(g.player.hp,4);
+});
+test('gate wall renderer matches the logical world box, not an offset y center',()=>{
+ const s=fs.readFileSync(require('node:path').join(__dirname,'../orbit-vector-render.js'),'utf8');
+ assert.match(s,/cube\(\(left\+x-xx\)\/2,0,z,/);
+ assert.match(s,/cube\(\(x\+xx\+right\)\/2,0,z,/);
 });

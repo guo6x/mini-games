@@ -38,3 +38,4 @@ jobs:
           sleep 2
           node tests/browser-smoke.cjs
           node tests/legacy-audit.cjs
+          node tests/vector-playthrough.cjs

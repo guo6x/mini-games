@@ -7,10 +7,13 @@ const core=new window.VectorRunCore({seed:20261103,onEvent:e=>onGameEvent(e)});
 const renderer=new window.VectorRunRenderer(view,hud);
 const held=new Set();let pointer=null,dragId=null,last=0;
 let audio=null,muted=true,highscore=0;
+const modeButtons=[...document.querySelectorAll('[data-flight-mode]')];
+const selectedMode=()=>core.mode;
 try{highscore=Number(localStorage.getItem('orbit-vector-best')||0);}catch(_){}
 const dom={overlay:$('overlay'),start:$('startBtn'),title:$('overlayTitle'),text:$('overlayText'),
  kicker:$('overlayKicker'),state:$('gameState'),status:$('statusLine'),
  score:$('scoreValue'),progress:$('progressValue'),bar:$('progressBar'),
+ aim:$('aimHint'),passes:$('passValue'),misses:$('missValue'),
  life:$('lifeValue'),combo:$('comboValue'),ability:$('abilityText'),mode:$('rendererText')};
 function audioBlip(freq=500,time=.065){
  if(muted)return;try{
@@ -34,8 +37,8 @@ function onGameEvent(e){
   case 'impact':status('撞击！船体剩余 '+e.hp+' 点');audioBlip(170,.17);break;
   case 'checkpoint':status('航段 '+e.stage+' 完成 · 检查点'+(e.recovered?'已恢复船体':'已抵达'));audioBlip(850);break;
   case 'pulse':status('相位护盾启动 · 1 秒临时保护');audioBlip(790);break;
-  case 'win':status('任务完成 · 12 道星门全部通过');audioBlip(1040,.2);break;
-  case 'lose':status('飞行失败 · 船体完整性归零');audioBlip(110,.2);break;
+  case 'win':status('任务成功 · '+e.passed+' 道精准穿越 · '+e.shielded+' 次护盾穿越');audioBlip(1040,.2);break;
+  case 'lose':status(e.reason==='qualification'?'航线未达标：至少需要安全穿越 8 道星门':'飞行失败：船体完整性归零');audioBlip(110,.2);break;
  }
 }
 function start(){
@@ -51,15 +54,16 @@ function showFinal(){
  dom.overlay.hidden=false;
  dom.kicker.textContent=won?'MISSION COMPLETE // 3D':'MISSION FAILED // RETRY';
  dom.title.textContent=won?'星门航线，成功突破。':'飞船受损，重新挑战。';
- dom.text.textContent='完成 '+core.resolved+' / 12 道星门 · 得分 '+core.score+
-   ' · 最高连击 x'+core.bestCombo+' · '+Math.floor(core.time)+' 秒'+
-   ' · 个人最佳 '+highscore;
- dom.start.textContent='重新出发 →';
- dom.state.textContent=won?'MISSION CLEAR / 通过':'MISSION FAILED / 失败';
  if(core.score>highscore){
   highscore=core.score;
   try{localStorage.setItem('orbit-vector-best',String(highscore));}catch(_){}
  }
+ dom.text.textContent='遭遇 '+core.resolved+' / 12 道星门 · 精准 '+core.passed+' · 护盾 '+core.shielded+
+   ' · 撞击 '+core.missed+' · 得分 '+core.score+' · 最高连击 x'+core.bestCombo+
+   ' · '+Math.floor(core.time)+' 秒 · 个人最佳 '+highscore+
+   (won?' · 评级 '+core.grade:core.grade==='INSUFFICIENT PASSES'?' · 安全穿越不足 8 门':'');
+ dom.start.textContent='重新出发 →';
+ dom.state.textContent=won?'MISSION CLEAR / 通过':'MISSION FAILED / 失败';
 }
 function pause(){
  if(!core.pause())return;
@@ -82,13 +86,30 @@ function input(){
 function renderHud(){
  const p=core.player;
  dom.progress.textContent=String(core.resolved).padStart(2,'0')+' / 12';
+ dom.passes.textContent=String(core.passed+core.shielded).padStart(2,'0');
+ dom.misses.textContent=String(core.missed).padStart(2,'0');
  dom.bar.style.width=(core.resolved/12*100).toFixed(1)+'%';
- dom.life.textContent=String(Math.max(0,p.hp)).padStart(2,'0')+' / 04';
+ dom.life.textContent=String(Math.max(0,p.hp)).padStart(2,'0')+' / '+String(p.maxHp).padStart(2,'0');
  dom.score.textContent=String(core.score).padStart(6,'0');
  dom.combo.textContent='x'+String(core.combo).padStart(2,'0');
  dom.ability.textContent=p.shield>0?'ACTIVE / '+p.shield.toFixed(1)+'s':p.cooldown>0?'COOLDOWN / '+p.cooldown.toFixed(1)+'s':'READY / SPACE';
  view.dataset.playerX=p.x.toFixed(3);view.dataset.playerY=p.y.toFixed(3);
  view.dataset.phase=core.state;view.dataset.gates=String(core.resolved);
+ view.dataset.passes=String(core.passed+core.shielded);view.dataset.misses=String(core.missed);
+ const next=core.gates.filter(g=>!g.resolved).sort((a,b)=>a.z-b.z)[0];
+ if(next){
+  const dx=next.x-p.x,dy=next.y-p.y;
+  const aligned=Math.abs(dx)<=next.halfW-p.r&&Math.abs(dy)<=next.halfH-p.r;
+  const ax=Math.abs(dx)>.20?(dx>0?'向右':'向左'):'保持水平';
+  const ay=Math.abs(dy)>.20?(dy>0?'上升':'下降'):'保持高度';
+  dom.aim.textContent='目标 '+next.id+'/12 · '+ax+' '+Math.abs(dx).toFixed(1)+' · '+ay+' '+Math.abs(dy).toFixed(1)+' · 距离 '+Math.round(Math.max(0,next.z-p.z))+'m'+(aligned?' · 已对准':' · 需调整');
+  dom.aim.dataset.aligned=String(aligned);
+  view.dataset.nextX=next.x.toFixed(4);view.dataset.nextY=next.y.toFixed(4);
+  view.dataset.nextZ=next.z.toFixed(4);
+ }else{
+  dom.aim.textContent='星门雷达扫描中 · 保持航线';dom.aim.dataset.aligned='';
+  delete view.dataset.nextX;delete view.dataset.nextY;delete view.dataset.nextZ;
+ }
 }
 function tick(now){
  requestAnimationFrame(tick);
@@ -134,6 +155,13 @@ $('pulseBtn').addEventListener('click',()=>{core.pulse();renderHud();});
 $('pauseBtn').addEventListener('click',pause);
 $('resetBtn').addEventListener('click',start);
 dom.start.addEventListener('click',start);
+modeButtons.forEach(b=>b.addEventListener('click',()=>{
+ if(!core.setMode(b.dataset.flightMode))return;
+ modeButtons.forEach(x=>{const active=x===b;x.classList.toggle('selected',active);x.setAttribute('aria-pressed',String(active));});
+ dom.title.textContent=core.mode==='training'?'训练航线 · 学会精准穿越。':'穿越星门，夺回航线。';
+ status(core.mode==='training'?'训练模式：五点船体、宽星门、较低速度':'标准模式：四点船体、递进的星门挑战');
+ renderHud();
+}));
 $('muteBtn').addEventListener('click',()=>{
  muted=!muted;$('muteBtn').textContent=muted?'声音：关':'声音：开';
  $('muteBtn').setAttribute('aria-pressed',String(!muted));if(!muted)audioBlip();
