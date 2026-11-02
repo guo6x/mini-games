@@ -14,6 +14,10 @@ jobs:
           node --check arcade-home.js
           node --check arcade-play.js
           node --check arcade-shell.js
+          node --check arcade-completion.js
+          node --check tic-tac-toe.js
+          node --check brick-breaker.js
+          node --check puzzle.js
           node --test tests/arcade-health.test.cjs
   browser-smoke:
     runs-on: ubuntu-latest

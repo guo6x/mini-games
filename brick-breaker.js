@@ -81,6 +81,8 @@ class BrickBreakerGame {
     }
     
     startGame() {
+        if(this.rafId)cancelAnimationFrame(this.rafId);
+        this.lastFrame=0;
         this.gameRunning = true;
         this.score = 0;
         this.lives = 3;
@@ -93,21 +95,22 @@ class BrickBreakerGame {
         this.updateScore();
         this.startButton.textContent = '游戏中...';
         this.startButton.disabled = true;
-        this.gameLoop();
+        this.rafId=requestAnimationFrame(t=>this.gameLoop(t));
     }
     
-    gameLoop() {
+    gameLoop(timestamp) {
         if (!this.gameRunning) return;
-        
-        this.update();
-        this.draw();
-        requestAnimationFrame(() => this.gameLoop());
+        const delta = this.lastFrame ? Math.min(2.2,(timestamp-this.lastFrame)/16.667) : 1;
+        this.lastFrame=timestamp;
+        this.update(delta);
+        if(this.gameRunning)this.draw();
+        if(this.gameRunning)this.rafId=requestAnimationFrame(t=>this.gameLoop(t));
     }
     
-    update() {
-        // 更新球的位置
-        this.ball.x += this.ball.dx;
-        this.ball.y += this.ball.dy;
+    update(delta=1) {
+        // Frame-rate independent movement (60Hz base).
+        this.ball.x += this.ball.dx*delta;
+        this.ball.y += this.ball.dy*delta;
         
         // 球与墙壁碰撞检测
         if (this.ball.x + this.ball.dx > this.canvas.width - this.ball.radius || this.ball.x + this.ball.dx < this.ball.radius) {
@@ -164,6 +167,7 @@ class BrickBreakerGame {
                         if (this.score === this.brickRowCount * this.brickColumnCount * 10) {
                             this.gameWin();
                         }
+                        return;
                     }
                 }
             }

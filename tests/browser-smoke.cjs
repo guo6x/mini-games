@@ -46,6 +46,6 @@ const assert=require('node:assert/strict');
   await mobile.locator('[data-key="ArrowRight"]').tap();
   assert.equal(await mobile.locator('#stage').count(),1);
   assert.deepEqual(errors,[],'Page errors: '+errors.join('\n'));
-  console.log('Browser smoke passed: hub, 10 games, rule interactions and mobile touch.');
+  console.log('Browser smoke passed: hub, 26 rebuilt games, rule interactions and mobile touch.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});
