@@ -30,7 +30,7 @@ try{
   await mobile.locator('#startBtn').tap();
   assert.equal(await mobile.locator('#statusPill').textContent(),'进行中','Mobile start '+g.id);
   assert.ok(await mobile.locator('#stage').isVisible(),'Stage hidden '+g.id);
-  await mobile.locator('[data-key="ArrowRight"]').tap();
+  await mobile.locator('.touch-panel [data-key="ArrowRight"]').tap();
   await mobile.locator('#pauseBtn').tap();
   assert.equal(await mobile.locator('#statusPill').textContent(),'已暂停','Mobile pause '+g.id);
   await mobile.locator('#resetBtn').tap();
