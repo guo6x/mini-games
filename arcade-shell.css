@@ -51,3 +51,34 @@ body.arcade-game :where(.game-overlay.active,.game-start.active,.game-start-scre
  body.arcade-game .game-area canvas{width:100%;height:auto}
  body.arcade-game .controls:not(.controls-container){display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:12px 3px;background:#101f35e8;border-radius:15px}
 }
+
+/* Legacy visual system: stronger contrast and coherent controls without altering game mechanics. */
+body.arcade-game :where(.stats .stat-box,.stats .stat-item,.score-box,.next-box,.stat-block){
+ background:#172a43!important;color:#edf7ff!important;border:1px solid #46648c!important;
+ border-radius:14px!important;box-shadow:0 10px 24px #0209182a!important;
+}
+body.arcade-game :where(.stats .stat-box,.stats .stat-item,.score-box,.next-box,.stat-block) :where(span,strong,div){
+ color:inherit;
+}
+body.arcade-game :where(.instructions,.results,.game-options){
+ background:#182c47;color:#deedff;border-color:#719bc154;border-radius:16px;
+}
+body.arcade-game :where(.game-area,.canvas-container,.game-board-container){
+ border-color:#7296c066;border-radius:16px;box-shadow:0 18px 42px #02061655;
+}
+body.arcade-game :where(input,select){
+ max-width:100%;border-radius:10px;accent-color:#85e8f8;
+}
+body.arcade-game :where(button,.game-btn,.play-button,.btn):not(:disabled){
+ transition:filter .15s,transform .15s;touch-action:manipulation;
+}
+body.arcade-game :where(button,.game-btn,.play-button,.btn):not(:disabled):active{
+ transform:scale(.98);filter:brightness(1.09)
+}
+body.arcade-game :where(.game-overlay.active,.game-start.active,.game-start-screen.active){
+ overflow:auto;overscroll-behavior:contain;
+}
+body.arcade-game ::selection{background:#5be6c9;color:#071322}
+@media(prefers-reduced-motion:reduce){
+ body.arcade-game *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
