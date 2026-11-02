@@ -49,7 +49,20 @@ for(let i=65;i<=90;i++)controlKeys.add('Key'+String.fromCharCode(i));
 for(let i=1;i<=9;i++)controlKeys.add('Digit'+i);
 controlKeys.add('Backspace');controlKeys.add('Delete');
 document.addEventListener('keydown',e=>{if(!controlKeys.has(e.code)||e.target.closest('input,textarea,select'))return;e.preventDefault();if(e.code==='KeyR'&&MODE!=='hangman'){begin();return;}if(e.code==='KeyP'&&MODE!=='hangman'){togglePause();return;}if(!playing||paused)return;if(!keys.has(e.code)&&engine.key)engine.key(e.code);keys.add(e.code);});
-document.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();if(playing&&!paused)togglePause();});
+document.addEventListener('keyup',e=>keys.delete(e.code));
+const swipeGames=new Set(['2048','snake','pac-man','tetris','puzzle','sliding-puzzle']);
+let swipeOrigin=null;
+if(swipeGames.has(MODE)){
+ canvas.addEventListener('pointerdown',e=>{swipeOrigin={x:e.clientX,y:e.clientY};});
+ canvas.addEventListener('pointerup',e=>{
+  if(!swipeOrigin||!playing||paused)return;
+  const dx=e.clientX-swipeOrigin.x,dy=e.clientY-swipeOrigin.y;swipeOrigin=null;
+  if(Math.hypot(dx,dy)<28)return;
+  const key=Math.abs(dx)>Math.abs(dy)?(dx>0?'ArrowRight':'ArrowLeft'):(dy>0?'ArrowDown':'ArrowUp');
+  engine.key?.(key);
+ });
+ canvas.addEventListener('pointercancel',()=>{swipeOrigin=null;});
+}window.addEventListener('blur',()=>{keys.clear();if(playing&&!paused)togglePause();});
 canvas.addEventListener('pointerdown',e=>{if(!playing||paused||!engine.click)return;const r=canvas.getBoundingClientRect();engine.click((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);});
 const actionButton=document.querySelector('[data-key="Space"]');if(actionButton){actionButton.textContent=( {'flappy-bird':'拍翼','music-rhythm':'节拍','space-invaders':'射击','space-shooter':'射击','plane-combat':'射击','tetris':'直落','reaction-test':'抢答','minesweeper':'插旗','time-guardian':'时缓','tic-tac-toe':'难度'}[MODE]||'动作');}
 document.querySelectorAll('[data-key]').forEach(b=>{const code=b.dataset.key;const down=e=>{e.preventDefault();if(!playing||paused)return;keys.add(code);if(engine.key)engine.key(code);b.classList.add('pressed');try{b.setPointerCapture(e.pointerId);}catch(_){}};const up=e=>{e.preventDefault();keys.delete(code);b.classList.remove('pressed');};b.addEventListener('pointerdown',down);['pointerup','pointercancel','lostpointercapture'].forEach(k=>b.addEventListener(k,up));});

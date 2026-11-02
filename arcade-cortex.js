@@ -107,8 +107,23 @@ window.ORBIT_CORTEX=api=>{
   draw(){backdrop('星图找不同','已找到 '+this.found.size+' / 5 处 · 可点击左图或右图');this.scene(0);this.scene(1);text('颜色 · 旋转 · 形状，仔细比对',258,466,17,'#bbdeef');}
  }),
  sudoku:()=>({
-  init(){const seed=Array.from({length:9},(_,y)=>Array.from({length:9},(_,x)=>(y*3+Math.floor(y/3)+x)%9+1));const nums=shuffle(Array.from({length:9},(_,i)=>i+1));const rp=shuffle([0,1,2]),cp=shuffle([0,1,2]);const rows=rp.flatMap(q=>shuffle([q*3,q*3+1,q*3+2]));const cols=cp.flatMap(q=>shuffle([q*3,q*3+1,q*3+2]));this.solution=rows.map(y=>cols.map(x=>nums[seed[y][x]-1]));this.board=this.solution.map(a=>a.slice());this.lock=Array.from({length:9},()=>Array(9).fill(true));const spots=shuffle(Array.from({length:81},(_,i)=>i));for(const i of spots.slice(0,41)){const y=Math.floor(i/9),x=i%9;this.board[y][x]=0;this.lock[y][x]=false;}this.selected={x:0,y:0};this.mistakes=0;this.elapsed=0;notify('已生成合法数独，请填满全部空格。');level('EMPTY 41');},
-  set(n){const {x,y}=this.selected;if(this.lock[y][x]){notify('这是题目给出的数字，不能修改');return;}this.board[y][x]=n;if(n&&n!==this.solution[y][x]){this.mistakes++;tone(150);notify('数字不符合唯一解，再试一次');}else tone(620);const empty=this.board.flat().filter(v=>!v).length;level('EMPTY '+empty);points(Math.max(0,(41-empty)*60-this.mistakes*12));if(this.board.every((row,y)=>row.every((v,x)=>v===this.solution[y][x])))finish('全部空格正确 · 数独通关！');},
+  solutionCount(original){
+   const b=original.map(row=>row.slice());let answers=0;
+   const valid=(y,x,n)=>!b[y].includes(n)&&!b.some(row=>row[x]===n)&&!b.some((row,ry)=>Math.floor(ry/3)===Math.floor(y/3)&&row.some((v,rx)=>Math.floor(rx/3)===Math.floor(x/3)&&v===n));
+   const dfs=()=>{
+    if(answers>=2)return;
+    let pick=null,options=null;
+    for(let y=0;y<9;y++)for(let x=0;x<9;x++)if(!b[y][x]){
+     const opts=[];for(let n=1;n<=9;n++)if(valid(y,x,n))opts.push(n);
+     if(!options||opts.length<options.length){options=opts;pick=[y,x];}
+     if(!opts.length)return;
+    }
+    if(!pick){answers++;return;}
+    const [y,x]=pick;for(const n of options){b[y][x]=n;dfs();if(answers>=2)break;}b[y][x]=0;
+   };dfs();return answers;
+  },
+  init(){const seed=Array.from({length:9},(_,y)=>Array.from({length:9},(_,x)=>(y*3+Math.floor(y/3)+x)%9+1));const nums=shuffle(Array.from({length:9},(_,i)=>i+1));const rp=shuffle([0,1,2]),cp=shuffle([0,1,2]);const rows=rp.flatMap(q=>shuffle([q*3,q*3+1,q*3+2]));const cols=cp.flatMap(q=>shuffle([q*3,q*3+1,q*3+2]));this.solution=rows.map(y=>cols.map(x=>nums[seed[y][x]-1]));this.board=this.solution.map(a=>a.slice());this.lock=Array.from({length:9},()=>Array(9).fill(true));const spots=shuffle(Array.from({length:81},(_,i)=>i));let removed=0;for(const i of spots){if(removed>=41)break;const y=Math.floor(i/9),x=i%9,v=this.board[y][x];this.board[y][x]=0;if(this.solutionCount(this.board)!==1){this.board[y][x]=v;}else{this.lock[y][x]=false;removed++;}}this.initialEmpty=removed;this.selected={x:0,y:0};this.mistakes=0;this.elapsed=0;notify('数独已生成，且经唯一解校验。');level('EMPTY '+removed);},
+  set(n){const {x,y}=this.selected;if(this.lock[y][x]){notify('这是题目给出的数字，不能修改');return;}this.board[y][x]=n;if(n&&n!==this.solution[y][x]){this.mistakes++;tone(150);notify('数字不符合唯一解，再试一次');}else tone(620);const empty=this.board.flat().filter(v=>!v).length;level('EMPTY '+empty);points(Math.max(0,(this.initialEmpty-empty)*60-this.mistakes*12));if(this.board.every((row,y)=>row.every((v,x)=>v===this.solution[y][x])))finish('全部空格正确 · 数独通关！');},
   key(k){if(/^Digit[1-9]$/.test(k))this.set(+k.slice(-1));if(k==='Backspace'||k==='Delete')this.set(0);const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(d[k]){this.selected.x=clamp(this.selected.x+d[k][0],0,8);this.selected.y=clamp(this.selected.y+d[k][1],0,8);}},
   click(x,y){const sx=158,sy=71,size=42;if(hit(x,y,sx,sy,378,378)){this.selected={x:Math.floor((x-sx)/size),y:Math.floor((y-sy)/size)};return;}for(let i=0;i<9;i++)if(hit(x,y,574+(i%3)*61,171+Math.floor(i/3)*61,55,52))this.set(i+1);if(hit(x,y,572,376,182,49))this.set(0);},
   update(dt){this.elapsed+=dt;},

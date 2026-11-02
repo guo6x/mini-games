@@ -14,7 +14,7 @@ try{
  await start('tower-defense');await tap(80,80);assert.match(await page.locator('#liveFeedback').textContent(),/部署完成/);
  await start('racing');await page.waitForTimeout(500);assert.ok(Number(await page.locator('#scoreValue').textContent())>0);
  await start('reversi');await tap(323,223);assert.ok(Number(await page.locator('#scoreValue').textContent())>=40);
- await start('sokoban');await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowUp');assert.equal(await page.locator('#levelValue').textContent(),'LEVEL 2');
+ await start('sokoban');await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowUp');assert.equal(await page.locator('#levelValue').textContent(),'LEVEL 2');
  assert.deepEqual(errors,[],'Page errors: '+errors.join('\n'));
  console.log('Cross-family rule smoke passed');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
