@@ -19,3 +19,22 @@ test('all 57 pages share the stage, overlay, help, pause, reset and accessibilit
  for(const g of games){const page=read(g.file);for(const s of ['id="stage"','id="startBtn"','id="pauseBtn"','id="resetBtn"','aria-label="游戏主画面"'])assert.ok(page.includes(s),g.id+' missing '+s);assert.ok(page.includes('arcade-play.js'));}
 });
 test('all static assets and stage modules exist',()=>{for(const x of ['arcade-home.js','arcade-home.css','arcade-play.js','arcade-play.css','arcade-extra.js','arcade-more.js','arcade-final.js','arcade-completion.js',...Object.keys(newGroups)])assert.ok(fs.existsSync(path.join(root,x)),x);});
+
+test('quality-tier editorial labels remain consistent and all 57 URLs stay playable',()=>{
+ const picks=games.filter(g=>g.qualityTier==='candidate');
+ const lab=games.filter(g=>g.qualityTier==='lab');
+ const other=games.filter(g=>g.qualityTier==='standard');
+ assert.equal(picks.length,10);assert.equal(lab.length,17);assert.equal(other.length,30);
+ for(const g of games){
+  assert.equal(g.dimension,'2d');
+  assert.equal(g.featured,g.qualityTier==='candidate');
+  assert.ok(['candidate','standard','lab'].includes(g.qualityTier));
+  if(g.qualityTier==='lab')assert.ok(g.qualityNote&&g.qualityNote.length>8);
+  assert.ok(fs.existsSync(path.join(root,g.file)));
+ }
+ assert.ok(fs.existsSync(path.join(root,'docs/QUALITY_ROADMAP.md')));
+});
+test('crossword letter modes cannot be swallowed by restart/pause shortcuts',()=>{
+ const source=read('arcade-play.js');
+ assert.match(source,/\['hangman','crossword'\]\.includes\(MODE\)/);
+});

@@ -1,4 +1,4 @@
-/* 57 game editions and original generated micro-posters. */
+/* Catalog: quality curation is independent of technical playability. */
 const GAMES_DATA = [
   {
     "id": "2048",
@@ -15,7 +15,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "brick-breaker",
@@ -32,7 +34,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "bubble-shooter",
@@ -46,10 +50,12 @@ const GAMES_DATA = [
       "消除"
     ],
     "file": "bubble-shooter.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "card-memory",
@@ -63,7 +69,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "checkers",
@@ -80,7 +88,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "chess",
@@ -95,10 +105,12 @@ const GAMES_DATA = [
       "国际象棋"
     ],
     "file": "chess.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "city-builder",
@@ -109,10 +121,13 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "city-builder.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "建设与资源模型过浅，缺少长期策略"
   },
   {
     "id": "color-match",
@@ -129,7 +144,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "仅有简单反应判断，缺少持续成长与变化"
   },
   {
     "id": "connect-dots",
@@ -143,7 +161,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "主要是依序点击数字，缺少路线规划机制"
   },
   {
     "id": "cooking",
@@ -157,7 +178,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "订单和烹饪步骤过于固定，长期挑战不足"
   },
   {
     "id": "crossword",
@@ -172,10 +196,12 @@ const GAMES_DATA = [
       "填字"
     ],
     "file": "crossword.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "dress-up",
@@ -186,10 +212,13 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "dress-up.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "主题答案固定，创作自由度和造型反馈不足"
   },
   {
     "id": "farm",
@@ -203,7 +232,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "经济目标太容易完成，缺少有意义的投入产出选择"
   },
   {
     "id": "fishing",
@@ -214,10 +246,12 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "fishing.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "flappy-bird",
@@ -231,10 +265,12 @@ const GAMES_DATA = [
       "挑战"
     ],
     "file": "flappy-bird.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "geography",
@@ -245,10 +281,13 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "geography.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "题库、地图交互与空间知识反馈仍有限"
   },
   {
     "id": "gomoku",
@@ -265,7 +304,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "hangman",
@@ -282,7 +323,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "jigsaw-puzzle",
@@ -293,10 +336,12 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "jigsaw-puzzle.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "mahjong",
@@ -310,10 +355,12 @@ const GAMES_DATA = [
       "配对"
     ],
     "file": "mahjong.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "match3",
@@ -327,7 +374,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "math-game",
@@ -341,10 +390,12 @@ const GAMES_DATA = [
       "计算"
     ],
     "file": "math-game.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "maze-runner",
@@ -358,7 +409,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "memory-game",
@@ -372,10 +425,13 @@ const GAMES_DATA = [
       "配对"
     ],
     "file": "memory-game.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "与另一款记忆配对游戏高度重叠，需形成差异"
   },
   {
     "id": "minesweeper",
@@ -392,7 +448,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "music-rhythm",
@@ -400,13 +458,16 @@ const GAMES_DATA = [
     "icon": "🎵",
     "category": "action",
     "difficulty": "medium",
-    "description": "四轨音符判定与连击得分，可按 A/S/D/F 或触控。",
+    "description": "四轨节奏反应实验：音符判定与提示音，尚未加入同步配乐。",
     "tags": [],
     "file": "music-rhythm.html",
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "缺少真正与背景音乐同步的谱面和完整节奏反馈"
   },
   {
     "id": "nonogram",
@@ -417,10 +478,12 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "nonogram.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "number-memory",
@@ -434,7 +497,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "关卡变化有限，错误后的反馈和复盘不足"
   },
   {
     "id": "pac-man",
@@ -448,7 +514,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "pet-care",
@@ -459,10 +527,13 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "pet-care.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "养成选择、奖励与阶段目标还比较单薄"
   },
   {
     "id": "pinball",
@@ -473,10 +544,12 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "pinball.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "plane-combat",
@@ -490,10 +563,12 @@ const GAMES_DATA = [
       "躲避"
     ],
     "file": "plane-combat.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "platformer",
@@ -504,10 +579,12 @@ const GAMES_DATA = [
     "description": "奔跑、跳跃、收集能量，抵达终点。",
     "tags": [],
     "file": "platformer.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "pong",
@@ -524,7 +601,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "puzzle",
@@ -538,7 +617,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "quiz",
@@ -549,10 +630,13 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "quiz.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "题库与学习反馈比较基础，缺少进阶模式"
   },
   {
     "id": "racing",
@@ -566,7 +650,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "reaction-test",
@@ -580,7 +666,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "更接近反应计时工具，缺少完整的游戏循环"
   },
   {
     "id": "reversi",
@@ -597,7 +686,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "sliding-puzzle",
@@ -614,7 +705,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "snake-ladder",
@@ -625,10 +718,13 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "snake-ladder.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "由随机骰子主导，玩家决策空间很小"
   },
   {
     "id": "snake",
@@ -645,7 +741,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "sokoban",
@@ -659,7 +757,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "solitaire",
@@ -674,10 +774,12 @@ const GAMES_DATA = [
       "策略"
     ],
     "file": "solitaire.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "space-invaders",
@@ -691,7 +793,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "space-shooter",
@@ -708,7 +812,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "spot-difference",
@@ -722,7 +828,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "随机几何画面辨识度不足，缺少精心设计的关卡"
   },
   {
     "id": "sudoku-killer",
@@ -733,10 +842,12 @@ const GAMES_DATA = [
     "description": "浏览器里的轻量小游戏挑战。",
     "tags": [],
     "file": "sudoku-killer.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "sudoku",
@@ -753,7 +864,9 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "tangram",
@@ -768,10 +881,12 @@ const GAMES_DATA = [
       "拼图"
     ],
     "file": "tangram.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "tetris",
@@ -788,7 +903,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "tic-tac-toe",
@@ -802,10 +919,12 @@ const GAMES_DATA = [
       "双人"
     ],
     "file": "tic-tac-toe.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "time-guardian",
@@ -820,10 +939,12 @@ const GAMES_DATA = [
       "守护"
     ],
     "file": "time-guardian.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "standard",
+    "dimension": "2d"
   },
   {
     "id": "tower-defense",
@@ -840,7 +961,9 @@ const GAMES_DATA = [
     "featured": true,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "candidate",
+    "dimension": "2d"
   },
   {
     "id": "typing-game",
@@ -857,7 +980,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "词库较小，难度曲线和长期目标不足"
   },
   {
     "id": "word-chain",
@@ -875,7 +1001,10 @@ const GAMES_DATA = [
     "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v3"
+    "edition": "unified-v3",
+    "qualityTier": "lab",
+    "dimension": "2d",
+    "qualityNote": "干扰选项过于明显，推理难度不足"
   },
   {
     "id": "word-search",
@@ -889,9 +1018,11 @@ const GAMES_DATA = [
       "搜索"
     ],
     "file": "word-search.html",
-    "featured": true,
+    "featured": false,
     "status": "playable",
     "revamped": true,
-    "edition": "unified-v2"
+    "edition": "unified-v2",
+    "qualityTier": "standard",
+    "dimension": "2d"
   }
 ];

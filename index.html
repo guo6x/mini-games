@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e1c"><meta name="description" content="57 个浏览器小游戏项目，精选可玩作品、近期挑战与持续打磨的街机实验室。">
+<meta name="theme-color" content="#090e1c"><meta name="description" content="ORBIT ARCADE：10 款优先体验候选、40 款主游戏、17 款公开实验作品。57 个页面持续打磨。">
 <title>ORBIT ARCADE · 值得再来一局</title>
 <link rel="stylesheet" href="arcade-home.css">
 <script src="games-data.js" defer></script><script src="arcade-home.js" defer></script>
@@ -16,21 +16,21 @@
 <main>
 <section class="hero" aria-labelledby="hero-heading"><div class="hero-copy">
 <div class="eyebrow"><span class="live-dot"></span> A PERSONAL ARCADE EXPERIMENT</div>
-<h1 id="hero-heading">好游戏，<br><em>值得再来一局。</em></h1>
-<p class="hero-lead">不拼游戏数量，先把每一次操作做得有反馈、有挑战、有成就感。选一款，即刻开始。</p>
+<h1 id="hero-heading">先做好游戏，<br><em>再做更多游戏。</em></h1>
+<p class="hero-lead">57 款游戏不等于 57 款精品。优先体验相对成熟的玩法，其余作品留在公开实验室打磨。</p>
 <div class="hero-actions"><button class="primary-btn" id="surprise" type="button"><span>▶</span> 随机来一局</button><a class="ghost-btn" href="#library">探索游戏库 <span>↗</span></a></div>
 <div class="hero-meta"><span>NO INSTALL</span><span>PLAY IN BROWSER</span><span>MADE FOR FUN</span></div>
 </div><div class="hero-art" aria-hidden="true"><div class="orbit-ring ring-a"></div><div class="orbit-ring ring-b"></div><div class="orb-core"><span>✦</span></div><div class="floating-card one"><small>UP NEXT</small><strong>01 / PLAY</strong><span>↗</span></div><div class="floating-card two"><small>LEVEL UP</small><strong>+100 XP</strong><span>✳</span></div><div class="orbit-label">ORBIT // 2026</div></div></section>
-<section class="insights" aria-label="游戏库概览"><div class="insight"><span class="insight-number" id="readyCount">—</span><span class="insight-label">当前可探索</span></div><div class="insight"><span class="insight-number" id="revampedCount">—</span><span class="insight-label">玩法重制</span></div><div class="insight"><span class="insight-number" id="previewCount">—</span><span class="insight-label">待完善原型</span></div><div class="insight"><span class="insight-number" id="playedCount">0</span><span class="insight-label">我的游戏足迹</span></div></section>
-<section class="spotlight" id="spotlight"><div class="section-heading"><div><span class="section-kicker">CURATED FOR YOU</span><h2>先玩这些<span class="accent-point">.</span></h2><p>从最容易上手的经典玩法开始，挑战自己的最好成绩。</p></div><button type="button" id="refreshFeatured" class="text-button">换一组 ↻</button></div><div class="spotlight-grid" id="spotlightGrid"></div></section>
-<section class="library" id="library"><div class="section-heading"><div><span class="section-kicker">THE COLLECTION</span><h2>选择你的下一关<span class="accent-point">.</span></h2><p>原型不会伪装成完成品：可以筛选试玩作品，也能查看待打磨清单。</p></div></div>
+<section class="insights" aria-label="游戏库概览"><div class="insight"><span class="insight-number" id="readyCount">—</span><span class="insight-label">主游戏库</span></div><div class="insight"><span class="insight-number" id="revampedCount">—</span><span class="insight-label">优先体验候选</span></div><div class="insight"><span class="insight-number" id="previewCount">—</span><span class="insight-label">实验室作品</span></div><div class="insight"><span class="insight-number" id="playedCount">0</span><span class="insight-label">我的游戏足迹</span></div></section>
+<section class="spotlight" id="spotlight"><div class="section-heading"><div><span class="section-kicker">CURATED FOR YOU</span><h2>先玩这些<span class="accent-point">.</span></h2><p>优先选择有明确玩法、具备继续提升潜力的作品。这些是编辑候选，不是玩家认证的精品。</p></div><button type="button" id="refreshFeatured" class="text-button">换一组 ↻</button></div><div class="spotlight-grid" id="spotlightGrid"></div></section>
+<section class="library" id="library"><div class="section-heading"><div><span class="section-kicker">THE COLLECTION</span><h2>选择你的下一关<span class="accent-point">.</span></h2><p>主游戏库和实验室均可直接试玩。当前分级是代码审查判断，不是用户评分。</p></div></div>
 <div class="control-panel"><label class="search-field" for="gameSearch"><span>⌕</span><input id="gameSearch" type="search" autocomplete="off" placeholder="搜索游戏、玩法、关键词…" aria-label="搜索游戏"></label>
 <div class="select-wrap"><label for="sortBy">排序</label><select id="sortBy"><option value="curated">编辑精选</option><option value="name">名称 A–Z</option><option value="recent">最近玩过</option></select></div></div>
-<div class="filter-row"><div id="categoryFilters" class="filter-chips" role="group" aria-label="按类型筛选"></div><div class="view-tabs" role="group" aria-label="作品状态"><button type="button" data-view="playable" class="active">可玩作品</button><button type="button" data-view="prototype">待完善原型</button><button type="button" data-view="all">全部</button></div></div>
+<div class="filter-row"><div id="categoryFilters" class="filter-chips" role="group" aria-label="按类型筛选"></div><div class="view-tabs" role="group" aria-label="作品状态"><button type="button" data-view="playable" class="active">主游戏库</button><button type="button" data-view="lab">实验室</button><button type="button" data-view="all">全部 57 款</button></div></div>
 <div class="result-line"><span id="resultSummary" aria-live="polite"></span><span class="shortcut-hint">按 / 快速搜索</span></div>
 <div id="gamesGrid" class="games-grid"></div><div id="emptyState" class="empty-state" hidden><span>◌</span><h3>这里还没有符合条件的游戏</h3><p>试着清除关键词或切换分类。</p><button type="button" id="clearFilters">清除筛选</button></div>
 </section>
-<section class="outro"><div><span class="section-kicker">BUILD IN PUBLIC</span><h2>下一局，会更好。</h2><p>这是持续改进中的独立网页游戏实验室。玩法与稳定性比游戏数量更重要。</p></div><a href="https://github.com/guo6x/mini-games/issues" target="_blank" rel="noopener noreferrer">报告问题或提出创意 ↗</a></section>
+<section class="outro"><div><span class="section-kicker">BUILD IN PUBLIC</span><h2>下一局，会更好。</h2><p>我们保留需要改进的作品，而不是把它们伪装成精品。后续先打磨 2D，再验证具有独特玩法的 3D 和四维空间解谜。</p></div><a href="https://github.com/guo6x/mini-games/issues" target="_blank" rel="noopener noreferrer">报告问题或提出创意 ↗</a></section>
 </main><footer><span>© 2026 ORBIT ARCADE · BUILT BY GUO6X</span><span>NO DOWNLOADS. JUST PLAY.</span></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body></html>

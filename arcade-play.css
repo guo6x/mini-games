@@ -29,3 +29,6 @@ button:active{transform:scale(.98)}
 .immersive-actions{position:absolute;top:12px;right:12px;display:flex;gap:7px;pointer-events:auto}
 .immersive-controls.minimal .immersive-dpad{display:none}
 @media(max-width:650px){.immersive-dpad{left:9px;bottom:8px;gap:4px}.immersive-dpad button{min-width:36px;min-height:35px;padding:6px 8px;font-size:13px}.immersive-actions{top:7px;right:7px}.immersive-actions button{min-height:34px;padding:6px 9px;font-size:11px}}
+
+.lab-notice,.touch-zoom-hint{display:block;margin:-12px 0 18px;padding:10px 13px;border-radius:8px;border-left:3px solid #e0b17b;background:#3e342a70;color:#f1d5b2;font-size:12px;line-height:1.65}
+.touch-zoom-hint{border-left-color:#76c9ed;color:#b5e4f7;background:#20344b77}
