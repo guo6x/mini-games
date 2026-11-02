@@ -12,12 +12,12 @@ test('catalog is exactly the game HTML pages, with no missing links or duplicate
  assert.equal(new Set(catalog).size,catalog.length);
 });
 test('catalog statuses reflect the static placeholder audit',()=>{
- assert.equal(games.filter(g=>g.status==='prototype').length,4);
- assert.equal(games.filter(g=>g.status==='playable').length,53);
+ assert.equal(games.filter(g=>g.status==='prototype').length,0);
+ assert.equal(games.filter(g=>g.status==='playable').length,57);
  for(const g of games){assert.ok(['playable','prototype'].includes(g.status));assert.ok(g.id);assert.ok(g.name);assert.ok(g.icon)}
 });
 test('all rebuilt games are wired to a canvas and common gameplay engine',()=>{
- const ids=['racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle','mahjong','sudoku-killer','dress-up','pinball'];
+ const ids=['chess','crossword','solitaire','tangram','racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle','mahjong','sudoku-killer','dress-up','pinball'];
  for(const id of ids){
  const g=games.find(x=>x.id===id);
  assert.equal(g.revamped,true);assert.equal(g.status,'playable');
@@ -26,6 +26,8 @@ test('all rebuilt games are wired to a canvas and common gameplay engine',()=>{
  assert.match(page,/id="stage"/);assert.match(page,/arcade-play\.js/);
  assert.doesNotMatch(page,/模拟游戏逻辑|游戏特定逻辑可以在这里添加/);
  }
- for(const id of ['index.html','arcade-home.js','arcade-home.css','arcade-play.js','arcade-play.css'])assert.ok(fs.existsSync(path.join(root,id)));
+ for(const id of ['index.html','arcade-home.js','arcade-home.css','arcade-play.js','arcade-play.css','arcade-completion.js'])assert.ok(fs.existsSync(path.join(root,id)));
 });
 test('pages have no duplicate declared catalogue game IDs',()=>{assert.equal(new Set(games.map(g=>g.id)).size,games.length)});
+
+test('four completed games load their own completion engine before the base runtime',()=>{for(const id of ['chess','crossword','solitaire','tangram']){const p=read(id+'.html');assert.match(p,/arcade-completion\.js/);assert.ok(p.indexOf('arcade-completion.js')<p.indexOf('arcade-play.js'));}});

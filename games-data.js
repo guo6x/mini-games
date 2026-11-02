@@ -79,19 +79,20 @@ const GAMES_DATA = [
   },
   {
     "id": "chess",
-    "name": "国际象棋",
+    "name": "星际国际象棋",
     "icon": "♟️",
     "category": "strategy",
     "difficulty": "hard",
-    "description": "世界上最受欢迎的棋类游戏，考验策略和计算能力。",
+    "description": "与电脑对弈，按真实棋规走子、将军与将死。",
     "tags": [
-      "象棋",
-      "策略"
+      "棋盘",
+      "人机对战",
+      "国际象棋"
     ],
     "file": "chess.html",
     "featured": true,
-    "status": "prototype",
-    "revamped": false
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "city-builder",
@@ -150,19 +151,20 @@ const GAMES_DATA = [
   },
   {
     "id": "crossword",
-    "name": "填字游戏",
-    "icon": "📝",
+    "name": "星际填字工坊",
+    "icon": "🔤",
     "category": "puzzle",
     "difficulty": "hard",
-    "description": "根据提示填写交叉的单词网格。",
+    "description": "横纵单词交叉的三关英文字母填字挑战。",
     "tags": [
-      "填字",
-      "词汇"
+      "英文",
+      "词汇",
+      "填字"
     ],
     "file": "crossword.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "dress-up",
@@ -618,19 +620,20 @@ const GAMES_DATA = [
   },
   {
     "id": "solitaire",
-    "name": "纸牌接龙",
+    "name": "深空纸牌接龙",
     "icon": "🃏",
     "category": "puzzle",
     "difficulty": "medium",
-    "description": "经典的单人纸牌游戏，将所有牌按花色和顺序整理。",
+    "description": "经典 Klondike：翻牌、叠牌、同花基础堆。",
     "tags": [
       "纸牌",
-      "排序"
+      "排序",
+      "策略"
     ],
     "file": "solitaire.html",
     "featured": true,
-    "status": "prototype",
-    "revamped": false
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "space-invaders",
@@ -705,16 +708,20 @@ const GAMES_DATA = [
   },
   {
     "id": "tangram",
-    "name": "七巧板",
-    "icon": "🎮",
+    "name": "七巧板星际工坊",
+    "icon": "🔶",
     "category": "puzzle",
     "difficulty": "medium",
-    "description": "浏览器里的轻量小游戏挑战。",
-    "tags": [],
+    "description": "辨认七块拼图并旋转归位，拼成三组星景。",
+    "tags": [
+      "空间",
+      "旋转",
+      "拼图"
+    ],
     "file": "tangram.html",
-    "featured": false,
-    "status": "prototype",
-    "revamped": false
+    "featured": true,
+    "status": "playable",
+    "revamped": true
   },
   {
     "id": "tetris",

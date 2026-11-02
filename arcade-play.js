@@ -19,6 +19,7 @@ const map={
 Object.assign(map,window.ORBIT_EXTRA_META||{});
 Object.assign(map,window.ORBIT_MORE_META||{});
 Object.assign(map,window.ORBIT_FINAL_META||{});
+Object.assign(map,window.ORBIT_COMPLETION_META||{});
 if(!map[MODE])return;
 const meta=map[MODE], keys=new Set();
 let engine,playing=false,paused=false,ended=false,last=0,score=0,best=0,elapsed=0;
@@ -41,6 +42,7 @@ function begin(){engine=engines[MODE]();points(0);level('01');elapsed=0;engine.i
 function togglePause(){if(!playing||ended)return;paused=!paused;keys.clear();$('pauseBtn').textContent=paused?'继续':'暂停';$('statusPill').textContent=paused?'已暂停':'进行中';notify(paused?'游戏暂停':'继续挑战');}
 function frame(t){requestAnimationFrame(frame);if(!engine)return;const dt=last?Math.min(.04,(t-last)/1000):0;last=t;if(playing&&!paused){elapsed+=dt;engine.update(dt);}engine.draw();}
 const controlKeys=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD','KeyP','KeyR','KeyZ','Digit1','Digit2','Digit3','Digit4']);
+if(MODE==='crossword'){for(let i=65;i<=90;i++)controlKeys.add('Key'+String.fromCharCode(i));controlKeys.add('Backspace');}
 document.addEventListener('keydown',e=>{if(!controlKeys.has(e.code)||e.target.closest('input,textarea,select'))return;e.preventDefault();if(e.code==='KeyR'){begin();return;}if(e.code==='KeyP'){togglePause();return;}if(!playing||paused)return;if(!keys.has(e.code)&&engine.key)engine.key(e.code);keys.add(e.code);});
 document.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();if(playing&&!paused)togglePause();});
 canvas.addEventListener('pointerdown',e=>{if(!playing||paused||!engine.click)return;const r=canvas.getBoundingClientRect();engine.click((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);});
@@ -81,7 +83,7 @@ platformer:()=>({
  const escapes=this.enemies.filter(e=>e.dead);this.health-=escapes.length;this.enemies=this.enemies.filter(e=>!e.dead);
  if(this.health<=0){this.health=0;finish('核心失守 · 已坚持 '+this.wave+' 波');return;}
  this.bullets=this.bullets.filter(b=>(b.ttl-=dt)>0);
- for(const t of this.towers){t.cool-=dt;t.flash=Math.max(0,t.flash-dt);if(t.cool<=0){const target=this.enemies.filter(e=>Math.hypot(e.pos.x-t.x,e.pos.y-t.y)<130+t.level*13).sort((a,b)=>b.d-a.d)[0];if(target){target.hp-=29+t.level*20;t.cool=Math.max(.23,.63-t.level*.09);t.flash=.13;this.bullets.push({x:t.x,y:t.y,tx:target.pos.x,ty:target.pos.y,ttl:.1});if(target.hp<=0){target.dead=true;this.kills++;this.cash+=24+this.wave*3;tone(600);}}}}
+ for(const t of this.towers){t.cool-=dt;t.flash=Math.max(0,t.flash-dt);if(t.cool<=0){const target=this.enemies.filter(e=>!e.dead&&Math.hypot(e.pos.x-t.x,e.pos.y-t.y)<130+t.level*13).sort((a,b)=>b.d-a.d)[0];if(target){target.hp-=29+t.level*20;t.cool=Math.max(.23,.63-t.level*.09);t.flash=.13;this.bullets.push({x:t.x,y:t.y,tx:target.pos.x,ty:target.pos.y,ttl:.1});if(target.hp<=0){target.dead=true;this.kills++;this.cash+=24+this.wave*3;tone(600);}}}}
  this.enemies=this.enemies.filter(e=>!e.dead);
  if(this.queue===0&&this.enemies.length===0&&!this.breaking){this.breaking=true;this.breaktime=3;this.cash+=35+this.wave*8;notify('第 '+this.wave+' 波已清除，奖励能量！');tone(820);}
  points(this.kills*25+this.wave*100);level('WAVE '+this.wave);},
@@ -177,6 +179,7 @@ nonogram:()=>({
 if(window.ORBIT_EXTRA)Object.assign(engines,window.ORBIT_EXTRA({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 if(window.ORBIT_MORE)Object.assign(engines,window.ORBIT_MORE({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 if(window.ORBIT_FINAL)Object.assign(engines,window.ORBIT_FINAL({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
+if(window.ORBIT_COMPLETION)Object.assign(engines,window.ORBIT_COMPLETION({ctx,fill,text,points,level,finish,notify,tone,clamp,rand}));
 engine=engines[MODE]();engine.init();engine.draw();
 requestAnimationFrame(frame);
 })();

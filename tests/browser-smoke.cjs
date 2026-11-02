@@ -5,13 +5,13 @@ const assert=require('node:assert/strict');
  try{
   const page=await browser.newPage({viewport:{width:1440,height:960}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'networkidle'});
-  assert.equal(await page.locator('.game-card').count(),53);
+  assert.equal(await page.locator('.game-card').count(),57);
   await page.locator('[data-view="prototype"]').click();
-  assert.equal(await page.locator('.game-card').count(),4);
+  assert.equal(await page.locator('.game-card').count(),0);
   await page.locator('[data-view="playable"]').click();
   await page.locator('#gameSearch').fill('赛车');
   assert.equal(await page.locator('.game-card').count(),1);
-  for(const id of ['racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle','mahjong','sudoku-killer','dress-up','pinball']){
+  for(const id of ['chess','crossword','solitaire','tangram','racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle','mahjong','sudoku-killer','dress-up','pinball']){
    await page.goto('http://127.0.0.1:4173/'+id+'.html',{waitUntil:'domcontentloaded'});
    assert.equal(await page.locator('canvas#stage').count(),1);
    await page.locator('#startBtn').click();
@@ -21,6 +21,10 @@ const assert=require('node:assert/strict');
    await page.keyboard.press('ArrowRight');
    const stage=page.locator('canvas#stage');
    async function tapCanvas(x,y){const bounds=await stage.boundingBox();await stage.click({position:{x:x/800*bounds.width,y:y/500*bounds.height}});}
+   if(id==='chess'){await tapCanvas(426,377);await tapCanvas(426,324);assert.match(await page.locator('#levelValue').textContent(),/WHITE TO MOVE|BLACK TO MOVE/);}
+   if(id==='crossword'){await tapCanvas(150,120);await page.keyboard.press('b');assert.ok(Number(await page.locator('#scoreValue').textContent())>0,'Typing correct crossword letter earns points');}
+   if(id==='solitaire'){await tapCanvas(60,68);assert.ok(Number(await page.locator('#scoreValue').textContent())>=0);}
+   if(id==='tangram'){await tapCanvas(80,109);assert.ok((await page.locator('#liveFeedback').textContent()).length>0);}
    if(id==='racing')assert.ok(Number(await page.locator('#scoreValue').textContent())>0,'Race distance should increase');
    if(id==='tower-defense'){await tapCanvas(80,80);assert.match(await page.locator('#liveFeedback').textContent(),/部署完成/);}
    if(id==='reversi'){await tapCanvas(323,223);assert.ok(Number(await page.locator('#scoreValue').textContent())>=40,'Legal Reversi move must flip a piece');}
