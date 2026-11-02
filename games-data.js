@@ -1030,5 +1030,30 @@ const GAMES_DATA = [
     "edition": "unified-v2",
     "qualityTier": "standard",
     "dimension": "2d"
+  },
+  {
+    "id": "vector-run",
+    "name": "VECTOR RUN · 3D 星门穿越",
+    "icon": "✦",
+    "category": "action",
+    "difficulty": "hard",
+    "description": "真实三维坐标与 WebGL 透视：12 道星门、三段航线、空间碰撞及相位护盾。",
+    "tags": [
+      "3D",
+      "WebGL",
+      "飞行",
+      "透视",
+      "空间",
+      "星门",
+      "独立原型"
+    ],
+    "file": "vector-run.html",
+    "featured": false,
+    "status": "playable",
+    "revamped": false,
+    "edition": "experimental-3d-v1",
+    "qualityTier": "lab",
+    "qualityNote": "首款完整 3D 玩法原型，尚未完成真实玩家体验、设备性能和难度曲线评估",
+    "dimension": "3d"
   }
 ];

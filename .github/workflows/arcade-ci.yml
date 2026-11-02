@@ -19,8 +19,12 @@ jobs:
           node --check arcade-completion.js
           node --check orbit-nebula-core.js
           node --check orbit-nebula-strike.js
+          node --check orbit-vector-core.js
+          node --check orbit-vector-render.js
+          node --check orbit-vector-game.js
           node --test tests/arcade-health.test.cjs
           node --test tests/nebula-strike.test.cjs
+          node --test tests/vector-run.test.cjs
   browser-regression:
     runs-on: ubuntu-latest
     steps:

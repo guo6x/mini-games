@@ -25,7 +25,19 @@ function renderPoster(canvas,g){
  for(let y=18;y<H;y+=34){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
  for(let i=0;i<42;i++){const x=random()*W,y=random()*H,r=random()*1.4+.4;c.fillStyle=i%4?'#d6ecff55':glow;c.beginPath();c.arc(x,y,r,0,7);c.fill();}
  c.save();c.translate(W*.52,H*.52);c.rotate((seed%9-4)*.055);c.shadowColor=glow;c.shadowBlur=18;
- if(g.id==='space-shooter'){
+ if(g.id==='vector-run'){
+  // 3D wireframe tunnel with converging perspective and an approaching portal.
+  c.save();
+  c.strokeStyle='#78e8f4';c.lineWidth=1.6;c.shadowColor='#5fdefd';c.shadowBlur=11;
+  for(const z of [0.1,0.35,0.75,1]){const ww=95*z,hh=55*z; c.strokeRect(-ww,-hh,2*ww,2*hh);}
+  for(const sign of [-1,1]){for(const y of [-1,1]){c.beginPath();c.moveTo(sign*10,y*5);c.lineTo(sign*95,y*55);c.stroke();}}
+  c.strokeStyle='#8afcdb';c.lineWidth=5;c.strokeRect(-50,-35,100,70);
+  c.strokeStyle='#e8ffff';c.lineWidth=2;c.strokeRect(-32,-22,64,44);
+  c.fillStyle='#aaffed';c.beginPath();c.moveTo(0,7);c.lineTo(-23,22);c.lineTo(-6,18);c.lineTo(0,26);c.lineTo(6,18);c.lineTo(23,22);c.closePath();c.fill();
+  c.restore();
+  c.fillStyle='#edffff';c.font='bold 20px system-ui';c.textAlign='left';c.fillText('VECTOR RUN',-157,-52);
+  c.fillStyle='#90ffe4';c.font='bold 11px system-ui';c.fillText('3D / PERSPECTIVE FLIGHT',-157,-33);
+ }else if(g.id==='space-shooter'){
   // Original key art for our first authored campaign: hero craft, orbiting enemy core and projectile trails.
   c.save();
   c.translate(29,28);

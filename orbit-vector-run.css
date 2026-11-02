@@ -1,0 +1,55 @@
+:root{font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#060e1d;color:#eef7ff;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-width:320px;min-height:100vh;background:radial-gradient(ellipse at 66% -5%,#214b7c55,transparent 54%),radial-gradient(ellipse at 8% 76%,#12456655,transparent 62%),#060e1d}
+button{font:inherit;color:inherit;cursor:pointer}a{color:inherit;text-decoration:none}
+button:focus-visible,a:focus-visible{outline:3px solid #a4ffef;outline-offset:3px}
+.bar{max-width:1300px;margin:auto;padding:20px 25px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #a8daec22}
+.brand{font-size:17px;font-weight:900;letter-spacing:-.03em}.brand span{color:#7bafda;font-weight:600}
+.toplinks{display:flex;align-items:center;gap:13px}.toplinks button,.toplinks a{font-size:12px;border:1px solid #c6ecff38;border-radius:10px;padding:10px 13px;background:#1b334caa}
+.toplinks .chip{border:1px solid #80f5db66;background:#255d5b44;border-radius:30px;padding:7px 12px;color:#9bffe6;font-size:10px;font-weight:900;letter-spacing:.12em}
+.layout{max-width:1300px;margin:auto;padding:37px 25px 60px}
+.heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:27px}
+.eyebrow{font-size:11px;letter-spacing:.22em;color:#8efadf;font-weight:850}
+.heading h1{font-size:clamp(40px,6.2vw,72px);margin:6px 0;line-height:1;letter-spacing:-.065em;font-weight:950}
+.heading h1 em{font-style:normal;background:linear-gradient(100deg,#9cffda,#78b9ff);background-clip:text;-webkit-background-clip:text;color:transparent}
+.heading p{color:#a0b9d1;line-height:1.7;font-size:14px;max-width:670px}
+.state{border:1px solid #73bcd355;background:#0c263666;border-radius:12px;padding:12px 16px;color:#9bedde;font-size:12px;white-space:nowrap;letter-spacing:.06em}
+.content{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:22px;align-items:start}
+.playfield{min-width:0}
+.viewport{position:relative;width:100%;aspect-ratio:900/550;border:1px solid #8de7f273;border-radius:22px;overflow:hidden;background:#0b1732;box-shadow:0 12px 60px #0009,0 0 60px #2cc4c511;isolation:isolate}
+.viewport canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#vectorView{touch-action:none;cursor:crosshair}
+#vectorHud{pointer-events:none}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:18px;background:linear-gradient(135deg,#061325ed,#06142fd5 72%,#143247b8);z-index:4}
+.overlay-card{max-width:510px;text-align:center;background:#0b2033b9;border:1px solid #9af0ef55;border-radius:23px;padding:32px 36px;box-shadow:0 20px 75px #000a;backdrop-filter:blur(8px)}
+.overline{font-size:11px;font-weight:850;color:#97ffdf;letter-spacing:.17em}
+.overlay h2{margin:15px 0 12px;font-size:clamp(25px,3vw,38px);letter-spacing:-.04em}
+.overlay p{font-size:14px;color:#afcde0;line-height:1.8}
+#startBtn{border:0;background:linear-gradient(110deg,#a3ffdc,#7cbcff);border-radius:12px;color:#092b33;font-weight:900;padding:14px 22px;margin-top:12px;box-shadow:0 9px 32px #61e2d32e}
+.fallback{position:absolute;bottom:6px;right:6px;left:6px;text-align:center;background:#17243df0;border:1px solid #d6b88a82;color:#f7d3a6;border-radius:9px;padding:8px;font-size:11px;z-index:3}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 4px;font-size:12px;color:#a5c4dd}
+.hud span:first-child{color:#b4ffe9}.hud span:last-child{font-size:10px;letter-spacing:.1em;text-align:right}
+.touch-panel{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap}
+.touch-panel button{width:58px;height:50px;border:1px solid #86c9e553;border-radius:13px;background:linear-gradient(135deg,#1d3b56,#142438);font-weight:850;font-size:22px;user-select:none;-webkit-user-select:none;touch-action:none}
+.touch-panel button:active,.touch-panel button.is-down{background:#387e88}
+.touch-panel .pulse{width:127px;background:linear-gradient(135deg,#1a6663,#1d3a59);font-size:13px;color:#aeffe8}
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 0}
+.actions button{border:1px solid #84c4e452;border-radius:11px;background:#172b41;padding:11px 16px;font-size:12px}
+.actions span{font-size:11px;color:#789bb9}
+.sidebar{display:grid;gap:13px}
+.stat{border-radius:17px;padding:17px 20px;background:linear-gradient(145deg,#13283f,#101e32);border:1px solid #88cfe922;box-shadow:inset 0 1px 0 #ffffff08}
+.stat.hero{background:linear-gradient(125deg,#164e54,#16324c);border-color:#82eadc44}
+.stat small{display:block;font-size:10px;letter-spacing:.13em;color:#8cadcb;font-weight:800;margin-bottom:10px}
+.stat strong{font-weight:900;letter-spacing:-.04em;font-size:27px;font-variant-numeric:tabular-nums}
+.stat strong em{font-size:14px;color:#9ac7cb;font-weight:500;font-style:normal}
+.track{height:6px;background:#ffffff22;border-radius:10px;margin-top:12px;overflow:hidden}
+.track i{height:100%;width:0%;display:block;border-radius:10px;background:linear-gradient(90deg,#71edcb,#92c2ff);transition:width .16s}
+.instructions{padding:22px;background:#111e31;border:1px solid #87aedc33;border-radius:17px}
+.instructions b{display:block;color:#eafaff;margin-bottom:9px;font-size:15px}
+.instructions p{font-size:12px;color:#a8bfda;line-height:1.85;margin:10px 0}
+footer{margin-top:30px;display:flex;justify-content:space-between;gap:13px;color:#668cae;letter-spacing:.1em;font-size:10px}
+[hidden]{display:none!important}
+@media(max-width:1030px){.content{grid-template-columns:minmax(0,1fr) 214px}.stat{padding:14px 15px}}
+@media(max-width:790px){.layout{padding:27px 13px 50px}.content{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.sidebar .instructions{grid-column:1/-1}.stat strong{font-size:22px}.heading{display:block}.state{display:inline-block}.viewport{border-radius:13px}.bar{padding:15px 13px}}
+@media(max-width:530px){.heading h1{font-size:48px}.heading p{font-size:12px}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar .hero{grid-column:1/-1}.touch-panel{gap:6px}.touch-panel button{width:49px;height:49px}.touch-panel .pulse{width:102px}.overlay-card{padding:19px 14px;border-radius:16px}.overlay p{font-size:12px}.overlay h2{font-size:25px}.toplinks .chip{display:none}.toplinks{gap:6px}.toplinks button,.toplinks a{padding:8px;font-size:10px}footer{display:block;line-height:2}.hud{font-size:10px}.actions span{display:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}

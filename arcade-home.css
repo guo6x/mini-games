@@ -25,3 +25,10 @@
 .quality-note{font-size:11px!important;color:#dfc7a3!important;line-height:1.65!important;margin:0 0 15px;border-left:2px solid #dfb77d;padding-left:9px;display:block!important;-webkit-line-clamp:unset!important}
 .game-card[data-quality="lab"] .play-link{color:#e7cba7}
 @media(max-width:410px){.game-card[data-quality="lab"]{min-height:225px}}
+
+/* First playable 3D prototype, explicitly identified as an experimental build. */
+.prototype-callout{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 15px;margin:18px 0 8px;border:1px solid #83e8db55;border-radius:12px;background:linear-gradient(115deg,#184154bb,#1c2c59b0);font-size:12px}
+.prototype-callout span{font-size:10px;letter-spacing:.1em;color:#9ffce1;font-weight:850}
+.prototype-callout strong{color:#edfaff;font-weight:850}
+.prototype-callout a{margin-left:auto;color:#b3e9ff;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:760px){.prototype-callout{font-size:11px}.prototype-callout a{margin-left:0}}

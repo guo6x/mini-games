@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061224">
+<meta name="description" content="VECTOR RUN：使用真实三维空间坐标、WebGL 透视渲染与三维碰撞规则的原创星门飞行挑战。">
+<title>VECTOR RUN / 3D 星门穿越 · ORBIT ARCADE</title>
+<link rel="stylesheet" href="orbit-vector-run.css">
+<script src="orbit-vector-core.js" defer></script>
+<script src="orbit-vector-render.js" defer></script>
+<script src="orbit-vector-game.js" defer></script>
+</head><body>
+<header class="bar"><a class="brand" href="index.html">✳ ORBIT <span>/ ARCADE</span></a><div class="toplinks"><span class="chip">3D / WEBGL</span><button id="muteBtn" type="button" aria-pressed="false">声音：关</button><a href="index.html#library">返回游戏库 ↗</a></div></header>
+<main class="layout">
+<div class="heading"><div><span class="eyebrow">VECTOR PROGRAM // 3D FLIGHT TRIAL</span><h1>VECTOR <em>RUN</em></h1><p>真正的三维坐标飞行：左右与上下移动，穿过不断逼近的星门。最后完成 12 道星门的极限航线。</p></div><div id="gameState" class="state" role="status">READY / 待命</div></div>
+<div class="content">
+<section class="playfield" aria-label="3D 星门挑战">
+ <div class="viewport" id="viewport">
+  <canvas id="vectorView" width="900" height="550" aria-label="三维 WebGL 飞行画面"></canvas>
+  <canvas id="vectorHud" width="900" height="550" aria-hidden="true"></canvas>
+  <div class="overlay" id="overlay">
+   <div class="overlay-card">
+    <span class="overline" id="overlayKicker">MISSION 01 // STARGATE COURSE</span>
+    <h2 id="overlayTitle">穿越星门，夺回航线。</h2>
+    <p id="overlayText">12 道星门，3 组速度递进的航段。使用方向键或 WASD、移动端拖动战机，空格启动短时间相位护盾。</p>
+    <button id="startBtn" type="button">启动 3D 飞行 →</button>
+   </div>
+  </div>
+  <div id="fallbackNotice" class="fallback" hidden>当前环境无法启用 WebGL：已自动使用软件三维透视降级模式，空间坐标和碰撞规则保持不变。</div>
+ </div>
+ <div class="hud"><span id="statusLine" role="status">等待驾驶员接管</span><span id="rendererText">3D 加载中</span></div>
+ <div class="touch-panel" role="group" aria-label="手机方向操作">
+  <button type="button" data-dir="left" aria-label="向左">←</button>
+  <button type="button" data-dir="up" aria-label="向上">↑</button>
+  <button type="button" data-dir="down" aria-label="向下">↓</button>
+  <button type="button" data-dir="right" aria-label="向右">→</button>
+  <button type="button" id="pulseBtn" class="pulse" aria-label="启动相位护盾">◈ 护盾</button>
+ </div>
+ <div class="actions"><button type="button" id="pauseBtn">暂停</button><button type="button" id="resetBtn">重新开始 ↻</button><span>支持键盘、拖动与触控方向键</span></div>
+</section>
+<aside class="sidebar">
+ <div class="stat hero"><small>GATES CLEARED</small><strong id="progressValue">00 <em>/ 12</em></strong><div class="track"><i id="progressBar"></i></div></div>
+ <div class="stat"><small>HULL INTEGRITY</small><strong id="lifeValue">04 / 04</strong></div>
+ <div class="stat"><small>SCORE</small><strong id="scoreValue">000000</strong></div>
+ <div class="stat"><small>GATE COMBO</small><strong id="comboValue">x00</strong></div>
+ <div class="stat"><small>PHASE SHIELD</small><strong id="abilityText">READY</strong></div>
+ <div class="instructions"><b>飞行员指南</b><p>左右 + 上下，真正的二维方向操控发生在三维航道中。对准星门内部的开口；撞上门框会损失 1 点船体值。</p><p>空格 / 护盾键：短时穿越危险星门。每经过 4 道星门会恢复 1 点船体值，最多恢复至 4 点。</p><p>阶段 1：导航；阶段 2：精确穿越；阶段 3：高速航线。12 门全部通过即完成战役。</p></div>
+</aside>
+</div>
+<footer><span>ORBIT ARCADE / FIRST 3D PROTOTYPE</span><span>无需账号 · 不依赖外部资源 · 技术验证版</span></footer>
+</main></body></html>
