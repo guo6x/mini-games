@@ -42,6 +42,8 @@ try{
  
  await desktop.goto('http://127.0.0.1:4173/space-shooter.html',{waitUntil:'domcontentloaded'});
  assert.equal(await desktop.locator('#gameName').textContent(),'NEBULA STRIKE · 星云突围');
+ assert.equal(await desktop.locator('#overlayTitle').textContent(),'星云战役 · 即将启航');
+
  await desktop.locator('#startBtn').click();
  await desktop.keyboard.press('Space');
  await desktop.waitForTimeout(900);

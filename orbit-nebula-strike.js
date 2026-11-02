@@ -223,6 +223,10 @@ return {'space-shooter':()=>({
   if(!this.endShown&&(run.phase==='victory'||run.phase==='defeat')){
    this.endShown=true;
    finish(run.phase==='victory'?'星云突围成功 · 核心已击破':'战机损毁 · 挑战结束');
+   const rank=run.phase==='victory'?(run.player.hp>=4?'S':run.player.hp>=2?'A':'B'):'—';
+   const endCard=document.getElementById('overlayDescription');
+   if(endCard)endCard.textContent='评价 '+rank+' · 击落 '+run.kills+' 架 · '+run.score+' 分 · 战役时间 '+Math.floor(run.totalTime)+' 秒 · 武装 '+run.upgradeHistory.length+'/3';
+
   }
  },
  draw(){
