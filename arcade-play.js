@@ -92,7 +92,7 @@ document.addEventListener('fullscreenchange',()=>{
  if(!document.fullscreenElement){keys.clear();try{screen.orientation?.unlock?.();}catch(_){}}
 });
 
-const actionButton=document.querySelector('[data-key="Space"]');if(actionButton){actionButton.textContent=( {'flappy-bird':'拍翼','music-rhythm':'节拍','space-invaders':'射击','space-shooter':'射击','plane-combat':'射击','tetris':'直落','reaction-test':'抢答','minesweeper':'插旗','time-guardian':'时缓','tic-tac-toe':'难度'}[MODE]||'动作');}
+const actionButton=document.querySelector('.touch-panel [data-key="Space"]');const immersionAction=document.querySelector('.immersive-dpad [data-key="Space"]');if(immersionAction)immersionAction.textContent='动作';if(actionButton){actionButton.textContent=( {'flappy-bird':'拍翼','music-rhythm':'节拍','space-invaders':'射击','space-shooter':'射击','plane-combat':'射击','tetris':'直落','reaction-test':'抢答','minesweeper':'插旗','time-guardian':'时缓','tic-tac-toe':'难度'}[MODE]||'动作');}
 document.querySelectorAll('[data-key]').forEach(b=>{const code=b.dataset.key;const down=e=>{e.preventDefault();if(!playing||paused)return;keys.add(code);if(engine.key)engine.key(code);b.classList.add('pressed');try{b.setPointerCapture(e.pointerId);}catch(_){}};const up=e=>{e.preventDefault();keys.delete(code);b.classList.remove('pressed');};b.addEventListener('pointerdown',down);['pointerup','pointercancel','lostpointercapture'].forEach(k=>b.addEventListener(k,up));});
 $('startBtn').addEventListener('click',begin);$('resetBtn').addEventListener('click',begin);$('pauseBtn').addEventListener('click',togglePause);
 $('soundToggle').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',String(on));e.currentTarget.textContent=on?'声音开':'静音';});
