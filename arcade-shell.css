@@ -32,3 +32,22 @@ body.arcade-game .game-nav ul{padding-right:150px}
 body.arcade-game .game-nav li{margin:2px}
 body.arcade-game .game-nav a{font-size:13px}
 @media(max-width:650px){body.arcade-game{overflow-x:hidden}body.arcade-game .game-nav ul{padding-right:10px}body.arcade-game .game-nav li:nth-child(n+7){display:none}body.arcade-game .arcade-utility{position:sticky;top:0;margin:0 4px 6px auto;width:max-content}body.arcade-game :where(.game-board,.game-wrapper,.game-area){max-width:100%!important}body.arcade-game .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
+
+/* On narrow devices, some older fixed-height game surfaces overlapped the action row.
+   Keep real start/pause/restart buttons above those rendering layers. */
+body.arcade-game :where(.game-container,.container) > .controls,
+body.arcade-game :where(.game-container,.container) > .game-actions,
+body.arcade-game .controls:not(.controls-container){position:relative;z-index:45}
+body.arcade-game :where(.game-container,.container) > .game-area,
+body.arcade-game :where(.game-container,.container) > .game-board-container{position:relative;z-index:1}
+body.arcade-game :where(.canvas-container,.game-board-container) > .game-overlay.active,
+body.arcade-game :where(.canvas-container,.game-board-container) > .game-start.active,
+body.arcade-game .game-start-screen.active{position:absolute;z-index:65;pointer-events:auto}
+body.arcade-game :where(.game-overlay.active,.game-start.active,.game-start-screen.active) button{position:relative;z-index:66}
+@media(max-width:650px){
+ body.arcade-game .checkerboard .piece{width:min(60px,80%);height:auto;aspect-ratio:1}
+ body.arcade-game .game-area:has(#gameCanvas){height:auto;aspect-ratio:1}
+ body.arcade-game .game-area:has(#gameCanvas[width="800"]){aspect-ratio:4 / 3}
+ body.arcade-game .game-area canvas{width:100%;height:auto}
+ body.arcade-game .controls:not(.controls-container){display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:12px 3px;background:#101f35e8;border-radius:15px}
+}
