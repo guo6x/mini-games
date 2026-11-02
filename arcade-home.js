@@ -25,7 +25,28 @@ function renderPoster(canvas,g){
  for(let y=18;y<H;y+=34){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
  for(let i=0;i<42;i++){const x=random()*W,y=random()*H,r=random()*1.4+.4;c.fillStyle=i%4?'#d6ecff55':glow;c.beginPath();c.arc(x,y,r,0,7);c.fill();}
  c.save();c.translate(W*.52,H*.52);c.rotate((seed%9-4)*.055);c.shadowColor=glow;c.shadowBlur=18;
- if(g.id==='snake'||g.id==='pac-man'||g.id==='flappy-bird'){
+ if(g.id==='space-shooter'){
+  // Original key art for our first authored campaign: hero craft, orbiting enemy core and projectile trails.
+  c.save();
+  c.translate(29,28);
+  let aura=c.createRadialGradient(53,-22,2,53,-22,79);aura.addColorStop(0,'#f09bd4b0');aura.addColorStop(1,'#f09bd400');
+  c.fillStyle=aura;c.fillRect(-32,-102,164,164);
+  c.strokeStyle='#f3b5f8';c.lineWidth=2;c.shadowBlur=14;c.shadowColor='#df83f3';
+  c.rotate(.2);
+  for(let r=27;r<=51;r+=24){c.beginPath();c.ellipse(54,-28,r,r*.55,1,0,Math.PI*2);c.stroke();}
+  c.beginPath();for(let i=0;i<12;i++){const a=i*Math.PI/6,r=i%2?15:29;c.lineTo(54+Math.cos(a)*r,-28+Math.sin(a)*r);}c.closePath();
+  c.fillStyle='#442b75';c.fill();c.stroke();
+  c.fillStyle='#ffeaff';c.beginPath();c.arc(54,-28,9,0,Math.PI*2);c.fill();
+  c.restore();
+  c.save();c.translate(-22,39);c.shadowColor='#8fffe5';c.shadowBlur=19;
+  c.strokeStyle='#e5fffa';c.lineWidth=3;c.fillStyle='#75ddcf';
+  c.beginPath();c.moveTo(0,-45);c.lineTo(16,-11);c.lineTo(42,14);c.lineTo(6,6);c.lineTo(0,13);c.lineTo(-6,6);c.lineTo(-42,14);c.lineTo(-16,-11);c.closePath();c.fill();c.stroke();
+  c.shadowBlur=0;c.fillStyle='#c6e7ff';c.fillRect(-5,-27,10,14);
+  c.strokeStyle='#85fff0';c.lineWidth=4;for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(i*16,-42);c.lineTo(i*22,-88);c.stroke();}
+  c.restore();
+  c.fillStyle='#effdff';c.font='bold 21px system-ui';c.textAlign='left';c.fillText('NEBULA',-161,-49);
+  c.fillStyle='#9dfde6';c.font='bold 10px system-ui';c.fillText('STRIKE  //  2D CAMPAIGN',-160,-31);
+ }else if(g.id==='snake'||g.id==='pac-man'||g.id==='flappy-bird'){
   for(let i=0;i<8;i++){c.fillStyle=i%2?'#84f3d9':'#a9c3ff';c.beginPath();c.arc(-85+i*23,Math.sin(i*.8)*23,13,0,7);c.fill();}
  }else if(g.id==='tetris'||g.id==='2048'||g.category==='puzzle'){
   for(let y=0;y<3;y++)for(let x=0;x<4;x++){const v=(x+y*4+seed)%7;c.fillStyle=['#6f9ce5','#72dcbe','#c3a9ff','#edc18d','#9dd8f8','#bdc5fa','#f2a3cd'][v];const xx=-90+x*47,yy=-65+y*43;c.beginPath();c.roundRect(xx,yy,39,35,6);c.fill();c.globalAlpha=.28;c.fillStyle='#ffffff';c.fillRect(xx+5,yy+5,28,2);c.globalAlpha=1;}

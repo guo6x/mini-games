@@ -32,3 +32,15 @@ button:active{transform:scale(.98)}
 
 .lab-notice,.touch-zoom-hint{display:block;margin:-12px 0 18px;padding:10px 13px;border-radius:8px;border-left:3px solid #e0b17b;background:#3e342a70;color:#f1d5b2;font-size:12px;line-height:1.65}
 .touch-zoom-hint{border-left-color:#76c9ed;color:#b5e4f7;background:#20344b77}
+
+/* Nebula Strike: bespoke first-party flagship presentation. */
+body[data-game="space-shooter"]{background-image:radial-gradient(ellipse at 68% 3%,#366ba642,transparent 52%),radial-gradient(ellipse at 13% 80%,#39447d21,transparent 52%)}
+body[data-game="space-shooter"] .game-intro h1{font-weight:950;letter-spacing:-.05em;background:linear-gradient(110deg,#f9ffff,#9bfce2 62%,#a5acff);-webkit-background-clip:text;background-clip:text;color:transparent}
+body[data-game="space-shooter"] .game-intro .eyebrow{letter-spacing:.25em;color:#8fffe9}
+body[data-game="space-shooter"] .stage-wrap{border-color:#96ffe16b;box-shadow:0 15px 55px #0008,0 0 70px #1c93801c}
+body[data-game="space-shooter"] .overlay{background:linear-gradient(150deg,#061528ee,#081c39e6 65%,#092e2ed9)}
+body[data-game="space-shooter"] .overlay-box{border:1px solid #99e9e645;box-shadow:0 25px 68px #0008;background:#0c1a3199;padding:20px 25px;border-radius:24px}
+body[data-game="space-shooter"] .overlay-kicker{color:#8af8d9}
+body[data-game="space-shooter"] .primary{background:linear-gradient(115deg,#91ffe7,#8cbeff);box-shadow:0 13px 25px #60e1e122}
+body[data-game="space-shooter"] .instructions{border-color:#8af8d42b}
+body[data-game="space-shooter"] .stat-block.accent{background:linear-gradient(125deg,#16444e,#1e3652)}

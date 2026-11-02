@@ -57,3 +57,6 @@ CI 对 57 款逐个执行桌面和移动端启动与基本操作回归；有界�
 - 30 款基础可玩
 - 17 款公开实验作品（原始链接保留、可继续试玩）
 完整分析、晋级标准与未来 2D/3D/4D 游戏规划见 [docs/QUALITY_ROADMAP.md](docs/QUALITY_ROADMAP.md)。CI 测试只证明基础可运行，不能代替真人完成一局或长期耐玩性评价。
+
+### NEBULA STRIKE（第一款旗舰候选）
+`space-shooter.html` 独立使用 `orbit-nebula-core.js` 与 `orbit-nebula-strike.js`，实现三波战斗、武装升级、相位冲刺、Boss 和明确终局。不调用外部媒体接口。运行 `node --test tests/nebula-strike.test.cjs` 执行确定性玩法测试。此项目仍处于编辑候选阶段，尚无真人试玩结论。
