@@ -11,7 +11,8 @@ const assert=require('node:assert/strict');
   await page.locator('[data-view="playable"]').click();
   await page.locator('#gameSearch').fill('赛车');
   assert.equal(await page.locator('.game-card').count(),1);
-  for(const id of ['chess','crossword','solitaire','tangram','racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle','mahjong','sudoku-killer','dress-up','pinball']){
+  const rebuiltIds=['chess','crossword','solitaire','tangram','racing','platformer','tower-defense','match3','maze-runner','reversi','sokoban','snake-ladder','nonogram','math-game','bubble-shooter','city-builder','fishing','pet-care','quiz','geography','word-search','jigsaw-puzzle','mahjong','sudoku-killer','dress-up','pinball'];
+  for(const id of rebuiltIds){
    await page.goto('http://127.0.0.1:4173/'+id+'.html',{waitUntil:'domcontentloaded'});
    assert.equal(await page.locator('canvas#stage').count(),1);
    await page.locator('#startBtn').click();
@@ -45,7 +46,20 @@ const assert=require('node:assert/strict');
   await mobile.locator('#startBtn').click();
   await mobile.locator('[data-key="ArrowRight"]').tap();
   assert.equal(await mobile.locator('#stage').count(),1);
+  // Repeat launch/pause/restart on a real touch viewport for every rebuilt game.
+  for(const id of rebuiltIds){
+   await mobile.goto('http://127.0.0.1:4173/'+id+'.html',{waitUntil:'domcontentloaded'});
+   await mobile.locator('#startBtn').tap();
+   assert.equal(await mobile.locator('#statusPill').textContent(),'进行中','Mobile launch failed: '+id);
+   assert.ok(await mobile.locator('#stage').isVisible(),'Canvas invisible on mobile: '+id);
+   await mobile.locator('#pauseBtn').tap();
+   assert.equal(await mobile.locator('#statusPill').textContent(),'已暂停','Mobile pause failed: '+id);
+   await mobile.locator('#resetBtn').tap();
+   assert.equal(await mobile.locator('#statusPill').textContent(),'进行中','Mobile restart failed: '+id);
+   const overflow=await mobile.evaluate(()=>Math.max(0,document.documentElement.scrollWidth-innerWidth));
+   assert.ok(overflow<=20,'Horizontal overflow '+overflow+'px in mobile '+id);
+  }
   assert.deepEqual(errors,[],'Page errors: '+errors.join('\n'));
-  console.log('Browser smoke passed: hub, 26 rebuilt games, rule interactions and mobile touch.');
+  console.log('Browser smoke passed: hub, 26 rebuilt games desktop and mobile launch/pause/restart, rule interactions.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});
