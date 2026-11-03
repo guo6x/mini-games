@@ -9,7 +9,7 @@ assert.equal(await page.locator('#tutorialStep').textContent(),'引导 1 / 3');
 await page.locator('#help').click();assert.equal(await page.locator('#tutorial').isVisible(),true);
 await page.locator('#tutorialDismiss').click();assert.equal(await page.locator('#tutorial').isVisible(),false);
 await page.locator('#help').click();
-const hit=await page.locator('#field').evaluate(c=>{const r=c.getBoundingClientRect();return{x:r.left+(160+104+45)*r.width/c.width,y:r.top+(90+2*104+45)*r.height/c.height};});await page.mouse.click(hit.x,hit.y);
+const hit=await page.locator('#field').evaluate(c=>{const r=c.getBoundingClientRect();return{x:r.left+(160+104+45)*r.width/c.width,y:r.top+(90+2*104+45)*r.height/c.height};});await page.locator('#field').click({position:{x:hit.x-(await page.locator('#field').boundingBox()).x,y:hit.y-(await page.locator('#field').boundingBox()).y}});
 assert.equal(await page.locator('#position').textContent(),'X1 Y2 Z0 W0','canvas adjacent click must move');
 assert.equal(await page.locator('#tutorialStep').textContent(),'引导 2 / 3');
 await page.locator('#reset').click();
