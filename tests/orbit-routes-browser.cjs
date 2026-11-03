@@ -57,6 +57,9 @@ async function tap(page,cell,n){
   const errs=[];mobile.on('pageerror',e=>errs.push(e.message));
   await mobile.goto(url,{waitUntil:'domcontentloaded'});
   await mobile.locator('#startBtn').click();
+  const bar=mobile.locator('#routeTouchBar');
+  assert.equal(await bar.isVisible(),true,'portrait layout must show large tactile controls');
+  assert.ok((await bar.locator('[data-route-color="0"]').boundingBox()).height>=44,'touch target minimum height');
   const cv=mobile.locator('#stage');await cv.scrollIntoViewIfNeeded();
   const box=await cv.boundingBox();
   const pos=cell=>{const p=loc(cell,4);return{x:box.x+p.x*box.width/800,y:box.y+p.y*box.height/500};};
@@ -74,7 +77,10 @@ async function tap(page,cell,n){
    return c.dataset.routePairs==='1'&&c.dataset.routeCoverage==='5';
   },null,{timeout:4000});
   assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
-  await cv.screenshot({path:path.join(out,'mobile-drag.png')});
+  await bar.locator('[data-route-color="1"]').click();
+  await mobile.locator('.touch-panel [data-key="ArrowRight"]').click();
+  await mobile.waitForFunction(()=>document.getElementById('stage').dataset.routeCoverage==='7',null,{timeout:4000});
+  await mobile.screenshot({path:path.join(out,'mobile-drag.png'),fullPage:true});
   assert.deepEqual(errs,[]);
   await touch.detach();
   console.log('STAR ROUTES complete 5-level browser pilot and mobile drag: PASS');
