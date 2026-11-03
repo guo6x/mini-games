@@ -120,3 +120,31 @@ test('third boss stage adds a second announced beam with finite safe corridors',
  frames(g,1);assert.equal(g.boss.stage,3);assert.equal(g.hazards.length,2);
  assert.ok(g.hazards.every(h=>h.time>0));assert.ok(Math.abs(g.hazards[0].x-g.hazards[1].x)>=100);
 });
+
+test('upgrade drafts never offer cards with no meaningful effect',()=>{
+ const g=new Core({seed:871});
+ g.mods.spread=1;g.mods.dash=2;g.player.hp=g.player.maxHp;
+ advance(g,1);
+ assert.deepEqual(new Set(g.choices),new Set(['rapid','power','barrier']));
+ assert.equal(g.choices.length,3);
+});
+test('damage restores hull eligibility while repeated spread and exhausted dash remain excluded',()=>{
+ const g=new Core({seed:872});g.mods.spread=1;g.mods.dash=2;g.player.hp=3;
+ advance(g,1);
+ assert.equal(g.choices.length,3);
+ assert.ok(g.choices.every(id=>!['spread','dash'].includes(id)));
+ assert.ok(['rapid','hull','power','barrier'].every(id=>Object.hasOwn(Core.UPGRADES,id)));
+});
+test('every offered upgrade can change player state, fire rate or damage',()=>{
+ for(let seed=30;seed<50;seed++){
+  const g=new Core({seed});advance(g,1);
+  assert.equal(g.choices.length,3);
+  for(const id of g.choices){
+   const player={...g.player},mods={...g.mods};
+   if(id==='hull')assert.ok(player.hp<player.maxHp,'full-health repair card is never offered');
+   else if(id==='spread')assert.equal(mods.spread,0,'spent spread card must be suppressed');
+   else if(id==='dash')assert.ok(mods.dash<2,'near-capped dash card must be suppressed');
+   else assert.ok(['rapid','power','barrier'].includes(id));
+  }
+ }
+});
