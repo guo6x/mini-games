@@ -24,6 +24,7 @@ jobs:
           node --check orbit-vector-game.js
           node --test tests/arcade-health.test.cjs
           node --test tests/nebula-strike.test.cjs
+          node --test tests/nebula-boss-reachability.test.cjs
           node --test tests/vector-run.test.cjs
           node --check hyperfold-core.js
           node --check hyperfold-game.js
