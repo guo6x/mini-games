@@ -58,27 +58,44 @@ function Renderer(canvas,hud){
  function starfighter(p,time){
   const x=p.x,y=p.y,z=p.z;
   const at=(dx,dy,dz)=>[x+dx,y+dy,z+dz];
-  const tip=at(0,.04,-1.18),cockpit=at(0,.24,-.23),spine=at(0,.06,.81);
-  const left=at(-.78,-.01,.42),right=at(.78,-.01,.42);
-  const rearL=at(-.39,-.04,1.12),rearR=at(.39,-.04,1.12);
-  const keel=at(0,-.18,.12);
-  // Low-poly hull with tapered wings, not a stack of rectangles. The collision kernel remains unchanged.
-  triangle(tip,left,cockpit,colors.cyan);triangle(tip,cockpit,right,colors.blue);
-  triangle(cockpit,left,spine,colors.steel);triangle(cockpit,spine,right,colors.blue);
-  triangle(left,rearL,spine,colors.cyan);triangle(spine,rearR,right,colors.steel);
-  triangle(tip,keel,left,colors.dark);triangle(tip,right,keel,colors.dark);
-  triangle(left,keel,rearL,colors.steel);triangle(keel,right,rearR,colors.dark);
-  cube(x,y+.19,z-.22,.19,.13,.43,colors.white);
-  cube(x,y+.28,z-.17,.10,.08,.33,colors.blue);
+  // The ship advances toward +Z. From the rear chase camera (-Z), the
+  // sharp nose must point into the distant gate, not back at the viewer.
+  const nose=at(0,.015,1.44),canopy=at(0,.26,.30);
+  const shoulderL=at(-.25,.065,.36),shoulderR=at(.25,.065,.36);
+  const wingL=at(-.84,-.065,-.55),wingR=at(.84,-.065,-.55);
+  const aftL=at(-.36,-.10,-.96),aftR=at(.36,-.10,-.96);
+  const spine=at(0,.105,-.73),keel=at(0,-.22,-.12);
+  // Three-dimensional faceted fuselage with swept wings, visible upper
+  // deck, reinforced leading edges and narrower rear nacelles.
+  triangle(nose,shoulderL,canopy,colors.white);
+  triangle(nose,canopy,shoulderR,colors.cyan);
+  triangle(nose,keel,shoulderL,colors.steel);
+  triangle(nose,shoulderR,keel,colors.blue);
+  triangle(canopy,shoulderL,spine,colors.blue);
+  triangle(canopy,spine,shoulderR,colors.steel);
+  triangle(shoulderL,wingL,spine,colors.cyan);
+  triangle(spine,wingR,shoulderR,colors.blue);
+  triangle(wingL,aftL,spine,colors.dark);
+  triangle(spine,aftR,wingR,colors.steel);
+  triangle(wingL,keel,aftL,colors.dark);
+  triangle(keel,wingR,aftR,colors.dark);
+  // Narrow illuminated leading edges and physical wingtip lights.
+  triangle(shoulderL,wingL,at(-.69,-.02,-.49),colors.white);
+  triangle(shoulderR,at(.69,-.02,-.49),wingR,colors.cyan);
+  cube(x,y+.03,z+.18,.22,.15,1.12,colors.steel);
+  cube(x,y+.245,z+.25,.20,.14,.46,colors.blue);
+  cube(x,y+.32,z+.21,.10,.05,.25,colors.cyan);
   for(const side of [-1,1]){
-   cube(x+side*.64,y+.02,z+.45,.13,.08,.37,colors.white);
-   cube(x+side*.24,y-.02,z+.81,.19,.16,.55,colors.dark);
-   cube(x+side*.24,y+.13,z+.81,.09,.25,.26,colors.blue);
-   cube(x+side*.24,y-.04,z+1.10,.14,.13,.15,colors.cyan);
-   const flicker=.35+.13*Math.sin(time*27+side*1.8);
-   triangle(at(side*.24-.075,-.05,1.12),at(side*.24+.075,-.05,1.12),at(side*.24,-.09,1.30+flicker),p.shield>0?colors.gold:colors.cyan);
+   const engineX=x+side*.32;
+   cube(x+side*.79,y-.035,z-.52,.10,.09,.20,colors.gold);
+   cube(engineX,y-.035,z-.66,.20,.21,.72,colors.dark);
+   cube(engineX,y+.13,z-.62,.08,.21,.27,colors.steel);
+   cube(engineX,y-.045,z-1.075,.16,.16,.15,p.shield>0?colors.gold:colors.cyan);
+   const flicker=.27+.12*Math.sin(time*27+side*1.8);
+   // Engine flame trails toward the rear (-Z), independent of collision.
+   triangle(at(side*.32-.065,-.04,-1.12),at(side*.32+.065,-.04,-1.12),at(side*.32,-.10,-1.34-flicker),p.shield>0?colors.gold:colors.cyan);
   }
-  if(p.shield>0){cube(x,y,z,.92,.035,.92,colors.gold);}
+  if(p.shield>0){cube(x,y,z,.94,.035,.95,colors.gold);}
  }
 
  function cube(x,y,z,sx,sy,sz,col){
