@@ -33,6 +33,33 @@ window.ORBIT_CORTEX=(api)=>{
    if(action){action.textContent='提示';action.setAttribute('aria-label','展示当前颜色提示路线');}
    const immersive=document.querySelector('.immersive-dpad [data-key="Space"]');
    if(immersive)immersive.textContent='提示';
+   document.getElementById('routeTouchBar')?.remove();
+   const bar=document.createElement('div');bar.id='routeTouchBar';bar.className='route-touch-bar';
+   bar.setAttribute('role','group');bar.setAttribute('aria-label','星际线路触屏操作');
+   for(let i=0;i<4;i++){
+    const b=document.createElement('button');b.type='button';b.dataset.routeColor=String(i);
+    b.textContent=(i+1)+' · '+labels[i];b.style.setProperty('--route-color',colors[i]);
+    b.addEventListener('click',()=>{
+     if(document.getElementById('statusPill').textContent!=='进行中')return;
+     if(this.core.select(i))notify(this.core.status);
+    });bar.append(b);
+   }
+   for(const [action,labelText] of [['undo','↶ 撤销'],['hint','✦ 提示'],['clear','× 清空'],['next','下一关 ↗']]){
+    const b=document.createElement('button');b.type='button';b.dataset.routeAction=action;
+    b.textContent=labelText;
+    b.addEventListener('click',()=>{
+     if(document.getElementById('statusPill').textContent!=='进行中')return;
+     if(action==='next')this.proceed();
+     else if(action==='undo'&&this.core.undo())notify(this.core.status);
+     else if(action==='hint'&&this.core.hint())notify(this.core.status);
+     else if(action==='clear'&&this.core.clear())notify(this.core.status);
+    });bar.append(b);
+   }
+   const note=document.createElement('p');note.className='route-touch-note';
+   note.textContent='手机：先选颜色，再在棋盘拖动线路；也可用下方方向键逐格延伸。';
+   bar.append(note);
+   document.querySelector('.stage-wrap').insertAdjacentElement('afterend',bar);
+   this.touchBar=bar;
    level('MAP 1 / 5');points(0);
    notify('选择同色端点并连接，所有彩色路线必须填满整张棋盘。');
   },
@@ -173,9 +200,21 @@ window.ORBIT_CORTEX=(api)=>{
    fill(526,244,225*c.progress.coverage/c.progress.cells,6,'#6ff4d2',4);
    button(526,261,225,44,'↶  撤销一步  /  Z');
    button(526,316,225,44,'✦  显示推荐线路  /  空格');
-   if(c.solved)button(526,385,225,68,c.stage===4?'完成战役  ↗':'进入下一张星图  ↗',true);
+   if(c.solved)button(526,385,225,55,c.stage===4?'完成战役  ↗':'进入下一张星图  ↗',true);
    else button(526,370,225,43,'×  清空当前线路',false);
-   text(c.solved?'棋盘全部填满，线路无交叉':'端点必须配对，线路不可交叉',528,455,11,c.solved?'#97fbd4':'#9baec5');
+   text(c.solved?'棋盘全部填满，线路无交叉':'端点必须配对，线路不可交叉',528,c.solved?462:455,11,c.solved?'#97fbd4':'#9baec5');
+   if(this.touchBar){
+    for(const b of this.touchBar.querySelectorAll('[data-route-color]')){
+     const color=Number(b.dataset.routeColor);
+     b.disabled=color>=c.paths.length||c.solved;
+     b.setAttribute('aria-pressed',String(c.active===color));
+     b.classList.toggle('connected',color<c.paths.length&&c.connected(color));
+    }
+    for(const b of this.touchBar.querySelectorAll('[data-route-action]')){
+     const action=b.dataset.routeAction;
+     b.disabled=action==='next'?!c.solved:action==='undo'?!c.undoStack.length:action==='clear'?c.active===null||c.solved:c.solved;
+    }
+   }
    text('MOVES '+c.moves+'    HINTS '+c.hints,35,474,14,'#bad4ea');
    if(this.flash>0){ctx.globalAlpha=this.flash*.2;fill(0,0,800,500,'#b0fff3');ctx.globalAlpha=1;}
    canvas.dataset.routeStage=String(c.stage+1);
