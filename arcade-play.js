@@ -86,7 +86,7 @@ let activeGamePointer=null;
 const relativePointer=(e)=>{const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};};
 canvas.addEventListener('pointerdown',e=>{
  if(MODE==='2048'||!playing||paused||!engine.click)return;
- if(MODE==='space-shooter'){
+ if(MODE==='space-shooter'||MODE==='connect-dots'){
   activeGamePointer=e.pointerId;try{canvas.setPointerCapture(e.pointerId);}catch(_){}
  }
  const p=relativePointer(e);engine.click(p.x,p.y);

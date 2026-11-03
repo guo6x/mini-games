@@ -151,11 +151,11 @@ const GAMES_DATA = [
   },
   {
     "id": "connect-dots",
-    "name": "星际连线",
+    "name": "STAR ROUTES · 星际连线",
     "icon": "🎮",
     "category": "puzzle",
     "difficulty": "medium",
-    "description": "按序连接空间节点，限时完成三张星路图。",
+    "description": "五关多色线路规划：连接同色端点，不交叉、填满星图棋盘，支持撤销与提示。",
     "tags": [],
     "file": "connect-dots.html",
     "featured": false,
@@ -164,7 +164,7 @@ const GAMES_DATA = [
     "edition": "unified-v3",
     "qualityTier": "lab",
     "dimension": "2d",
-    "qualityNote": "主要是依序点击数字，缺少路线规划机制"
+    "qualityNote": "已改为多线路填格解谜，仍需要更广泛的关卡难度与美术体验验证"
   },
   {
     "id": "cooking",

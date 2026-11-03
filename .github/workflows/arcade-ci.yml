@@ -19,6 +19,9 @@ jobs:
           node --check arcade-completion.js
           node --check orbit-nebula-core.js
           node --check orbit-nebula-strike.js
+          node --check orbit-routes-core.js
+          node --check orbit-routes-game.js
+          node --test tests/orbit-routes.test.cjs
           node --check orbit-vector-core.js
           node --check orbit-vector-render.js
           node --check orbit-vector-game.js
@@ -44,6 +47,7 @@ jobs:
           node tests/browser-smoke.cjs
           node tests/legacy-audit.cjs
           node tests/vector-playthrough.cjs
+          node tests/orbit-routes-browser.cjs
           node tests/vector-visual.cjs
           node tests/hyperfold-browser.cjs
           node tests/hyperfold-accessibility.cjs
@@ -62,5 +66,13 @@ jobs:
         with:
           name: vector-flight-visual-audit
           path: artifacts/vector-visual/*.png
+          if-no-files-found: warn
+          retention-days: 14
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: star-routes-visual-audit
+          path: artifacts/routes-visual/*.png
           if-no-files-found: warn
           retention-days: 14
