@@ -17,7 +17,7 @@ function Renderer(canvas,hud){
   white:[.87,.97,1],dark:[.06,.19,.31],pink:[1,.34,.68],
   gold:[1,.78,.39],steel:[.16,.37,.55]
  };
- const seedStars=()=>{let n=181;for(let i=0;i<92;i++){n=(Math.imul(n,1664525)+1013904223)>>>0;let x=(n/4294967295)*13-6.5;n=(Math.imul(n,1664525)+1013904223)>>>0;let y=(n/4294967295)*9-4.5;n=(Math.imul(n,1664525)+1013904223)>>>0;const z=12+(n/4294967295)*105;stars.push({x,y,z,s:.015+(i%5)*.006});}};
+ const seedStars=()=>{let n=181;for(let i=0;i<154;i++){n=(Math.imul(n,1664525)+1013904223)>>>0;let x=(n/4294967295)*13-6.5;n=(Math.imul(n,1664525)+1013904223)>>>0;let y=(n/4294967295)*9-4.5;n=(Math.imul(n,1664525)+1013904223)>>>0;const z=12+(n/4294967295)*105;stars.push({x,y,z,s:.02+(i%5)*.008});}};
  seedStars();
  function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
  if(gl){
@@ -69,10 +69,11 @@ function Renderer(canvas,hud){
   triangle(tip,keel,left,colors.dark);triangle(tip,right,keel,colors.dark);
   triangle(left,keel,rearL,colors.steel);triangle(keel,right,rearR,colors.dark);
   cube(x,y+.19,z-.22,.19,.13,.43,colors.white);
-  cube(x,y+.28,z-.17,.10,.08,.33,colors.pink);
+  cube(x,y+.28,z-.17,.10,.08,.33,colors.blue);
   for(const side of [-1,1]){
    cube(x+side*.64,y+.02,z+.45,.13,.08,.37,colors.white);
    cube(x+side*.24,y-.02,z+.81,.19,.16,.55,colors.dark);
+   cube(x+side*.24,y+.13,z+.81,.09,.25,.26,colors.blue);
    cube(x+side*.24,y-.04,z+1.10,.14,.13,.15,colors.cyan);
    const flicker=.35+.13*Math.sin(time*27+side*1.8);
    triangle(at(side*.24-.075,-.05,1.12),at(side*.24+.075,-.05,1.12),at(side*.24,-.09,1.30+flicker),p.shield>0?colors.gold:colors.cyan);
@@ -127,9 +128,9 @@ function Renderer(canvas,hud){
  function scene(core){
   // Third-person chase camera holds the fighter visibly foregrounded while
   // maintaining parallax: distant gates move against the tracked craft.
-  camX=core.player.x*.82;camY=core.player.y*.82;
+  camX=core.player.x*.82;camY=core.player.y*.82+.62;
   verts.length=0;primitive.length=0;
-  for(const s of stars){const z=12+((s.z-core.time*4)%105+105)%105;
+  for(const s of stars){const z=12+((s.z-core.time*(core.mode==='ace'?9:7))%105+105)%105;
    cube(s.x,s.y,z,s.s,s.s,s.s,colors.white);
   }
   // Starfighter-speed luminous track markers accelerate visually in ACE mode.
