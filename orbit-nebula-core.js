@@ -184,7 +184,7 @@
        }
      }
      if(this.finished)return;
-     for(const h of this.hostile){if(h.ttl>0&&distance(h,p)<h.r+12){h.ttl=0;this.hitPlayer();}}
+     for(const h of this.hostile){if(h.ttl<=0)continue;const gap=distance(h,p);if(gap<h.r+12){h.ttl=0;this.hitPlayer();}else if(!h.grazed&&gap<h.r+30&&p.inv<=0&&p.dashDuration<=0){h.grazed=true;this.grazes++;this.grazeChain=Math.min(20,this.grazeChain+1);const bonus=10+this.grazeChain*3;this.score+=bonus;p.dashLeft=Math.max(0,p.dashLeft-.32);this.event('graze',{x:h.x,y:h.y,chain:this.grazeChain,bonus});}}
      for(const e of this.enemies){
        if(!e.dead&&distance(e,p)<e.r+13){e.dead=true;this.hitPlayer();}
      }
