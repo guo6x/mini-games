@@ -49,6 +49,35 @@ function Renderer(canvas,hud){
   [3,2,6,3,6,7],[4,5,1,4,1,0]
  ];
  const verts=[],primitive=[];
+ function triangle(a,b,c,col){
+  if(gl){for(const p of [a,b,c])verts.push(p[0],p[1],p[2],...col);}
+  else primitive.push({shape:'triangle',pts:[a,b,c],z:(a[2]+b[2]+c[2])/3,col});
+ }
+ function starfighter(p,time){
+  const x=p.x,y=p.y,z=p.z;
+  const at=(dx,dy,dz)=>[x+dx,y+dy,z+dz];
+  const tip=at(0,.04,-1.18),cockpit=at(0,.24,-.23),spine=at(0,.06,.81);
+  const left=at(-.78,-.01,.42),right=at(.78,-.01,.42);
+  const rearL=at(-.39,-.04,1.12),rearR=at(.39,-.04,1.12);
+  const keel=at(0,-.18,.12);
+  // Low-poly hull with tapered wings, not a stack of rectangles. The collision kernel remains unchanged.
+  triangle(tip,left,cockpit,colors.cyan);triangle(tip,cockpit,right,colors.blue);
+  triangle(cockpit,left,spine,colors.steel);triangle(cockpit,spine,right,colors.blue);
+  triangle(left,rearL,spine,colors.cyan);triangle(spine,rearR,right,colors.steel);
+  triangle(tip,keel,left,colors.dark);triangle(tip,right,keel,colors.dark);
+  triangle(left,keel,rearL,colors.steel);triangle(keel,right,rearR,colors.dark);
+  cube(x,y+.19,z-.22,.19,.13,.43,colors.white);
+  cube(x,y+.28,z-.17,.10,.08,.33,colors.pink);
+  for(const side of [-1,1]){
+   cube(x+side*.64,y+.02,z+.45,.13,.08,.37,colors.white);
+   cube(x+side*.24,y-.02,z+.81,.19,.16,.55,colors.dark);
+   cube(x+side*.24,y-.04,z+1.10,.14,.13,.15,colors.cyan);
+   const flicker=.35+.13*Math.sin(time*27+side*1.8);
+   triangle(at(side*.24-.075,-.05,1.12),at(side*.24+.075,-.05,1.12),at(side*.24,-.09,1.30+flicker),p.shield>0?colors.gold:colors.cyan);
+  }
+  if(p.shield>0){cube(x,y,z,.92,.035,.92,colors.gold);}
+ }
+
  function cube(x,y,z,sx,sy,sz,col){
   if(sx<=0||sy<=0||sz<=0)return;
   const xx=sx/2,yy=sy/2,zz=sz/2;
@@ -68,6 +97,13 @@ function Renderer(canvas,hud){
   fallback.fillStyle='rgb('+obj.col.map(v=>Math.floor(255*v)).join(',')+')';
   fallback.fillRect(p.x-sx/2,p.y-sy/2,Math.max(1,sx),Math.max(1,sy));
   fallback.strokeStyle='#ffffff44';fallback.strokeRect(p.x-sx/2,p.y-sy/2,sx,sy);
+ }
+ function drawTriangle2d(o){
+  const pts=o.pts.map(p=>project(...p));
+  fallback.beginPath();fallback.moveTo(pts[0].x,pts[0].y);
+  fallback.lineTo(pts[1].x,pts[1].y);fallback.lineTo(pts[2].x,pts[2].y);fallback.closePath();
+  fallback.fillStyle='rgb('+o.col.map(v=>Math.floor(255*v)).join(',')+')';fallback.fill();
+  fallback.strokeStyle='#ffffff22';fallback.lineWidth=.7;fallback.stroke();
  }
  function gate(g){
   const c=g.stage===1?colors.cyan:g.stage===2?colors.blue:colors.violet;
@@ -91,6 +127,12 @@ function Renderer(canvas,hud){
   for(const s of stars){const z=12+((s.z-core.time*4)%105+105)%105;
    cube(s.x,s.y,z,s.s,s.s,s.s,colors.white);
   }
+  // Starfighter-speed luminous track markers accelerate visually in ACE mode.
+  for(let i=0;i<22;i++){
+   const z=13+((i*19.7-core.time*(core.mode==='ace'?43:31))%90+90)%90;
+   const side=i%2===0?-4.1:4.1;
+   cube(side,(i%3-1)*1.8,z,.045,.055,.52,i%4===0?colors.cyan:colors.blue);
+  }
   // Longitudinal rails + cross braces express actual perspective and depth.
   for(const x of [-4.15,4.15])for(const y of [-2.85,2.85]){
    cube(x,y,55,.035,.035,95,colors.steel);
@@ -107,15 +149,7 @@ function Renderer(canvas,hud){
   for(const g of gates)gate(g);
   const p=core.player;
   if(core.state==='running'||core.state==='paused'||core.state==='ready'){
-   const c=p.shield>0?colors.gold:colors.cyan;
-   cube(p.x,p.y,10,.48,.13,.92,c);
-   cube(p.x,p.y,9.34,.16,.22,.93,colors.white);
-   cube(p.x-.47,p.y-.08,10.25,.65,.11,.26,c);
-   cube(p.x+.47,p.y-.08,10.25,.65,.11,.26,c);
-   cube(p.x-.19,p.y-.06,10.74,.08,.13,.34,colors.pink);
-   cube(p.x+.19,p.y-.06,10.74,.08,.13,.34,colors.pink);
-   cube(p.x,p.y+.07,9.93,.22,.16,.40,colors.blue);
-   if(p.shield>0){cube(p.x,p.y,10,.94,.035,.94,colors.gold);}
+   starfighter(p,core.time);
   }
   if(gl){
    gl.clearColor(.018,.038,.087,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
@@ -124,7 +158,7 @@ function Renderer(canvas,hud){
    gl.drawArrays(gl.TRIANGLES,0,verts.length/6);
   }else{
    fallback.fillStyle='#061126';fallback.fillRect(0,0,w,h);
-   primitive.sort((a,b)=>b.z-a.z);for(const o of primitive)drawCube2d(o);
+   primitive.sort((a,b)=>b.z-a.z);for(const o of primitive){if(o.shape==='triangle')drawTriangle2d(o);else drawCube2d(o);}
   }
   overlay.clearRect(0,0,w,h);
   overlay.save();
