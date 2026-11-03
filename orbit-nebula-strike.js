@@ -115,7 +115,7 @@ function drawHud(run){
  T(run.phase==='boss'?'BOSS':run.phase==='draft'?'UPGRADE':'WAVE '+run.wave+'/3',747,23,16,palette.gold,'right');
  T('KILLS '+run.kills+'  /  GRAZE '+run.grazes,744,47,11,'#98bad8','right');
  if(run.phase==='wave'){progressBar(35,77,730,run.waveTime/(16+run.wave*3),palette.mint);}
- if(run.phase==='boss'&&run.boss){progressBar(220,77,360,run.boss.hp/run.boss.maxHp,palette.rose);}
+ if(run.phase==='boss'&&run.boss){progressBar(220,77,360,run.boss.hp/run.boss.maxHp,palette.rose);T('CORE // PHASE '+run.boss.stage,400,97,12,palette.rose,'center');}
  const left=run.player.dashLeft;
  R(593,438,178,39,left<=0?'#1e756eaa':'#1b3458d8',10);
  T(left<=0?'SPACE · 相位冲刺':'冲刺冷却 '+left.toFixed(1)+'s',682,457,14,left<=0?'#c3fff4':'#c1d7f1','center');
@@ -217,6 +217,7 @@ return {'space-shooter':()=>({
    if(e.type==='upgrade'){tone(785);notify('已装配 '+e.name+'，准备下一波。');}
    if(e.type==='draft'){tone(880);notify('已清理第 '+e.wave+' 波，选一项强化才能继续。');}
    if(e.type==='boss'){tone(230);notify('最终 Boss 出现！注意红色预警光束。');}
+   if(e.type==='boss-stage'){tone(300+e.stage*110);notify('核心进入第 '+e.stage+' 阶段：弹幕升级，留意预警光束！');}
    if(e.type==='warning')notify('红色区域预警！尽快撤离危险轨道。');
   }
   points(run.score);
