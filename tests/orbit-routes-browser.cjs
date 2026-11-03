@@ -69,8 +69,10 @@ async function tap(page,cell,n){
    await mobile.waitForTimeout(22);
   }
   await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-  assert.equal(Number(await cv.getAttribute('data-route-pairs')),1);
-  assert.equal(Number(await cv.getAttribute('data-route-coverage')),5);
+  await mobile.waitForFunction(()=>{
+   const c=document.getElementById('stage');
+   return c.dataset.routePairs==='1'&&c.dataset.routeCoverage==='5';
+  },null,{timeout:4000});
   assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
   await cv.screenshot({path:path.join(out,'mobile-drag.png')});
   assert.deepEqual(errs,[]);
