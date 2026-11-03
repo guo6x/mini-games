@@ -11,7 +11,7 @@
 </head><body>
 <header class="bar"><a class="brand" href="index.html">✳ ORBIT <span>/ ARCADE</span></a><div class="toplinks"><span class="chip">3D / WEBGL</span><button id="muteBtn" type="button" aria-pressed="false">声音：关</button><a href="index.html#library">返回游戏库 ↗</a></div></header>
 <main class="layout">
-<div class="heading"><div><span class="eyebrow">VECTOR PROGRAM // 3D FLIGHT TRIAL</span><h1>VECTOR <em>RUN</em></h1><p>真正的三维坐标飞行：左右与上下移动，穿过不断逼近的星门。最后完成 12 道星门的极限航线。</p></div><div id="gameState" class="state" role="status">READY / 待命</div></div>
+<div class="heading"><div><span class="eyebrow">VECTOR PROGRAM // 3D FLIGHT TRIAL</span><h1>VECTOR <em>RUN</em></h1><p>真正的三维坐标飞行：左右与上下移动，穿过不断逼近的星门。完成 12 道星门的极限航线。挑战金色中心瞄准环，精准穿心积累额外连击。</p></div><div id="gameState" class="state" role="status">READY / 待命</div></div>
 <div class="content">
 <section class="playfield" aria-label="3D 星门挑战">
  <div class="viewport" id="viewport">
@@ -22,7 +22,7 @@
     <span class="overline" id="overlayKicker">MISSION 01 // STARGATE COURSE</span>
     <h2 id="overlayTitle">穿越星门，夺回航线。</h2>
     <p id="overlayText">12 道星门，3 组速度递进的航段。准确穿越或使用护盾成功通过至少 8 门才能完成任务。上下左右飞行、空格启动相位护盾。</p>
-    <div class="mode-switch" role="group" aria-label="选择飞行难度"><button data-flight-mode="training" type="button" aria-pressed="false">训练 · 宽星门 / 5 HP</button><button data-flight-mode="standard" class="selected" type="button" aria-pressed="true">标准 · 4 HP</button></div>
+    <div class="mode-switch" role="group" aria-label="选择飞行难度"><button data-flight-mode="training" type="button" aria-pressed="false">训练 · 宽星门 / 5 HP</button><button data-flight-mode="standard" class="selected" type="button" aria-pressed="true">标准 · 4 HP</button><button data-flight-mode="ace" type="button" aria-pressed="false">王牌 · 窄星门 / 3 HP</button></div>
     <button id="startBtn" type="button">启动 3D 飞行 →</button>
    </div>
   </div>
@@ -44,8 +44,9 @@
  <div class="stat"><small>HULL INTEGRITY</small><strong id="lifeValue">04 / 04</strong></div>
  <div class="stat"><small>SCORE</small><strong id="scoreValue">000000</strong></div>
  <div class="stat"><small>GATE COMBO</small><strong id="comboValue">x00</strong></div>
+ <div class="stat precision-stat"><small>PRECISION / 精准穿心</small><strong id="bullseyeValue">00</strong><p class="gate-ledger">该难度最高得分 <b id="bestValue">0</b></p></div>
  <div class="stat"><small>PHASE SHIELD</small><strong id="abilityText">READY</strong></div>
- <div class="instructions"><b>飞行员指南</b><p>左右 + 上下，真正的二维方向操控发生在三维航道中。对准星门内部的开口；撞上门框会损失 1 点船体值。</p><p>空格 / 护盾键：短时穿越危险星门。每经过 4 道星门会恢复 1 点船体值，最多恢复至当前模式的上限。</p><p>阶段 1：导航；阶段 2：精确穿越；阶段 3：高速航线。安全穿越至少 8 门，且船体值不归零，才能完成战役。</p></div>
+ <div class="instructions"><b>飞行员指南</b><p>左右 + 上下，真正的二维方向操控发生在三维航道中。对准星门内部的开口；撞上门框会损失 1 点船体值。</p><p>空格 / 护盾键：短时穿越危险星门。每经过 4 道星门会恢复 1 点船体值，最多恢复至当前模式的上限。</p><p>穿过星门中央的金色小环可触发精准穿心奖励，连续命中加成更高。王牌难度：更窄、更快、3 点船体，至少安全穿越 10 门。</p><p>阶段 1：导航；阶段 2：精确穿越；阶段 3：高速航线。训练和标准模式需安全穿越至少 8 门，且船体值不归零。</p></div>
 </aside>
 </div>
 <footer><span>ORBIT ARCADE / FIRST 3D PROTOTYPE</span><span>无需账号 · 不依赖外部资源 · 技术验证版</span></footer>

@@ -63,3 +63,8 @@ footer{margin-top:30px;display:flex;justify-content:space-between;gap:13px;color
 .gate-ledger{font-size:11px;line-height:1.55;color:#b9d9e6;margin:10px 0 0}
 .gate-ledger b{font-size:14px;color:#f2fffb}
 @media(max-width:530px){.aim-hint{font-size:10px}.mode-switch button{font-size:10px;padding:9px}}
+
+/* Flight mastery: center-alignment feedback and mobile-safe mission chooser. */
+.aim-hint[data-precision="true"]{background:#294332;border-color:#c5ffb9;color:#e4ffcb}
+.precision-stat strong{color:#ffdb97}
+@media(max-width:530px){.viewport{aspect-ratio:auto;height:430px}.overlay{overflow-y:auto;place-items:start center;padding:10px}.overlay-card{width:100%;margin:0 auto}.mode-switch{gap:5px}.mode-switch button{flex:1 1 110px}}

@@ -135,6 +135,17 @@ function Renderer(canvas,hud){
    const gp=project(next.x,next.y,next.z),radius=Math.max(14,Math.min(74,gp.size*next.halfW));
    overlay.beginPath();overlay.arc(gp.x,gp.y,radius,0,Math.PI*2);
    overlay.strokeStyle='#9ffff17a';overlay.lineWidth=1.5;overlay.stroke();
+   // Gold inner reticle represents a bonus scoring zone, never an obstacle.
+   const p=core.player;
+   const onTarget=Math.abs(p.x-next.x)<=Math.max(.23,(next.halfW-p.r)*.34)&&Math.abs(p.y-next.y)<=Math.max(.20,(next.halfH-p.r)*.40);
+   const precisionRadius=Math.max(5,Math.min(28,gp.size*Math.min(next.halfW-p.r,next.halfH-p.r)*.38));
+   overlay.beginPath();overlay.arc(gp.x,gp.y,precisionRadius,0,Math.PI*2);
+   overlay.strokeStyle=onTarget?'#a5ffe0':'#ffd389';overlay.lineWidth=onTarget?2.5:1.6;overlay.stroke();
+   overlay.beginPath();overlay.moveTo(gp.x-precisionRadius-8,gp.y);overlay.lineTo(gp.x-precisionRadius-2,gp.y);
+   overlay.moveTo(gp.x+precisionRadius+2,gp.y);overlay.lineTo(gp.x+precisionRadius+8,gp.y);
+   overlay.moveTo(gp.x,gp.y-precisionRadius-8);overlay.lineTo(gp.x,gp.y-precisionRadius-2);
+   overlay.moveTo(gp.x,gp.y+precisionRadius+2);overlay.lineTo(gp.x,gp.y+precisionRadius+8);
+   overlay.stroke();
    overlay.font='600 11px system-ui';overlay.fillStyle='#b6ffea';
    overlay.textAlign='center';overlay.fillText('GATE '+next.id+' · '+Math.round(Math.max(0,next.z-core.player.z))+'m',gp.x,gp.y-radius-9);
   }
