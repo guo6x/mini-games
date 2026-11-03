@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const view=$('vectorView'),hud=$('vectorHud'),ui={};
 const core=new window.VectorRunCore({seed:20261103,onEvent:e=>onGameEvent(e)});
 const renderer=new window.VectorRunRenderer(view,hud);
-const held=new Set();let pointer=null,dragId=null,last=0;
+const held=new Set();let pointer=null,dragId=null,touchStart=null,last=0;
 let audio=null,muted=true;
 const bestByMode={training:0,standard:0,ace:0};
 const modeButtons=[...document.querySelectorAll('[data-flight-mode]')];
@@ -43,7 +43,7 @@ function onGameEvent(e){
  }
 }
 function start(){
- held.clear();pointer=null;dragId=null;core.start();
+ held.clear();pointer=null;dragId=null;touchStart=null;core.start();
  dom.overlay.hidden=true;dom.state.textContent='MISSION ACTIVE / 飞行中';
  $('pauseBtn').textContent='暂停';
  status('向着第一道星门飞行');
@@ -71,7 +71,7 @@ function pause(){
  const paused=core.state==='paused';
  dom.state.textContent=paused?'PAUSED / 暂停':'MISSION ACTIVE / 飞行中';
  $('pauseBtn').textContent=paused?'继续':'暂停';
- held.clear();pointer=null;dragId=null;
+ held.clear();pointer=null;dragId=null;touchStart=null;
  if(paused)status('飞行暂停');else status('已恢复飞行');
  last=performance.now();
 }
@@ -133,13 +133,26 @@ function pointerToWorld(e){
 }
 view.addEventListener('pointerdown',e=>{
  if(core.state!=='running')return;
- dragId=e.pointerId;pointer=pointerToWorld(e);
+ if(dragId!==null)return;
+ dragId=e.pointerId;
+ if(e.pointerType==='touch'){
+  // Relative touch steering: touching an arbitrary pixel never yanks the craft
+  // toward a false world coordinate when the 3D chase camera follows it.
+  touchStart={clientX:e.clientX,clientY:e.clientY,worldX:core.player.x,worldY:core.player.y};
+  pointer={x:core.player.x,y:core.player.y};
+ }else{touchStart=null;pointer=pointerToWorld(e);}
  try{view.setPointerCapture(e.pointerId);}catch(_){}
 });
 view.addEventListener('pointermove',e=>{
- if(e.pointerId===dragId&&core.state==='running')pointer=pointerToWorld(e);
+ if(e.pointerId!==dragId||core.state!=='running')return;
+ if(touchStart){
+  const r=view.getBoundingClientRect();
+  const x=touchStart.worldX+(e.clientX-touchStart.clientX)/r.width*8.8;
+  const y=touchStart.worldY-(e.clientY-touchStart.clientY)/r.height*5.7;
+  pointer={x:Math.max(-3.2,Math.min(3.2,x)),y:Math.max(-2.15,Math.min(2.15,y))};
+ }else pointer=pointerToWorld(e);
 });
-function release(e){if(e.pointerId!==dragId)return;pointer=null;dragId=null;}
+function release(e){if(e.pointerId!==dragId)return;pointer=null;dragId=null;touchStart=null;}
 view.addEventListener('pointerup',release);view.addEventListener('pointercancel',release);
 document.addEventListener('keydown',e=>{
  const keys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyW','KeyA','KeyS','KeyD','Space','KeyP','Escape'];
@@ -172,7 +185,7 @@ $('muteBtn').addEventListener('click',()=>{
  muted=!muted;$('muteBtn').textContent=muted?'声音：关':'声音：开';
  $('muteBtn').setAttribute('aria-pressed',String(!muted));if(!muted)audioBlip();
 });
-window.addEventListener('blur',()=>{held.clear();pointer=null;if(core.state==='running')pause();});
+window.addEventListener('blur',()=>{held.clear();pointer=null;touchStart=null;dragId=null;if(core.state==='running')pause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&core.state==='running')pause();});
 window.addEventListener('resize',renderer.resize);
 renderer.resize();dom.mode.textContent=renderer.mode==='webgl'?'WEBGL / 实时 3D':'3D SOFTWARE / 降级';
