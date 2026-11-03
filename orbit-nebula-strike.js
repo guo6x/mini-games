@@ -10,7 +10,7 @@ window.ORBIT_FLAGSHIP_META={
    name:'NEBULA STRIKE · 星云突围',
    sub:'三波战役 · 武装升级 · 相位冲刺 · 最终 Boss',
    instruction:'移动：WASD / 方向键，手机在战场拖动战机。自动开火；空格或屏幕操作按钮发动无敌冲刺。每波结束后选择 1–3 项升级之一，最后击败星云核心。闪光红色预警带会变成危险光束。',
-   hint:'优先在移动中躲弹幕，用冲刺穿越密集火力；升级卡可点击或按数字 1、2、3。战役完成或船体归零结算。',
+   hint:'靠近敌弹但不碰撞可获得擦弹加分并加速冲刺充能；优先在移动中躲弹幕，用冲刺穿越密集火力；升级卡可点击或按数字 1、2、3。战役完成或船体归零结算。',
    accent:'#85f6db'
  }
 };
@@ -113,7 +113,7 @@ function drawHud(run){
  T(String(run.score).padStart(6,'0'),601,26,23,'#f2f9ff','right');
  T('SCORE',602,48,10,'#9ab9d2','right');
  T(run.phase==='boss'?'BOSS':run.phase==='draft'?'UPGRADE':'WAVE '+run.wave+'/3',747,23,16,palette.gold,'right');
- T('KILLS '+run.kills,744,47,11,'#98bad8','right');
+ T('KILLS '+run.kills+'  /  GRAZE '+run.grazes,744,47,11,'#98bad8','right');
  if(run.phase==='wave'){progressBar(35,77,730,run.waveTime/(16+run.wave*3),palette.mint);}
  if(run.phase==='boss'&&run.boss){progressBar(220,77,360,run.boss.hp/run.boss.maxHp,palette.rose);}
  const left=run.player.dashLeft;
@@ -208,6 +208,7 @@ return {'space-shooter':()=>({
   for(const v of this.fx){v.x+=v.vx*dt;v.y+=v.vy*dt;v.life-=dt;}
   this.fx=this.fx.filter(v=>v.life>0);
   for(const e of this.queue.splice(0)){
+   if(e.type==='graze'){particleBurst(this.fx,e.x,e.y,'130,238,255',5);if(e.chain%5===0)notify('擦弹连击 '+e.chain+' · 冲刺充能加速');}
    if(e.type==='kill')particleBurst(this.fx,e.x,e.y,'134,245,211',13);
    if(e.type==='impact')particleBurst(this.fx,e.x,e.y,'255,165,212',4);
    if(e.type==='hurt'){tone(155);notify('船体受损！剩余 '+e.hp+' 点船体值。');}

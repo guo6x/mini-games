@@ -33,7 +33,7 @@
      this.mods={spread:0,rapid:0,power:0,dash:0};
      this.enemies=[];this.shots=[];this.hostile=[];this.hazards=[];
      this.boss=null;this.spawnTime=.55;this.fireTime=.2;this.bossFire=1.2;this.bossBeam=4.5;
-     this.clock=0;this.acc=0;this.score=0;this.kills=0;this.combo=0;
+     this.clock=0;this.acc=0;this.score=0;this.kills=0;this.combo=0;this.grazes=0;this.grazeChain=0;
      this.nextId=0;this.choices=[];this.upgradeHistory=[];this.finished=false;
      this.events=[];
      this.event('start');
@@ -109,12 +109,12 @@
    }
    fireHostile(x,y,speed=195,angle=null){
      const target=this.player,rad=angle===null?Math.atan2(target.y-y,target.x-x):angle;
-     this.hostile.push({x,y,vx:Math.cos(rad)*speed,vy:Math.sin(rad)*speed,r:6,ttl:4});
+     this.hostile.push({x,y,vx:Math.cos(rad)*speed,vy:Math.sin(rad)*speed,r:6,ttl:4,grazed:false});
    }
    hitPlayer(){
      const p=this.player;
      if(p.inv>0||p.dashDuration>0||this.phase==='defeat')return;
-     p.inv=1.1;this.combo=0;
+     p.inv=1.1;this.combo=0;this.grazeChain=0;
      if(p.shield>0){p.shield--;this.event('shield-hit');return;}
      p.hp--;this.event('hurt',{hp:p.hp});
      if(p.hp<=0){
@@ -184,7 +184,7 @@
        }
      }
      if(this.finished)return;
-     for(const h of this.hostile){if(h.ttl>0&&distance(h,p)<h.r+12){h.ttl=0;this.hitPlayer();}}
+     for(const h of this.hostile){if(h.ttl<=0)continue;const gap=distance(h,p);if(gap<h.r+12){h.ttl=0;this.hitPlayer();}else if(!h.grazed&&gap<h.r+30&&p.inv<=0&&p.dashDuration<=0){h.grazed=true;this.grazes++;this.grazeChain=Math.min(20,this.grazeChain+1);const bonus=10+this.grazeChain*3;this.score+=bonus;p.dashLeft=Math.max(0,p.dashLeft-.32);this.event('graze',{x:h.x,y:h.y,chain:this.grazeChain,bonus});}}
      for(const e of this.enemies){
        if(!e.dead&&distance(e,p)<e.r+13){e.dead=true;this.hitPlayer();}
      }
