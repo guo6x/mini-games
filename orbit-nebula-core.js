@@ -66,7 +66,7 @@
    startBoss(){
      this.phase='boss';this.wave=4;this.waveTime=0;
      this.enemies=[];this.hostile=[];this.shots=[];this.hazards=[];
-     this.boss={id:++this.nextId,x:400,y:142,r:52,hp:138,maxHp:138,phase:0};
+     this.boss={id:++this.nextId,x:400,y:142,r:52,hp:138,maxHp:138,phase:0,stage:1};
      this.bossFire=.55;this.bossBeam=3;this.fireTime=.1;
      this.player.inv=Math.max(this.player.inv,1.4);
      this.event('boss');
@@ -220,18 +220,23 @@
      b.phase+=dt;
      b.x=400+Math.sin(b.phase*.83)*169;
      b.y=138+Math.sin(b.phase*1.53)*20;
+     const stage=b.hp<=46?3:b.hp<=92?2:1;
+     if(stage!==b.stage){b.stage=stage;this.bossFire=Math.min(this.bossFire,.45);this.bossBeam=Math.min(this.bossBeam,1.2);this.event('boss-stage',{stage});}
      this.bossFire-=dt;
      if(this.bossFire<=0){
        // Three aimed bullets leave a genuine navigable safe gap.
        const a=Math.atan2(this.player.y-b.y,this.player.x-b.x);
-       for(const offset of [-.25,0,.25])this.fireHostile(b.x,b.y+30,220,a+offset);
-       this.bossFire=Math.max(.51,.94-(1-b.hp/b.maxHp)*.31);
+       const spread=stage===1?[-.25,0,.25]:stage===2?[-.48,-.24,0,.24,.48]:[-.66,-.44,-.22,0,.22,.44,.66];
+       for(const offset of spread)this.fireHostile(b.x,b.y+30,205+stage*12,a+offset);
+       this.bossFire=stage===1?.94:stage===2?.79:.68;
        this.event('volley');
      }
      this.bossBeam-=dt;
      if(this.bossBeam<=0){
-       this.hazards.push({x:clamp(this.player.x,95,705),time:.93});
-       this.bossBeam=4.1;this.event('warning');
+       const x=clamp(this.player.x,95,705);
+       this.hazards.push({x,time:.93});
+       if(stage===3){const other=x<400?Math.min(705,x+185):Math.max(95,x-185);this.hazards.push({x:other,time:.93});}
+       this.bossBeam=stage===1?4.1:stage===2?3.4:2.9;this.event('warning');
      }
      if(b.hp<95){
        this.spawnTime-=dt;
