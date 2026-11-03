@@ -25,6 +25,9 @@ jobs:
           node --test tests/arcade-health.test.cjs
           node --test tests/nebula-strike.test.cjs
           node --test tests/vector-run.test.cjs
+          node --check hyperfold-core.js
+          node --check hyperfold-game.js
+          node --test tests/hyperfold.test.cjs
   browser-regression:
     runs-on: ubuntu-latest
     steps:
@@ -39,3 +42,4 @@ jobs:
           node tests/browser-smoke.cjs
           node tests/legacy-audit.cjs
           node tests/vector-playthrough.cjs
+          node tests/hyperfold-browser.cjs

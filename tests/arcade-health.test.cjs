@@ -2,11 +2,11 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.resolve(__dirname,'..');const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const state={};vm.runInNewContext(read('games-data.js')+'\n;globalThis.games=GAMES_DATA',state);const games=Array.from(state.games);
 const newGroups={"arcade-cortex.js":["2048","card-memory","memory-game","color-match","connect-dots","hangman","minesweeper","number-memory","puzzle","sliding-puzzle","spot-difference","sudoku"],"arcade-kinetic.js":["brick-breaker","flappy-bird","music-rhythm","pac-man","plane-combat","pong","reaction-test","snake","space-invaders","space-shooter","tetris","time-guardian","typing-game"],"arcade-strategy.js":["checkers","cooking","farm","gomoku","tic-tac-toe","word-chain"]};
-test('exactly 58 unique concrete game pages and all catalog statuses are playable',()=>{
+test('exactly 59 unique concrete game pages and all catalog statuses are playable',()=>{
  const pages=fs.readdirSync(root).filter(x=>x.endsWith('.html')&&!['index.html','game-template.html'].includes(x)).sort();
- assert.equal(pages.length,58);assert.deepEqual(games.map(x=>x.file).sort(),pages);
- assert.equal(new Set(games.map(x=>x.id)).size,58);
- assert.equal(games.filter(x=>x.status==='playable').length,58);
+ assert.equal(pages.length,59);assert.deepEqual(games.map(x=>x.file).sort(),pages);
+ assert.equal(new Set(games.map(x=>x.id)).size,59);
+ assert.equal(games.filter(x=>x.status==='playable').length,59);
 });
 test('31 newly rewritten games are distinct, catalogued, and loaded with the right module',()=>{
  const fresh=Object.values(newGroups).flat();assert.equal(fresh.length,31);assert.equal(new Set(fresh).size,31);
@@ -20,13 +20,13 @@ test('all original 57 pages keep legacy shell, and new 3D uses dedicated shell',
 });
 test('all static assets and stage modules exist',()=>{for(const x of ['arcade-home.js','arcade-home.css','arcade-play.js','arcade-play.css','arcade-extra.js','arcade-more.js','arcade-final.js','arcade-completion.js',...Object.keys(newGroups)])assert.ok(fs.existsSync(path.join(root,x)),x);});
 
-test('editorial tiers remain honest for all 58 playable games',()=>{
+test('editorial tiers remain honest for all 59 playable games',()=>{
  const picks=games.filter(g=>g.qualityTier==='candidate');
  const lab=games.filter(g=>g.qualityTier==='lab');
  const other=games.filter(g=>g.qualityTier==='standard');
- assert.equal(picks.length,10);assert.equal(lab.length,18);assert.equal(other.length,30);
+ assert.equal(picks.length,10);assert.equal(lab.length,19);assert.equal(other.length,30);
  for(const g of games){
-  assert.ok(['2d','3d'].includes(g.dimension));
+  assert.ok(['2d','3d','4d'].includes(g.dimension));
   assert.equal(g.featured,g.qualityTier==='candidate');
   assert.ok(['candidate','standard','lab'].includes(g.qualityTier));
   if(g.qualityTier==='lab')assert.ok(g.qualityNote&&g.qualityNote.length>8);
@@ -64,3 +64,5 @@ test('3D flight has a real independent renderer, simulation, lab disclosure and 
  assert.ok(html.indexOf('orbit-vector-render.js')<html.indexOf('orbit-vector-game.js'));
  assert.ok(fs.existsSync(path.join(root,'tests/vector-run.test.cjs')));
 });
+
+test('4D puzzle has independent W coordinate, 5 solvable levels, assets and honest lab status',()=>{const g=games.find(x=>x.id==='hyperfold');assert.ok(g);assert.equal(g.dimension,'4d');assert.equal(g.qualityTier,'lab');const html=read(g.file);for(const s of ['hyperfold-core.js','hyperfold-game.js','hyperfold.css','id="field"'])assert.ok(html.includes(s));for(const s of ['hyperfold-core.js','hyperfold-game.js','hyperfold.css','tests/hyperfold.test.cjs'])assert.ok(fs.existsSync(path.join(root,s)));});

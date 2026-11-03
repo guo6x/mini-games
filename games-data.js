@@ -1055,5 +1055,29 @@ const GAMES_DATA = [
     "qualityTier": "lab",
     "qualityNote": "首款完整 3D 玩法原型，尚未完成真实玩家体验、设备性能和难度曲线评估",
     "dimension": "3d"
+  },
+  {
+    "id": "hyperfold",
+    "name": "HYPERFOLD · 四维空间折叠",
+    "icon": "◇",
+    "category": "puzzle",
+    "difficulty": "hard",
+    "description": "真正的 X/Y/Z/W 四维离散迷宫：五关超维路径、截面切换、晶体收集与可验证解法。",
+    "tags": [
+      "4D",
+      "四维",
+      "解谜",
+      "空间",
+      "W轴",
+      "独立原型"
+    ],
+    "file": "hyperfold.html",
+    "featured": false,
+    "status": "playable",
+    "revamped": false,
+    "edition": "experimental-4d-v1",
+    "qualityTier": "lab",
+    "qualityNote": "四维离散迷宫技术原型；五关算法可解，尚未经过真人试玩和移动端手感评估",
+    "dimension": "4d"
   }
 ];

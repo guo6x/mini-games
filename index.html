@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e1c"><meta name="description" content="ORBIT ARCADE：10 款优先体验候选、40 款主游戏、18 款公开实验作品，包含首款真三维飞行原型。58 款游戏持续打磨。">
+<meta name="theme-color" content="#090e1c"><meta name="description" content="ORBIT ARCADE：10 款优先体验候选、40 款主游戏、19 款公开实验作品，包含首款真三维飞行原型。59 款游戏持续打磨。">
 <title>ORBIT ARCADE · 值得再来一局</title>
 <link rel="stylesheet" href="arcade-home.css">
 <script src="games-data.js" defer></script><script src="arcade-home.js" defer></script>
@@ -17,8 +17,8 @@
 <section class="hero" aria-labelledby="hero-heading"><div class="hero-copy">
 <div class="eyebrow"><span class="live-dot"></span> A PERSONAL ARCADE EXPERIMENT</div>
 <h1 id="hero-heading">先做好游戏，<br><em>再做更多游戏。</em></h1>
-<p class="hero-lead">58 款游戏不等于 58 款精品。优先体验相对成熟的玩法，其余作品留在公开实验室打磨。</p>
-<div class="prototype-callout"><span>NEW / 3D PROTOTYPE</span><strong>VECTOR RUN · 星门穿越</strong><a href="vector-run.html">试玩真三维飞行实验版 ↗</a></div><div class="hero-actions"><button class="primary-btn" id="surprise" type="button"><span>▶</span> 随机来一局</button><a class="ghost-btn" href="#library">探索游戏库 <span>↗</span></a></div>
+<p class="hero-lead">59 款游戏不等于 59 款精品。优先体验相对成熟的玩法，其余作品留在公开实验室打磨。</p>
+<div class="prototype-callout"><span>NEW / 3D PROTOTYPE</span><strong>VECTOR RUN · 星门穿越</strong><a href="vector-run.html">试玩真三维飞行实验版 ↗</a></div><div class="prototype-callout"><span>NEW / 4D PROTOTYPE</span><strong>HYPERFOLD · 四维空间折叠</strong><a href="hyperfold.html">挑战真正四轴解谜实验版 ↗</a></div><div class="hero-actions"><button class="primary-btn" id="surprise" type="button"><span>▶</span> 随机来一局</button><a class="ghost-btn" href="#library">探索游戏库 <span>↗</span></a></div>
 <div class="hero-meta"><span>NO INSTALL</span><span>PLAY IN BROWSER</span><span>MADE FOR FUN</span></div>
 </div><div class="hero-art" aria-hidden="true"><div class="orbit-ring ring-a"></div><div class="orbit-ring ring-b"></div><div class="orb-core"><span>✦</span></div><div class="floating-card one"><small>UP NEXT</small><strong>01 / PLAY</strong><span>↗</span></div><div class="floating-card two"><small>LEVEL UP</small><strong>+100 XP</strong><span>✳</span></div><div class="orbit-label">ORBIT // 2026</div></div></section>
 <section class="insights" aria-label="游戏库概览"><div class="insight"><span class="insight-number" id="readyCount">—</span><span class="insight-label">主游戏库</span></div><div class="insight"><span class="insight-number" id="revampedCount">—</span><span class="insight-label">优先体验候选</span></div><div class="insight"><span class="insight-number" id="previewCount">—</span><span class="insight-label">实验室作品</span></div><div class="insight"><span class="insight-number" id="playedCount">0</span><span class="insight-label">我的游戏足迹</span></div></section>
@@ -26,11 +26,11 @@
 <section class="library" id="library"><div class="section-heading"><div><span class="section-kicker">THE COLLECTION</span><h2>选择你的下一关<span class="accent-point">.</span></h2><p>主游戏库和实验室均可直接试玩。当前分级是代码审查判断，不是用户评分。</p></div></div>
 <div class="control-panel"><label class="search-field" for="gameSearch"><span>⌕</span><input id="gameSearch" type="search" autocomplete="off" placeholder="搜索游戏、玩法、关键词…" aria-label="搜索游戏"></label>
 <div class="select-wrap"><label for="sortBy">排序</label><select id="sortBy"><option value="curated">编辑精选</option><option value="name">名称 A–Z</option><option value="recent">最近玩过</option></select></div></div>
-<div class="filter-row"><div id="categoryFilters" class="filter-chips" role="group" aria-label="按类型筛选"></div><div class="view-tabs" role="group" aria-label="作品状态"><button type="button" data-view="playable" class="active">主游戏库</button><button type="button" data-view="lab">实验室</button><button type="button" data-view="all">全部 58 款</button></div></div>
+<div class="filter-row"><div id="categoryFilters" class="filter-chips" role="group" aria-label="按类型筛选"></div><div class="view-tabs" role="group" aria-label="作品状态"><button type="button" data-view="playable" class="active">主游戏库</button><button type="button" data-view="lab">实验室</button><button type="button" data-view="all">全部 59 款</button></div></div>
 <div class="result-line"><span id="resultSummary" aria-live="polite"></span><span class="shortcut-hint">按 / 快速搜索</span></div>
 <div id="gamesGrid" class="games-grid"></div><div id="emptyState" class="empty-state" hidden><span>◌</span><h3>这里还没有符合条件的游戏</h3><p>试着清除关键词或切换分类。</p><button type="button" id="clearFilters">清除筛选</button></div>
 </section>
-<section class="outro"><div><span class="section-kicker">BUILD IN PUBLIC</span><h2>下一局，会更好。</h2><p>我们保留需要改进的作品，而不是把它们伪装成精品。现已加入真正三维坐标和透视空间规则的飞行原型，后续将结合试玩结果继续完善 3D，并独立研究四维空间解谜。</p></div><a href="https://github.com/guo6x/mini-games/issues" target="_blank" rel="noopener noreferrer">报告问题或提出创意 ↗</a></section>
+<section class="outro"><div><span class="section-kicker">BUILD IN PUBLIC</span><h2>下一局，会更好。</h2><p>我们保留需要改进的作品，而不是把它们伪装成精品。现已加入真正三维坐标和透视空间规则的飞行原型，现已加入四维 X/Y/Z/W 离散迷宫，五关经过算法可解性验证，仍需真人试玩评估。</p></div><a href="https://github.com/guo6x/mini-games/issues" target="_blank" rel="noopener noreferrer">报告问题或提出创意 ↗</a></section>
 </main><footer><span>© 2026 ORBIT ARCADE · BUILT BY GUO6X</span><span>NO DOWNLOADS. JUST PLAY.</span></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body></html>
