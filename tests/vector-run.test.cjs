@@ -117,3 +117,54 @@ test('gate wall renderer matches the logical world box, not an offset y center',
  assert.match(s,/cube\(\(left\+x-xx\)\/2,0,z,/);
  assert.match(s,/cube\(\(x\+xx\+right\)\/2,0,z,/);
 });
+
+test('center precision gates reward actual 3D alignment without weakening clearance collision',()=>{
+ const g=new Core({seed:280});g.start();
+ crossAt(g);assert.equal(g.bullseyes,1);assert.equal(g.precisionCombo,1);
+ assert.equal(g.score,200,'first precision gate awards combo plus exact-center bonus');
+ crossAt(g);assert.equal(g.bullseyes,2);assert.equal(g.precisionCombo,2);
+ assert.equal(g.score,440,'consecutive bullseyes add a meaningful streak bonus');
+ const gate=g.spawn();g.spawnClock=100;
+ g.player.x=gate.x+(gate.halfW-g.player.r)*.86;g.player.y=gate.y;
+ gate.z=g.player.z+.2;step(g,2);
+ assert.equal(g.passed,3,'safe but off-center clearance still qualifies');
+ assert.equal(g.bullseyes,2);assert.equal(g.precisionCombo,0);
+ assert.equal(g.bestPrecisionCombo,2);
+});
+test('phase shield never creates free bullseyes and collisions break precision combo',()=>{
+ const g=new Core({seed:281});g.start();crossAt(g);
+ assert.equal(g.precisionCombo,1);
+ crossAt(g,{aligned:false});assert.equal(g.precisionCombo,0);
+ assert.equal(g.bullseyes,1);
+ const h=new Core({seed:282});h.start();h.pulse();crossAt(h,{aligned:false});
+ assert.equal(h.shielded,1);assert.equal(h.bullseyes,0);
+ assert.equal(h.score,45);
+});
+test('ACE difficulty has faster smaller gates, three HP and ten required clears',()=>{
+ const normal=new Core({seed:283}),ace=new Core({seed:283,mode:'ace'});
+ normal.start();ace.start();
+ const g1=normal.spawn(),g2=ace.spawn();
+ assert.equal(ace.player.maxHp,3);
+ assert.ok(g2.halfW<g1.halfW&&g2.halfH<g1.halfH);
+ assert.ok(g2.velocity>g1.velocity);
+ const lost=new Core({seed:284,mode:'ace'});lost.start();
+ for(let i=0;i<12;i++)crossAt(lost,{aligned:![0,4,8].includes(i)});
+ assert.equal(lost.resolved,12);assert.equal(lost.passed,9);
+ assert.equal(lost.state,'lost');assert.equal(lost.grade,'INSUFFICIENT PASSES');
+ assert.ok(lost.player.hp>0,'failure is qualification, not hull depletion');
+ const won=new Core({seed:285,mode:'ace'});won.start();
+ for(let i=0;i<12;i++)crossAt(won,{aligned:![0,4].includes(i)});
+ assert.equal(won.state,'won');assert.equal(won.passed,10);
+ assert.equal(won.bullseyes,10);assert.equal(won.player.hp>0,true);
+ assert.equal(won.setMode('training'),true);assert.equal(won.player.hp,5);
+});
+test('ACE perfect S grade demands center mastery rather than merely zero misses',()=>{
+ const g=new Core({seed:286,mode:'ace'});g.start();
+ for(let i=0;i<12;i++){
+  const gate=g.spawn();g.spawnClock=100;
+  g.player.x=gate.x+(gate.halfW-g.player.r)*.8;g.player.y=gate.y;
+  gate.z=g.player.z+.2;step(g,2);
+ }
+ assert.equal(g.state,'won');assert.equal(g.passed,12);
+ assert.equal(g.bullseyes,0);assert.equal(g.grade,'A');
+});
