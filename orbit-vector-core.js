@@ -12,17 +12,17 @@
  class VectorRunCore {
   constructor(options={}){
    this.initialSeed=(options.seed>>>0)||20261103;
-   this.mode=options.mode==='training'?'training':'standard';
+   this.mode=['training','standard','ace'].includes(options.mode)?options.mode:'standard';
    this.events=typeof options.onEvent==='function'?options.onEvent:()=>{};
    this.reset();
   }
-  setMode(mode){if(this.state==='running'||this.state==='paused')return false;this.mode=mode==='training'?'training':'standard';this.reset();return true;}
+  setMode(mode){if(this.state==='running'||this.state==='paused')return false;this.mode=['training','standard','ace'].includes(mode)?mode:'standard';this.reset();return true;}
   random(){this.seed=(Math.imul(1664525,this.seed)+1013904223)>>>0;return this.seed/4294967296;}
   emit(type,detail={}){this.events({type,...detail});}
   reset(){
    this.seed=this.initialSeed;this.state='ready';this.acc=0;this.time=0;this.spawnClock=.6;
-   this.spawned=0;this.resolved=0;this.passed=0;this.shielded=0;this.missed=0;this.score=0;this.combo=0;this.bestCombo=0;this.grade='';
-   this.gates=[];this.nextId=1;this.player={x:0,y:0,z:10,r:.3,hp:this.mode==='training'?5:4,maxHp:this.mode==='training'?5:4,shield:0,cooldown:0};
+   this.spawned=0;this.resolved=0;this.passed=0;this.shielded=0;this.missed=0;this.score=0;this.combo=0;this.bestCombo=0;this.bullseyes=0;this.precisionCombo=0;this.bestPrecisionCombo=0;this.grade='';
+   this.gates=[];this.nextId=1;this.player={x:0,y:0,z:10,r:.3,hp:this.mode==='training'?5:this.mode==='ace'?3:4,maxHp:this.mode==='training'?5:this.mode==='ace'?3:4,shield:0,cooldown:0};
    this.goal=12;this.lastOutcome='';this.emit('reset');
   }
   start(){this.reset();this.state='running';this.emit('start');}
@@ -36,9 +36,9 @@
    // Every gate requires 3D alignment: lateral and vertical aperture vary independently.
    const x=clamp(profile[0]+(this.random()-.5)*.52,-2,2);
    const y=clamp(profile[1]+(this.random()-.5)*.48,-1.25,1.25);
-   const size=(stage===1?1.7:stage===2?1.55:1.4)+(this.mode==='training'?.24:0);
+   const size=(stage===1?1.7:stage===2?1.55:1.4)+(this.mode==='training'?.24:this.mode==='ace'?-.2:0);
    const gate={id:this.nextId++,x,y,z:85,halfW:size,halfH:size*.72,
-      stage,kind:i%4,velocity:this.mode==='training'?18+stage*2.2:21+stage*2.8,
+      stage,kind:i%4,velocity:this.mode==='training'?18+stage*2.2:this.mode==='ace'?24+stage*3.4:21+stage*2.8,
       resolved:false,spin:(this.random()-.5)*.18};
    this.gates.push(gate);this.spawned++;this.emit('spawn',{id:gate.id,stage});
    return gate;
@@ -48,15 +48,18 @@
    g.resolved=true;this.resolved++;
    const p=this.player;
    const aligned=Math.abs(p.x-g.x)<=g.halfW-p.r&&Math.abs(p.y-g.y)<=g.halfH-p.r;
+   const centered=aligned&&Math.abs(p.x-g.x)<=Math.max(.23,(g.halfW-p.r)*.34)&&Math.abs(p.y-g.y)<=Math.max(.20,(g.halfH-p.r)*.40);
    if(aligned||p.shield>0){
     if(aligned)this.passed++;else this.shielded++;
     this.combo++;this.bestCombo=Math.max(this.combo,this.bestCombo);
-    const reward=aligned?100+Math.min(this.combo,10)*25:45;
-    this.score+=reward;this.lastOutcome=aligned?'PERFECT GATE':'PHASE SAVE';
-    this.emit('pass',{id:g.id,score:reward,combo:this.combo,phased:!aligned});
+    if(centered){this.bullseyes++;this.precisionCombo++;this.bestPrecisionCombo=Math.max(this.precisionCombo,this.bestPrecisionCombo);}
+    else this.precisionCombo=0;
+    const reward=(aligned?100+Math.min(this.combo,10)*25:45)+(centered?60+Math.min(this.precisionCombo,10)*15:0);
+    this.score+=reward;this.lastOutcome=centered?'BULLSEYE':aligned?'PERFECT GATE':'PHASE SAVE';
+    this.emit('pass',{id:g.id,score:reward,combo:this.combo,phased:!aligned,precision:centered,precisionCombo:this.precisionCombo});
    }else{
     this.missed++;
-    p.hp--;this.combo=0;this.lastOutcome='HULL IMPACT';
+    p.hp--;this.combo=0;this.precisionCombo=0;this.lastOutcome='HULL IMPACT';
     this.emit('impact',{id:g.id,hp:p.hp});
     if(p.hp<=0){
      this.state='lost';this.grade='HULL LOST';this.emit('lose',{score:this.score,passed:this.passed,shielded:this.shielded,missed:this.missed,reason:'hull'});
@@ -69,13 +72,13 @@
    }
    if(this.resolved>=this.goal){
     const clear=this.passed+this.shielded;
-    if(clear<8){
+    if(clear<(this.mode==='ace'?10:8)){
      this.state='lost';this.grade='INSUFFICIENT PASSES';
-     this.emit('lose',{score:this.score,passed:this.passed,shielded:this.shielded,missed:this.missed,reason:'qualification'});
+     this.emit('lose',{score:this.score,passed:this.passed,shielded:this.shielded,missed:this.missed,reason:'qualification',required:this.mode==='ace'?10:8});
     }else{
-     this.state='won';this.grade=this.missed===0&&this.shielded===0?'S':this.missed<=1?'A':this.missed<=3?'B':'C';
+     this.state='won';this.grade=this.missed===0&&this.shielded===0&&(this.mode!=='ace'||this.bullseyes>=8)?'S':this.missed<=1?'A':this.missed<=3?'B':'C';
      this.score+=Math.max(0,Math.round(1500-this.time*10))+p.hp*100;
-     this.emit('win',{score:this.score,hp:p.hp,time:this.time,grade:this.grade,passed:this.passed,shielded:this.shielded,missed:this.missed});
+     this.emit('win',{score:this.score,hp:p.hp,time:this.time,grade:this.grade,passed:this.passed,shielded:this.shielded,missed:this.missed,bullseyes:this.bullseyes});
     }
    }
    return true;
@@ -113,7 +116,7 @@
    this.gates=this.gates.filter(g=>!g.resolved&&g.z>-5);
   }
   snapshot(){
-   return {state:this.state,mode:this.mode,time:this.time,spawned:this.spawned,resolved:this.resolved,passed:this.passed,shielded:this.shielded,missed:this.missed,score:this.score,
+   return {state:this.state,mode:this.mode,time:this.time,spawned:this.spawned,resolved:this.resolved,passed:this.passed,shielded:this.shielded,missed:this.missed,score:this.score,bullseyes:this.bullseyes,precisionCombo:this.precisionCombo,bestPrecisionCombo:this.bestPrecisionCombo,
     combo:this.combo,player:{...this.player},gates:this.gates.map(g=>({...g}))};
   }
  }
