@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-      - run: npm install --no-save playwright@1.56.1
+      - run: npm install --no-save playwright@1.56.1 axe-core@4.10.3
       - run: npx playwright install --with-deps chromium
       - run: |
           python3 -m http.server 4173 > /tmp/arcade-server.log 2>&1 &
@@ -43,3 +43,4 @@ jobs:
           node tests/legacy-audit.cjs
           node tests/vector-playthrough.cjs
           node tests/hyperfold-browser.cjs
+          node tests/hyperfold-accessibility.cjs
