@@ -33,7 +33,7 @@
      this.mods={spread:0,rapid:0,power:0,dash:0};
      this.enemies=[];this.shots=[];this.hostile=[];this.hazards=[];
      this.boss=null;this.spawnTime=.55;this.fireTime=.2;this.bossFire=1.2;this.bossBeam=4.5;
-     this.clock=0;this.acc=0;this.score=0;this.kills=0;this.combo=0;
+     this.clock=0;this.acc=0;this.score=0;this.kills=0;this.combo=0;this.grazes=0;this.grazeChain=0;
      this.nextId=0;this.choices=[];this.upgradeHistory=[];this.finished=false;
      this.events=[];
      this.event('start');
