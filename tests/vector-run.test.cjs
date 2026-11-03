@@ -75,7 +75,10 @@ test('three-dimensional WebGL shader and software projection both exist and requ
  const render=fs.readFileSync(require('node:path').join(__dirname,'../orbit-vector-render.js'),'utf8');
  assert.match(render,/getContext\('webgl'/);
  assert.match(render,/gl\.enable\(gl\.DEPTH_TEST\)/);
- assert.match(render,/gl_Position=vec4\(aPos\.x\*f\/uAspect,aPos\.y\*f/);
+ assert.match(render,/gl_Position=vec4\(\(aPos\.x-uCamera\.x\)\*f\/uAspect,\(aPos\.y-uCamera\.y\)\*f/);
+ assert.match(render,/float z=max\(aPos\.z-7\.0/);
+ assert.match(render,/camX=core\.player\.x\*\.82/);
+ assert.match(render,/Math\.max\(\.61,z-EYE_Z\)/);
  assert.match(render,/function project\(x,y,z\)/);
  assert.match(render,/software-perspective/);
  const html=fs.readFileSync(require('node:path').join(__dirname,'../vector-run.html'),'utf8');
