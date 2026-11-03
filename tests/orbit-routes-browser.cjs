@@ -36,10 +36,10 @@ async function tap(page,cell,n){
     const state=await canvas.evaluate(c=>({coverage:c.dataset.routeCoverage,pairs:c.dataset.routePairs,active:c.dataset.routeActive,moves:c.dataset.routeMoves,feedback:document.getElementById('liveFeedback').textContent}));
     console.log('STAR ROUTES stage '+(stage+1)+' pair '+(color+1),JSON.stringify(state));
    }
-   assert.equal(await canvas.getAttribute('data-route-stage'),String(stage+1));
-   assert.equal(await canvas.getAttribute('data-route-solved'),'true','full-cover puzzle '+(stage+1));
-   assert.equal(Number(await canvas.getAttribute('data-route-coverage')),l.size*l.size);
-   assert.equal(Number(await canvas.getAttribute('data-route-pairs')),l.routes.length);
+   await page.waitForFunction(({stage,cells,pairs})=>{
+    const c=document.getElementById('stage');
+    return c.dataset.routeStage===String(stage)&&c.dataset.routeSolved==='true'&&Number(c.dataset.routeCoverage)===cells&&Number(c.dataset.routePairs)===pairs;
+   },{stage:stage+1,cells:l.size*l.size,pairs:l.routes.length},{timeout:4000});
    if(stage===0)await page.locator('#stage').screenshot({path:path.join(out,'desktop-solved.png')});
    if(stage<levels.length-1){
     const r=await canvas.boundingBox();
