@@ -80,6 +80,30 @@ const assert=require('node:assert/strict');
   await mobile.locator('#startBtn').click();
   assert.equal(await mobile.locator('#vectorView').getAttribute('data-phase'),'running');
   assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'no mobile horizontal overflow');
+  // Real Chromium touch events: a tap must not re-target the craft, whereas
+  // dragging relative to any starting pixel should steer the craft smoothly.
+  const flight=mobile.locator('#vectorView');
+  await flight.scrollIntoViewIfNeeded();
+  const rect=await flight.boundingBox();
+  const sx=rect.x+rect.width*.65,sy=rect.y+rect.height*.65;
+  const ex=sx+rect.width*.18,ey=sy-rect.height*.12;
+  const cdp=await mobile.context().newCDPSession(mobile);
+  const start=Number(await flight.getAttribute('data-player-x'));
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:sx,y:sy,id:7}]});
+  await mobile.waitForTimeout(200);
+  const tap=Number(await flight.getAttribute('data-player-x'));
+  assert.ok(Math.abs(tap-start)<.05,'touchdown at an arbitrary pixel must not cause world-coordinate jump');
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:ex,y:ey,id:7}]});
+  await mobile.waitForTimeout(400);
+  const moveX=Number(await flight.getAttribute('data-player-x'));
+  const moveY=Number(await flight.getAttribute('data-player-y'));
+  assert.ok(moveX>start+.4,'drag right should steer positive X, got '+moveX);
+  assert.ok(moveY>.25,'drag up should steer positive Y, got '+moveY);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await mobile.waitForTimeout(150);
+  const released=Number(await flight.getAttribute('data-player-x'));
+  assert.ok(Math.abs(released-moveX)<.08,'releasing the finger must stop active targeting');
+  await cdp.detach();
   await mobile.close();
   console.log('VECTOR RUN guided browser playthrough success:',JSON.stringify({result,steps,renderer:await page.locator('#rendererText').textContent(),colors:pixels}));
  }finally{await browser.close();}
