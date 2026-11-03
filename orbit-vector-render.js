@@ -23,7 +23,7 @@ function Renderer(canvas,hud){
  if(gl){
   try{
    const vs=shader(gl.VERTEX_SHADER,
-    'attribute vec3 aPos; attribute vec3 aCol; uniform float uAspect; uniform vec2 uCamera; varying vec3 vCol; void main(){float z=max(aPos.z-7.0,.1);float f=1.65;gl_Position=vec4((aPos.x-uCamera.x)*f/uAspect,(aPos.y-uCamera.y)*f,z*1.006-.603,z);vCol=aCol;}');
+    'attribute vec3 aPos; attribute vec3 aCol; uniform float uAspect; uniform vec2 uCamera; varying vec3 vCol; void main(){float z=max(aPos.z-7.0,.61);float f=1.65;gl_Position=vec4((aPos.x-uCamera.x)*f/uAspect,(aPos.y-uCamera.y)*f,z*1.006-.603,z);vCol=aCol;}');
    const fs=shader(gl.FRAGMENT_SHADER,
     'precision mediump float; varying vec3 vCol; void main(){vec3 c=pow(vCol,vec3(.90));gl_FragColor=vec4(c,1.0);}');
    program=gl.createProgram();gl.attachShader(program,vs);gl.attachShader(program,fs);gl.linkProgram(program);
@@ -144,7 +144,7 @@ function Renderer(canvas,hud){
   }
   const offset=(core.time*17)%13;
   for(let z=13-offset;z<102;z+=13){
-   if(z<=.8)continue;
+   if(z<=EYE_Z+.8)continue;
    cube(0,-2.85,z,8.3,.035,.05,colors.steel);
    cube(0,2.85,z,8.3,.035,.05,colors.steel);
    cube(-4.15,0,z,.05,5.7,.05,colors.steel);
