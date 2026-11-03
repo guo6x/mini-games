@@ -109,12 +109,12 @@
    }
    fireHostile(x,y,speed=195,angle=null){
      const target=this.player,rad=angle===null?Math.atan2(target.y-y,target.x-x):angle;
-     this.hostile.push({x,y,vx:Math.cos(rad)*speed,vy:Math.sin(rad)*speed,r:6,ttl:4});
+     this.hostile.push({x,y,vx:Math.cos(rad)*speed,vy:Math.sin(rad)*speed,r:6,ttl:4,grazed:false});
    }
    hitPlayer(){
      const p=this.player;
      if(p.inv>0||p.dashDuration>0||this.phase==='defeat')return;
-     p.inv=1.1;this.combo=0;
+     p.inv=1.1;this.combo=0;this.grazeChain=0;
      if(p.shield>0){p.shield--;this.event('shield-hit');return;}
      p.hp--;this.event('hurt',{hp:p.hp});
      if(p.hp<=0){
