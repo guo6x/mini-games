@@ -1,0 +1,39 @@
+/* STAR ROUTES tactile fallback for narrow portrait screens.
+ * Canvas grid retains its 800x500 simulation; accessible HTML buttons are
+ * deliberately larger than its downscaled in-canvas controls.
+ */
+.route-touch-bar{display:none}
+@media(max-width:750px){
+ .route-touch-bar{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;margin:12px 0 16px;
+  padding:11px;border:1px solid #6babc54d;border-radius:16px;
+  background:linear-gradient(125deg,#112b41,#151b35);
+ }
+ .route-touch-bar button{
+  min-height:48px;padding:8px 3px;
+  border:1px solid #6b97bf88;border-radius:11px;
+  background:#243a59;color:#e0f3ff;font-size:12px;font-weight:700;
+  touch-action:manipulation;line-height:1.35;
+ }
+ .route-touch-bar button[data-route-color]{
+  border-top:4px solid var(--route-color,#87e5dd);
+ }
+ .route-touch-bar button[aria-pressed="true"]{
+  background:#356a69;border-color:#a9ffe6;color:#fff;
+ }
+ .route-touch-bar button.connected{
+  background:#1b4851;
+ }
+ .route-touch-bar button[data-route-action="next"]:not(:disabled){
+  background:#1e7466;color:#f4fff9;border-color:#a6f0d5;
+ }
+ .route-touch-bar button:focus-visible{
+  outline:3px solid #a7ffdc;outline-offset:2px;
+ }
+ .route-touch-bar button:disabled{opacity:.46;cursor:not-allowed}
+ .route-touch-note{
+  grid-column:1/-1;margin:0;color:#b2d1e7;
+  font-size:12px;line-height:1.5;text-align:center;
+ }
+}
