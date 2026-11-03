@@ -21,7 +21,7 @@ function makeStage3(x,y,{volley=true,beam=true}={}){
 function pilot(g,x,y,seconds=2){
  const frames=Math.ceil(seconds/STEP);
  for(let i=0;i<frames;i++){
-  if(g.phase!=='boss'break;
+  if(g.phase!=='boss')break;
   g.update(STEP,{pointer:{x,y}});
  }
  return {hp:g.player.hp,phase:g.phase,x:g.player.x,y:g.player.y};
