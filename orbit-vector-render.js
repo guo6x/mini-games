@@ -8,7 +8,9 @@ function Renderer(canvas,hud){
        ||canvas.getContext('experimental-webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:true});
  const overlay=hud.getContext('2d');
  const fallback=!gl?canvas.getContext('2d'):null;
- let w=0,h=0,aspect=1,dpr=1,program,buffer,posLoc,colLoc,stars=[];
+ let w=0,h=0,aspect=1,dpr=1,program,buffer,posLoc,colLoc,cameraLoc,stars=[];
+ let camX=0,camY=0;
+ const EYE_Z=7;
  const clamp=(a,b,c)=>Math.max(b,Math.min(c,a));
  const colors={
   blue:[.32,.73,1],cyan:[.22,.94,.86],violet:[.74,.43,1],
@@ -21,12 +23,12 @@ function Renderer(canvas,hud){
  if(gl){
   try{
    const vs=shader(gl.VERTEX_SHADER,
-    'attribute vec3 aPos; attribute vec3 aCol; uniform float uAspect; varying vec3 vCol; void main(){float z=max(aPos.z,.1);float f=1.65;gl_Position=vec4(aPos.x*f/uAspect,aPos.y*f,z*1.006-.603,z);vCol=aCol;}');
+    'attribute vec3 aPos; attribute vec3 aCol; uniform float uAspect; uniform vec2 uCamera; varying vec3 vCol; void main(){float z=max(aPos.z-7.0,.1);float f=1.65;gl_Position=vec4((aPos.x-uCamera.x)*f/uAspect,(aPos.y-uCamera.y)*f,z*1.006-.603,z);vCol=aCol;}');
    const fs=shader(gl.FRAGMENT_SHADER,
     'precision mediump float; varying vec3 vCol; void main(){vec3 c=pow(vCol,vec3(.90));gl_FragColor=vec4(c,1.0);}');
    program=gl.createProgram();gl.attachShader(program,vs);gl.attachShader(program,fs);gl.linkProgram(program);
    if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
-   gl.useProgram(program);posLoc=gl.getAttribLocation(program,'aPos');colLoc=gl.getAttribLocation(program,'aCol');
+   gl.useProgram(program);posLoc=gl.getAttribLocation(program,'aPos');colLoc=gl.getAttribLocation(program,'aCol');cameraLoc=gl.getUniformLocation(program,'uCamera');
    gl.enableVertexAttribArray(posLoc);gl.enableVertexAttribArray(colLoc);
    buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
    gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(colLoc,3,gl.FLOAT,false,24,12);
@@ -90,10 +92,10 @@ function Renderer(canvas,hud){
    const p=c[i],l=contrast[f];verts.push(p[0],p[1],p[2],...col.map(v=>Math.min(1,v*l)));
   }}else primitive.push({x,y,z,sx,sy,sz,col});
  }
- function project(x,y,z){const zz=Math.max(.61,z),scale=1.65/zz;return{x:w/2+x*scale*w/2/aspect,y:h/2-y*scale*h/2,size:scale*h/2};}
+ function project(x,y,z){const zz=Math.max(.61,z-EYE_Z),scale=1.65/zz;return{x:w/2+(x-camX)*scale*w/2/aspect,y:h/2-(y-camY)*scale*h/2,size:scale*h/2};}
  function drawCube2d(obj){
   const p=project(obj.x,obj.y,obj.z),sx=obj.sx*p.size,sy=obj.sy*p.size;
-  if(obj.z<.6||p.x+sx<0||p.x-sx>w||p.y+sy<0||p.y-sy>h)return;
+  if(obj.z<EYE_Z+.6||p.x+sx<0||p.x-sx>w||p.y+sy<0||p.y-sy>h)return;
   fallback.fillStyle='rgb('+obj.col.map(v=>Math.floor(255*v)).join(',')+')';
   fallback.fillRect(p.x-sx/2,p.y-sy/2,Math.max(1,sx),Math.max(1,sy));
   fallback.strokeStyle='#ffffff44';fallback.strokeRect(p.x-sx/2,p.y-sy/2,sx,sy);
@@ -123,6 +125,9 @@ function Renderer(canvas,hud){
   return s;
  }
  function scene(core){
+  // Third-person chase camera holds the fighter visibly foregrounded while
+  // maintaining parallax: distant gates move against the tracked craft.
+  camX=core.player.x*.82;camY=core.player.y*.82;
   verts.length=0;primitive.length=0;
   for(const s of stars){const z=12+((s.z-core.time*4)%105+105)%105;
    cube(s.x,s.y,z,s.s,s.s,s.s,colors.white);
@@ -153,6 +158,7 @@ function Renderer(canvas,hud){
   }
   if(gl){
    gl.clearColor(.018,.038,.087,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+   gl.uniform2f(cameraLoc,camX,camY);
    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.DYNAMIC_DRAW);
    gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(colLoc,3,gl.FLOAT,false,24,12);
    gl.drawArrays(gl.TRIANGLES,0,verts.length/6);
