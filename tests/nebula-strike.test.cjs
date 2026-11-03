@@ -103,3 +103,20 @@ test('dash invulnerability cannot be exploited for graze bonuses',()=>{
  g.hostile=[{x:g.player.x+31,y:g.player.y,vx:0,vy:0,r:6,ttl:4,grazed:false}];frames(g,1);
  assert.equal(g.grazes,0);assert.equal(g.score,0);
 });
+
+test('boss stages progress at HP thresholds and change bullet patterns',()=>{
+ const events=[],g=new Core({seed:121,emit:e=>events.push(e)});
+ for(let w=1;w<=3;w++){advance(g,w);g.pickUpgrade(0);}
+ assert.equal(g.boss.stage,1);g.fireTime=100;g.spawnTime=100;
+ const volley=hp=>{g.boss.hp=hp;g.bossFire=0;g.bossBeam=100;g.hostile=[];frames(g,1);return g.hostile.length;};
+ assert.equal(volley(138),3);assert.equal(g.boss.stage,1);
+ assert.equal(volley(92),5);assert.equal(g.boss.stage,2);
+ assert.equal(volley(46),7);assert.equal(g.boss.stage,3);
+ assert.deepEqual(events.filter(e=>e.type==='boss-stage').map(e=>e.stage),[2,3]);
+});
+test('third boss stage adds a second announced beam with finite safe corridors',()=>{
+ const g=new Core({seed:123});for(let w=1;w<=3;w++){advance(g,w);g.pickUpgrade(0);}
+ g.boss.hp=40;g.bossBeam=0;g.bossFire=100;g.fireTime=100;g.spawnTime=100;
+ frames(g,1);assert.equal(g.boss.stage,3);assert.equal(g.hazards.length,2);
+ assert.ok(g.hazards.every(h=>h.time>0));assert.ok(Math.abs(g.hazards[0].x-g.hazards[1].x)>=100);
+});
