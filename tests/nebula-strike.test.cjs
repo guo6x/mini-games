@@ -85,3 +85,21 @@ test('weapon upgrades change firing interval and fire pattern',()=>{
  assert.ok(g.fireTime<.23);
  assert.ok(g.shots.at(-1).damage>1.6);
 });
+
+test('near-miss awards one bonus per projectile and recharges dash without dealing damage',()=>{
+ const events=[],g=new Core({seed:101,emit:e=>events.push(e)});g.spawnTime=100;g.fireTime=100;g.player.dashLeft=4;
+ const p=g.player;g.hostile=[{x:p.x+31,y:p.y,vx:0,vy:0,r:6,ttl:4,grazed:false}];
+ const hp=p.hp;frames(g,1);assert.equal(p.hp,hp);assert.equal(g.grazes,1);assert.equal(g.grazeChain,1);assert.equal(g.score,13);assert.ok(p.dashLeft<4-.3);assert.ok(events.some(e=>e.type==='graze'));
+ frames(g,12);assert.equal(g.grazes,1);assert.equal(g.score,13);
+});
+test('collision never scores a graze and damage resets near-miss chain',()=>{
+ const g=new Core({seed:103});g.spawnTime=100;g.fireTime=100;const p=g.player;
+ g.hostile=[{x:p.x+30,y:p.y,vx:0,vy:0,r:6,ttl:4,grazed:false}];frames(g,1);assert.equal(g.grazes,1);
+ g.hostile.push({x:p.x+2,y:p.y,vx:0,vy:0,r:6,ttl:4,grazed:false});frames(g,1);
+ assert.equal(g.grazes,1);assert.equal(g.grazeChain,0);assert.equal(p.hp,4);
+});
+test('dash invulnerability cannot be exploited for graze bonuses',()=>{
+ const g=new Core({seed:107});g.spawnTime=100;g.fireTime=100;g.player.inv=1;
+ g.hostile=[{x:g.player.x+31,y:g.player.y,vx:0,vy:0,r:6,ttl:4,grazed:false}];frames(g,1);
+ assert.equal(g.grazes,0);assert.equal(g.score,0);
+});
