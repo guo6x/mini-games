@@ -5,3 +5,5 @@
 .slices button.active small{color:#e6fff5}
 
 #score{color:#f9c97a;letter-spacing:.1em;font-size:15px}#sound[aria-pressed=true]{border-color:#8fffd9;background:#17564d}.status>span:last-child{white-space:nowrap}
+
+.campaign-records{display:grid;gap:6px}.campaign-record{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;padding:10px;font-size:11px}.campaign-record b{white-space:nowrap;color:#f9c97a}.campaign-record.current{border-color:#8fffd9;background:#17504d}#campaignProgress{font-size:13px;color:#a8ffe4;font-weight:800}
