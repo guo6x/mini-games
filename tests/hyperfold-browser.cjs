@@ -27,6 +27,8 @@ await page.locator('#reset').click();
 const colors=await page.locator('#field').evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let set=new Set();for(let i=0;i<d.length;i+=200)set.add(d[i]+','+d[i+1]+','+d[i+2]);return set.size;});assert.ok(colors>=5,'render must not be blank');
 const route=await page.evaluate(()=>HyperfoldCore.solve(0));for(const [a,s] of route)await page.locator('[data-axis="'+a+'"][data-sign="'+s+'"]').click();
 assert.equal(await page.locator('#win').isVisible(),true);
+await page.locator('#winUndo').click();assert.equal(await page.locator('#win').isVisible(),false);await page.locator('[data-axis="0"][data-sign="1"]').count();
+const last=route.at(-1);await page.locator('[data-axis="'+last[0]+'"][data-sign="'+last[1]+'"]').click();assert.equal(await page.locator('#win').isVisible(),true);
 assert.equal(await page.locator('#tutorial').isVisible(),false);await page.locator('#continue').click();assert.match(await page.locator('#levelNum').textContent(),/02/);
 for(let level=1;level<5;level++){const path=await page.evaluate(i=>HyperfoldCore.solve(i),level);assert.ok(path.length>0);for(const [axis,sign] of path)await page.locator('[data-axis="'+axis+'"][data-sign="'+sign+'"]').click();assert.equal(await page.locator('#win').isVisible(),true,'level '+(level+1)+' full UI playthrough');if(level<4)await page.locator('#continue').click();}
 await page.locator('#continue').click();assert.match(await page.locator('#levelNum').textContent(),/01/);
