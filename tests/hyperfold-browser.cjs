@@ -7,6 +7,15 @@ await page.locator('[data-axis="0"][data-sign="1"]').click();assert.equal(await 
 await page.locator('[data-axis="3"][data-sign="1"]').click();assert.equal(await page.locator('#position').textContent(),'X1 Y2 Z0 W1');
 await page.locator('#undo').click();assert.equal(await page.locator('#position').textContent(),'X1 Y2 Z0 W0');
 await page.locator('#reset').click();
+assert.equal(await page.locator('.slice-card').count(),2);
+await page.locator('.slice-card').nth(1).click();
+assert.match(await page.locator('#slice').textContent(),/W1.*预览/);
+assert.equal(await page.locator('#position').textContent(),'X0 Y2 Z0 W0','preview must never teleport player');
+assert.equal(await page.locator('#backToPlayer').isVisible(),true);
+await page.locator('#backToPlayer').click();assert.equal(await page.locator('#backToPlayer').isVisible(),false);
+await page.locator('.slice-card').nth(1).click();await page.locator('[data-axis="3"][data-sign="1"]').click();
+assert.equal(await page.locator('#position').textContent(),'X0 Y2 Z0 W1');assert.equal(await page.locator('#backToPlayer').isVisible(),false);
+await page.locator('#reset').click();
 const colors=await page.locator('#field').evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let set=new Set();for(let i=0;i<d.length;i+=200)set.add(d[i]+','+d[i+1]+','+d[i+2]);return set.size;});assert.ok(colors>=5,'render must not be blank');
 const route=await page.evaluate(()=>HyperfoldCore.solve(0));for(const [a,s] of route)await page.locator('[data-axis="'+a+'"][data-sign="'+s+'"]').click();
 assert.equal(await page.locator('#win').isVisible(),true);await page.locator('#continue').click();assert.match(await page.locator('#levelNum').textContent(),/02/);
