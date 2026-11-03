@@ -26,6 +26,7 @@ jobs:
           node --test tests/nebula-strike.test.cjs
           node --test tests/nebula-boss-reachability.test.cjs
           node --test tests/vector-run.test.cjs
+          node --check tests/vector-visual.cjs
           node --check hyperfold-core.js
           node --check hyperfold-game.js
           node --test tests/hyperfold.test.cjs
@@ -43,6 +44,7 @@ jobs:
           node tests/browser-smoke.cjs
           node tests/legacy-audit.cjs
           node tests/vector-playthrough.cjs
+          node tests/vector-visual.cjs
           node tests/hyperfold-browser.cjs
           node tests/hyperfold-accessibility.cjs
           node tests/hyperfold-visual.cjs
@@ -52,5 +54,13 @@ jobs:
         with:
           name: hyperfold-visual-audit
           path: artifacts/hyperfold-visual/*.png
+          if-no-files-found: warn
+          retention-days: 14
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vector-flight-visual-audit
+          path: artifacts/vector-visual/*.png
           if-no-files-found: warn
           retention-days: 14
