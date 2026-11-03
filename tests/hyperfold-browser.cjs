@@ -2,6 +2,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
 (async()=>{const browser=await chromium.launch({headless:true,args:['--no-sandbox']});try{
 const page=await browser.newPage({viewport:{width:1200,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4173/hyperfold.html');await page.waitForSelector('#field');
 assert.equal(await page.locator('#position').textContent(),'X0 Y2 Z0 W0');
+assert.equal(await page.locator('#score').textContent(),'☆☆☆');
+await page.locator('#sound').click();assert.equal(await page.locator('#sound').getAttribute('aria-pressed'),'true');await page.locator('#sound').click();assert.equal(await page.locator('#sound').getAttribute('aria-pressed'),'false');
 assert.equal(await page.locator('#tutorialStep').textContent(),'引导 1 / 3');
 await page.locator('#help').click();assert.equal(await page.locator('#tutorial').isVisible(),true);
 await page.locator('#tutorialDismiss').click();assert.equal(await page.locator('#tutorial').isVisible(),false);
@@ -26,7 +28,7 @@ assert.equal(await page.locator('#position').textContent(),'X0 Y2 Z0 W1');assert
 await page.locator('#reset').click();
 const colors=await page.locator('#field').evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let set=new Set();for(let i=0;i<d.length;i+=200)set.add(d[i]+','+d[i+1]+','+d[i+2]);return set.size;});assert.ok(colors>=5,'render must not be blank');
 const route=await page.evaluate(()=>HyperfoldCore.solve(0));for(const [a,s] of route)await page.locator('[data-axis="'+a+'"][data-sign="'+s+'"]').click();
-assert.equal(await page.locator('#win').isVisible(),true);
+assert.equal(await page.locator('#win').isVisible(),true);assert.equal(await page.locator('#score').textContent(),'★★★');
 await page.locator('#winUndo').click();assert.equal(await page.locator('#win').isVisible(),false);await page.locator('[data-axis="0"][data-sign="1"]').count();
 const last=route.at(-1);await page.locator('[data-axis="'+last[0]+'"][data-sign="'+last[1]+'"]').click();assert.equal(await page.locator('#win').isVisible(),true);
 assert.equal(await page.locator('#tutorial').isVisible(),false);await page.locator('#continue').click();assert.match(await page.locator('#levelNum').textContent(),/02/);

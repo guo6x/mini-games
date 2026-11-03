@@ -3,3 +3,5 @@
 
 /* WCAG AA contrast: active slice captions must remain readable on teal. */
 .slices button.active small{color:#e6fff5}
+
+#score{color:#f9c97a;letter-spacing:.1em;font-size:15px}#sound[aria-pressed=true]{border-color:#8fffd9;background:#17564d}.status>span:last-child{white-space:nowrap}
