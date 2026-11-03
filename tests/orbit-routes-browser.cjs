@@ -30,8 +30,11 @@ async function tap(page,cell,n){
   await page.keyboard.press('KeyZ');
   for(let stage=0;stage<levels.length;stage++){
    const l=levels[stage];
-   for(const r of l.routes){
-    for(const cell of r)await tap(page,cell,l.size);
+   for(let color=0;color<l.routes.length;color++){
+    const route=l.routes[color];
+    for(const cell of route)await tap(page,cell,l.size);
+    const state=await canvas.evaluate(c=>({coverage:c.dataset.routeCoverage,pairs:c.dataset.routePairs,active:c.dataset.routeActive,moves:c.dataset.routeMoves,feedback:document.getElementById('liveFeedback').textContent}));
+    console.log('STAR ROUTES stage '+(stage+1)+' pair '+(color+1),JSON.stringify(state));
    }
    assert.equal(await canvas.getAttribute('data-route-stage'),String(stage+1));
    assert.equal(await canvas.getAttribute('data-route-solved'),'true','full-cover puzzle '+(stage+1));
