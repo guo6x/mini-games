@@ -73,7 +73,10 @@
    }
    draft(){
      this.phase='draft';this.enemies=[];this.shots=[];this.hostile=[];this.hazards=[];
-     const pool=['spread','rapid','hull','dash','power','barrier'];
+     const pool=['spread','rapid','hull','dash','power','barrier'].filter(id=>
+       (id!=='spread'||this.mods.spread===0)&&
+       (id!=='hull'||this.player.hp<this.player.maxHp)&&
+       (id!=='dash'||this.mods.dash<2));
      for(let i=pool.length-1;i>0;i--){const j=Math.floor(this.rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
      this.choices=pool.slice(0,3);
      this.score+=350*this.wave;
