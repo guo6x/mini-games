@@ -59,7 +59,7 @@
    const color=this.active;if(color===null||this.solved||this.completed||!Number.isInteger(i)||i<0||i>=this.size*this.size)return false;
    const path=this.paths[color],last=path[path.length-1];if(last===i||!neighbours(last,i,this.size))return false;
    const existing=path.indexOf(i);
-   if(existing===path.length-2){
+   if(existing>=0&&existing===path.length-2){
     this.record();path.pop();this.moves++;this.status='已经回退一格';return true;
    }
    if(existing>=0||this.occupied(i,color))return false;
