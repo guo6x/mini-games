@@ -44,3 +44,12 @@ jobs:
           node tests/vector-playthrough.cjs
           node tests/hyperfold-browser.cjs
           node tests/hyperfold-accessibility.cjs
+          node tests/hyperfold-visual.cjs
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hyperfold-visual-audit
+          path: artifacts/hyperfold-visual/*.png
+          if-no-files-found: warn
+          retention-days: 14

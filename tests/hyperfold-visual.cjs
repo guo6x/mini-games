@@ -1,0 +1,8 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+(async()=>{const browser=await chromium.launch({headless:true,args:['--no-sandbox']});const dir=path.resolve('artifacts/hyperfold-visual');fs.mkdirSync(dir,{recursive:true});try{
+let count=0;const errors=[];for(const width of [320,390,768,1280]){const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4173/hyperfold.html');await page.locator('#field').waitFor();let current=0;
+for(const level of [0,2,4]){while(current<level){await page.locator('#next').click();current++;}
+const pixels=await page.locator('#field').evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;const colors=new Set();let opaque=0;for(let i=0;i<d.length;i+=400){colors.add(d[i]+','+d[i+1]+','+d[i+2]);if(d[i+3]>0)opaque++;}return{colors:colors.size,opaque};});assert.ok(pixels.colors>=5&&pixels.opaque>100,'blank canvas '+width+'/'+level);
+await page.screenshot({path:path.join(dir,width+'-level-'+level+'.png'),fullPage:true,animations:'disabled'});count++;}
+const overflow=await page.evaluate(()=>Math.max(0,document.documentElement.scrollWidth-innerWidth));assert.ok(overflow<=20,'overflow '+width+': '+overflow);await page.close();}
+assert.deepEqual(errors,[]);assert.equal(count,12);console.log('Visual quality audit: 12 screenshots across 4 widths, no blank canvas, overflow or page errors');}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
