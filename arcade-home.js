@@ -109,7 +109,7 @@ function render(){
  });
  else list.sort((a,b)=>rank[a.qualityTier]-rank[b.qualityTier]||a.name.localeCompare(b.name,'zh-Hans-CN'));
  $('gamesGrid').replaceChildren(...list.map(card));$('emptyState').hidden=list.length!==0;
- $('resultSummary').textContent='找到 '+list.length+' 款 · '+(state.view==='playable'?'主游戏库':state.view==='lab'?'公开实验室':state.view==='favorites'?'我的收藏':'全部 57 款');
+ $('resultSummary').textContent='找到 '+list.length+' 款 · '+(state.view==='playable'?'主游戏库':state.view==='lab'?'公开实验室':state.view==='favorites'?'我的收藏':'全部 59 款');
  document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===state.view);b.setAttribute('aria-pressed',String(b.dataset.view===state.view));});
  document.querySelectorAll('[data-category]').forEach(b=>{b.classList.toggle('active',b.dataset.category===state.category);b.setAttribute('aria-pressed',String(b.dataset.category===state.category));});
 }

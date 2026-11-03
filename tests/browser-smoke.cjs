@@ -8,10 +8,10 @@ try{
  
  assert.equal(await desktop.locator('.game-card').count(),40,'Main catalog must avoid showing laboratory games');
  await desktop.locator('[data-view="lab"]').click();
- assert.equal(await desktop.locator('.game-card').count(),18,'18 lab games must remain reachable');
- assert.equal(await desktop.locator('.quality-note').count(),18,'Each lab game should declare its limitations');
+ assert.equal(await desktop.locator('.game-card').count(),19,'19 lab games must remain reachable');
+ assert.equal(await desktop.locator('.quality-note').count(),19,'Each lab game should declare its limitations');
  await desktop.locator('[data-view="all"]').click();
- assert.equal(await desktop.locator('.game-card').count(),58,'All 58 games remain browseable');
+ assert.equal(await desktop.locator('.game-card').count(),59,'All 59 games remain browseable');
  await desktop.locator('[data-view="playable"]').click();
 
  assert.equal(await desktop.locator('canvas.game-poster').count(),40,'Curated homepage posters should render');
