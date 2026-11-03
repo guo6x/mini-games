@@ -26,6 +26,20 @@ async function visualAudit(page,label,mode='standard'){
   return {colors:colors.size,width:c.width,height:c.height};
  });
  assert.ok(sample.colors>=4,label+' should render non-flat content: '+JSON.stringify(sample));
+ // The earlier screenshot test would pass even with a completely missing ship:
+ // rails and stars alone already satisfy a non-uniform canvas.
+ const foreground=await canvas.evaluate(c=>{
+  const probe=document.createElement('canvas');probe.width=120;probe.height=75;
+  const ctx=probe.getContext('2d');ctx.drawImage(c,0,0,120,75);
+  const pixels=ctx.getImageData(0,0,120,75).data;
+  let hull=0;
+  for(let y=30;y<62;y++)for(let x=24;x<96;x++){
+   const i=(y*120+x)*4,r=pixels[i],g=pixels[i+1],b=pixels[i+2];
+   if(g>140&&b>130&&g>r*1.2)hull++;
+  }
+  return hull;
+ });
+ assert.ok(foreground>=65,label+' must show a substantial visible cyan starfighter silhouette, got '+foreground);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,label+' should not overflow horizontally');
  await page.locator('#viewport').screenshot({path:path.join(out,label+'.png')});
  assert.deepEqual(errors,[],label+' browser errors');
